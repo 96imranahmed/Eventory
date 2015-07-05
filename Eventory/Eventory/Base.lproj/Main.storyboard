@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--LoginVC-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="LoginVC" id="vXZ-lx-hvc" customClass="LoginVC" customModule="Eventory" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -15,8 +15,45 @@
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PXK-ST-axB" customClass="FBSDKProfilePictureView">
+                                <rect key="frame" x="225" y="177" width="150" height="150"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="150" id="7ai-yV-BHZ"/>
+                                    <constraint firstAttribute="height" constant="150" id="HLq-8P-6At"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Not Logged in as yet!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ATX-Fv-5cc">
+                                <rect key="frame" x="226.5" y="151" width="147.5" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NZV-r5-Dy3" customClass="FBSDKLoginButton">
+                                <rect key="frame" x="200" y="335" width="200" height="50"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Ny5-9g-97f"/>
+                                    <constraint firstAttribute="width" constant="200" id="qTk-Qb-gAz"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerX" secondItem="ATX-Fv-5cc" secondAttribute="centerX" id="ELY-ik-xtW"/>
+                            <constraint firstAttribute="centerY" secondItem="NZV-r5-Dy3" secondAttribute="centerY" constant="-60" id="FoA-Gj-3wQ"/>
+                            <constraint firstItem="NZV-r5-Dy3" firstAttribute="top" secondItem="PXK-ST-axB" secondAttribute="bottom" constant="8" id="HyB-1k-Unu"/>
+                            <constraint firstAttribute="centerX" secondItem="PXK-ST-axB" secondAttribute="centerX" id="fVL-kr-fVl"/>
+                            <constraint firstAttribute="centerX" secondItem="NZV-r5-Dy3" secondAttribute="centerX" id="gET-ws-ySS"/>
+                            <constraint firstItem="PXK-ST-axB" firstAttribute="top" secondItem="ATX-Fv-5cc" secondAttribute="bottom" constant="8" id="gmK-74-am2"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="LoginButton" destination="NZV-r5-Dy3" id="85O-RI-xB5"/>
+                        <outlet property="ProfilePicture" destination="PXK-ST-axB" id="qrs-Ai-hxJ"/>
+                        <outlet property="StatusLabel" destination="ATX-Fv-5cc" id="sQy-Ju-ALM"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>

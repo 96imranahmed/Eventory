@@ -20,8 +20,23 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>URL Stub</key>
+	<string>http://www.acavee.x10host.com/</string>
+	<key>FacebookAppID</key>
+	<string>1609810042599454</string>
+	<key>FacebookDisplayName</key>
+	<string>Eventory</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb1609810042599454</string>
+			</array>
+		</dict>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

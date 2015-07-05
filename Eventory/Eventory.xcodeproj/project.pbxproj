@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7071B489D8400E85674 /* AppDelegate.swift */; };
-		D855B70A1B489D8400E85674 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7091B489D8400E85674 /* ViewController.swift */; };
+		D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7091B489D8400E85674 /* LoginVC.swift */; };
 		D855B70D1B489D8400E85674 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D855B70B1B489D8400E85674 /* Main.storyboard */; };
 		D855B70F1B489D8400E85674 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D855B70E1B489D8400E85674 /* Images.xcassets */; };
 		D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D855B7101B489D8400E85674 /* LaunchScreen.xib */; };
 		D855B71E1B489D8400E85674 /* EventoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B71D1B489D8400E85674 /* EventoryTests.swift */; };
 		D855B72A1B489DE500E85674 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */; };
 		D855B72B1B489DE500E85674 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */; };
+		D855B72E1B48A50900E85674 /* unknownprofile.gif in Resources */ = {isa = PBXBuildFile; fileRef = D855B72D1B48A50900E85674 /* unknownprofile.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,7 +32,7 @@
 		D855B7021B489D8400E85674 /* Eventory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eventory.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D855B7061B489D8400E85674 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D855B7071B489D8400E85674 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D855B7091B489D8400E85674 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D855B7091B489D8400E85674 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		D855B70C1B489D8400E85674 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D855B70E1B489D8400E85674 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		D855B7111B489D8400E85674 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -41,6 +42,7 @@
 		D855B7271B489DA100E85674 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../FBSDKLoginKit.framework; sourceTree = "<group>"; };
+		D855B72D1B48A50900E85674 /* unknownprofile.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = unknownprofile.gif; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,7 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				D855B7071B489D8400E85674 /* AppDelegate.swift */,
-				D855B7091B489D8400E85674 /* ViewController.swift */,
+				D855B7091B489D8400E85674 /* LoginVC.swift */,
 				D855B70B1B489D8400E85674 /* Main.storyboard */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
@@ -100,6 +102,7 @@
 		D855B7051B489D8400E85674 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D855B72C1B48A4F600E85674 /* Assets */,
 				D855B7061B489D8400E85674 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -120,6 +123,14 @@
 				D855B71C1B489D8400E85674 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D855B72C1B48A4F600E85674 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				D855B72D1B48A50900E85674 /* unknownprofile.gif */,
+			);
+			name = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,6 +216,7 @@
 				D855B70D1B489D8400E85674 /* Main.storyboard in Resources */,
 				D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */,
 				D855B70F1B489D8400E85674 /* Images.xcassets in Resources */,
+				D855B72E1B48A50900E85674 /* unknownprofile.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,7 +234,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D855B70A1B489D8400E85674 /* ViewController.swift in Sources */,
+				D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */,
 				D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
