@@ -118,6 +118,7 @@ class Connect {
         if (FALSE === $result) {
             return false;
         } else {
+            
             if (strpos($result, $id) !== false) {
                 return true;
             } else {

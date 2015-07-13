@@ -2,12 +2,88 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
+        <!--LogoutVC-->
+        <scene sceneID="Kn5-yI-5ti">
+            <objects>
+                <viewController title="LogoutVC" automaticallyAdjustsScrollViewInsets="NO" id="ylD-dX-pSi" customClass="LogoutVC" customModule="Eventory" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Omb-KL-0wu"/>
+                        <viewControllerLayoutGuide type="bottom" id="khc-hS-FF8"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="fGM-RK-fAv">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="273" sectionHeaderHeight="10" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="qZP-ne-04z">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="Profile" rowHeight="273" id="MAY-yw-z8a" customClass="ProfileCell" customModule="Eventory" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MAY-yw-z8a" id="au7-vs-hR4">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Note: Logging out will clear all saved data!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PNL-5T-vPo">
+                                                    <rect key="frame" x="191" y="250" width="219" height="14"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="14" id="1Z3-k6-1PP"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Not Logged in as yet!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WlJ-lG-Z5s">
+                                                    <rect key="frame" x="227" y="8" width="147" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="centerX" secondItem="PNL-5T-vPo" secondAttribute="centerX" id="BZP-2L-JzQ"/>
+                                                <constraint firstItem="WlJ-lG-Z5s" firstAttribute="top" secondItem="au7-vs-hR4" secondAttribute="topMargin" id="dD8-jQ-Ddu"/>
+                                                <constraint firstAttribute="centerX" secondItem="WlJ-lG-Z5s" secondAttribute="centerX" id="dp6-33-CRX"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="PNL-5T-vPo" secondAttribute="bottom" constant="0.5" id="fA7-Ep-8b1"/>
+                                                <constraint firstItem="WlJ-lG-Z5s" firstAttribute="leading" secondItem="au7-vs-hR4" secondAttribute="leadingMargin" constant="-39" id="hLC-sL-fhw"/>
+                                            </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="hLC-sL-fhw"/>
+                                                </mask>
+                                            </variation>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="StatusLabel" destination="WlJ-lG-Z5s" id="tMJ-8H-QJX"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="qZP-ne-04z" firstAttribute="bottom" secondItem="khc-hS-FF8" secondAttribute="top" id="5Cy-eg-eVg"/>
+                            <constraint firstItem="qZP-ne-04z" firstAttribute="leading" secondItem="fGM-RK-fAv" secondAttribute="leading" id="gjo-Tm-8Ov"/>
+                            <constraint firstItem="qZP-ne-04z" firstAttribute="top" secondItem="Omb-KL-0wu" secondAttribute="bottom" id="s7w-aT-4MP"/>
+                            <constraint firstAttribute="trailing" secondItem="qZP-ne-04z" secondAttribute="trailing" id="xVw-Yp-9tZ"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="settingstable" destination="qZP-ne-04z" id="w1O-pn-bZs"/>
+                        <segue destination="vXZ-lx-hvc" kind="presentation" identifier="LogouttoLogin" modalTransitionStyle="crossDissolve" id="t6h-0e-o9z"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9Za-VT-RKE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="464" y="-471"/>
+        </scene>
         <!--LoginVC-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController title="LoginVC" id="vXZ-lx-hvc" customClass="LoginVC" customModule="Eventory" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginVC" title="LoginVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vXZ-lx-hvc" customClass="LoginVC" customModule="Eventory" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -27,7 +103,7 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Not Logged in as yet!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ATX-Fv-5cc">
                                 <rect key="frame" x="226.5" y="151" width="147.5" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NZV-r5-Dy3" customClass="FBSDKLoginButton">
@@ -53,10 +129,60 @@
                         <outlet property="LoginButton" destination="NZV-r5-Dy3" id="85O-RI-xB5"/>
                         <outlet property="ProfilePicture" destination="PXK-ST-axB" id="qrs-Ai-hxJ"/>
                         <outlet property="StatusLabel" destination="ATX-Fv-5cc" id="sQy-Ju-ALM"/>
+                        <segue destination="Ld3-Sw-7ti" kind="presentation" identifier="LogintoLanding" modalTransitionStyle="crossDissolve" id="bux-n8-56C"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="464" y="242"/>
+        </scene>
+        <!--LandingVC-->
+        <scene sceneID="LlE-gl-bAM">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2c5-rq-cYh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController storyboardIdentifier="LandingVC" title="LandingVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="H80-QM-K9h" customClass="LandingVC" customModule="Eventory" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="L8C-Yf-6jU">
+                        <nil key="title"/>
+                        <view key="titleView" contentMode="scaleToFill" id="LHC-Wm-hM0">
+                            <rect key="frame" x="180" y="5.5" width="240" height="33"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Hi, welcome to Eventory!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FMa-UJ-f3F">
+                                    <rect key="frame" x="8" y="0.0" width="224" height="33"/>
+                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="navprofilelabel" destination="FMa-UJ-f3F" id="Xg9-Jz-sve"/>
+                        <outlet property="navtitle" destination="LHC-Wm-hM0" id="S4x-02-EUu"/>
+                        <segue destination="ylD-dX-pSi" kind="show" identifier="LandingtoLogout" id="Is9-hK-oNY"/>
+                    </connections>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="1816" y="242"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="3IP-O1-IBt">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ld3-Sw-7ti" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="DNw-eK-vp0">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="H80-QM-K9h" kind="relationship" relationship="rootViewController" id="NOn-Uj-cbB"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gEV-ub-x96" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1132" y="242"/>
         </scene>
     </scenes>
 </document>

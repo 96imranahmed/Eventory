@@ -6,7 +6,7 @@ $connection = new Connect();
 $connectinfo = $connection->GetConnection();
 //Start Program
 if (array_key_exists('profid', $_POST)) {
-    $id = filter_input(INPUT_POST, 'profid');
+    $profid = filter_input(INPUT_POST, 'profid');
 //echo '<p>ID: '.$id.'</p>';
 } else {
 //echo '<p>ID not supplied</p>';
@@ -44,7 +44,7 @@ if ($check) {
         try {
             $profilecheck = $connectinfo->prepare("SELECT id from Profiles where id='$profid'");
             $profilecheck->execute();
-            if ($profilecheck->rowCount() > 1) {
+            if ($profilecheck->rowCount() >= 1) {
                 //Profile already exists
             } else {
                 //Notify friends that person has joined
@@ -54,7 +54,7 @@ if ($check) {
             }
             $prepsql = $connectinfo->prepare("INSERT INTO Profiles (id, name, token, url) VALUES ('$profid','$name','$token','$profurl') ON DUPLICATE KEY UPDATE name=VALUES(name), token=VALUES(token), url=VALUES(url)");
             $prepsql->execute();
-            $notifysql = $connectinfo->prepare("INSERT INTO Notifications (id) VALUES ('$profid') ON DUPLICATE KEY UPDATE id=id");
+            $notifysql = $connectinfo->prepare("INSERT INTO Notifications (id, friends_new_unseen) VALUES ('$profid', null) ON DUPLICATE KEY UPDATE id=id");
             $notifysql->execute();
         } catch (PDOException $e) {
             echo 'Error - ' . $e->GetMessage();

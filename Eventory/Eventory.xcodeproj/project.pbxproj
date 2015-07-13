@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FCE1B4B1355007A747F /* Locksmith.swift */; };
+		D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */; };
+		D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */; };
 		D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7071B489D8400E85674 /* AppDelegate.swift */; };
 		D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7091B489D8400E85674 /* LoginVC.swift */; };
 		D855B70D1B489D8400E85674 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D855B70B1B489D8400E85674 /* Main.storyboard */; };
@@ -16,6 +19,10 @@
 		D855B72A1B489DE500E85674 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */; };
 		D855B72B1B489DE500E85674 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */; };
 		D855B72E1B48A50900E85674 /* unknownprofile.gif in Resources */ = {isa = PBXBuildFile; fileRef = D855B72D1B48A50900E85674 /* unknownprofile.gif */; };
+		D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE121B52BCE100F3151A /* LandingVC.swift */; };
+		D89DBE151B52BD2E00F3151A /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE141B52BD2E00F3151A /* CommonUtils.swift */; };
+		D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE181B54385900F3151A /* LogoutVC.swift */; };
+		D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE1A1B54515900F3151A /* ProfileCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +36,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D82E8FCE1B4B1355007A747F /* Locksmith.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locksmith.swift; sourceTree = "<group>"; };
+		D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocksmithRequest.swift; sourceTree = "<group>"; };
+		D82E8FDA1B4E5350007A747F /* Eventory.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Eventory.xcdatamodel; sourceTree = "<group>"; };
 		D855B7021B489D8400E85674 /* Eventory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eventory.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D855B7061B489D8400E85674 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D855B7071B489D8400E85674 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -43,6 +53,10 @@
 		D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		D855B72D1B48A50900E85674 /* unknownprofile.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = unknownprofile.gif; sourceTree = "<group>"; };
+		D89DBE121B52BCE100F3151A /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
+		D89DBE141B52BD2E00F3151A /* CommonUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonUtils.swift; sourceTree = "<group>"; };
+		D89DBE181B54385900F3151A /* LogoutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoutVC.swift; sourceTree = "<group>"; };
+		D89DBE1A1B54515900F3151A /* ProfileCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +79,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D82E8FD21B4B135C007A747F /* Supporting Classes */ = {
+			isa = PBXGroup;
+			children = (
+				D82E8FCE1B4B1355007A747F /* Locksmith.swift */,
+				D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */,
+			);
+			name = "Supporting Classes";
+			sourceTree = "<group>";
+		};
 		D855B6F91B489D8400E85674 = {
 			isa = PBXGroup;
 			children = (
@@ -87,11 +110,16 @@
 			isa = PBXGroup;
 			children = (
 				D855B7071B489D8400E85674 /* AppDelegate.swift */,
+				D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */,
 				D855B7091B489D8400E85674 /* LoginVC.swift */,
+				D89DBE181B54385900F3151A /* LogoutVC.swift */,
+				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
+				D89DBE141B52BD2E00F3151A /* CommonUtils.swift */,
 				D855B70B1B489D8400E85674 /* Main.storyboard */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
 				D855B7271B489DA100E85674 /* Bridging-Header.h */,
+				D89DBE1C1B54516200F3151A /* Custom Cells */,
 				D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */,
 				D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */,
 				D855B7051B489D8400E85674 /* Supporting Files */,
@@ -102,6 +130,7 @@
 		D855B7051B489D8400E85674 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D82E8FD21B4B135C007A747F /* Supporting Classes */,
 				D855B72C1B48A4F600E85674 /* Assets */,
 				D855B7061B489D8400E85674 /* Info.plist */,
 			);
@@ -131,6 +160,14 @@
 				D855B72D1B48A50900E85674 /* unknownprofile.gif */,
 			);
 			name = Assets;
+			sourceTree = "<group>";
+		};
+		D89DBE1C1B54516200F3151A /* Custom Cells */ = {
+			isa = PBXGroup;
+			children = (
+				D89DBE1A1B54515900F3151A /* ProfileCell.swift */,
+			);
+			name = "Custom Cells";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -234,7 +271,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */,
+				D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */,
+				D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */,
+				D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */,
+				D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */,
 				D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */,
+				D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */,
+				D89DBE151B52BD2E00F3151A /* CommonUtils.swift in Sources */,
 				D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -443,6 +487,7 @@
 				D855B7231B489D8400E85674 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D855B7241B489D8400E85674 /* Build configuration list for PBXNativeTarget "EventoryTests" */ = {
 			isa = XCConfigurationList;
@@ -451,8 +496,22 @@
 				D855B7261B489D8400E85674 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				D82E8FDA1B4E5350007A747F /* Eventory.xcdatamodel */,
+			);
+			currentVersion = D82E8FDA1B4E5350007A747F /* Eventory.xcdatamodel */;
+			path = Eventory.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = D855B6FA1B489D8400E85674 /* Project object */;
 }
