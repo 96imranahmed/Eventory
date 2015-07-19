@@ -40,5 +40,5 @@ function PasstoParse($targetid, $notification) {
     $connection = new Connect();
     $connectinfo = $connection->GetConnection();
     $name = $connection->GetNamebyId($connectinfo, $targetid, 0);
-    echo '<p>Directed to: '.$name.' - '. $notification . '</p>';
+    //echo '<p>Directed to: '.$name.' - '. $notification . '</p>';
 }

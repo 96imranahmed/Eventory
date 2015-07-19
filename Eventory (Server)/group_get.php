@@ -40,6 +40,7 @@ if ($safe) {
             foreach ($grouparray as $currentid) {
                 $row = $connection->GetRow($connectinfo, "Groups", $currentid);
                 $name = $row["name"];
+                $id = $row["id"];
                 $currentacceptedarray = explode(";", $row["people_accepted"]);
                 $currentinvited = explode(";", $row["people_requested"]);
                 $starter = $row["starter"];
@@ -48,10 +49,10 @@ if ($safe) {
                 } else {
                     $admin = 0;
                 }
-                $currentgroup = array("Name" => $name, "Members" => $currentacceptedarray, "Invited" => $currentinvited, "Admin" => $admin);
+                $currentgroup = array("Name" => $name, "GroupID" => $id, "Members" => $currentacceptedarray, "Invited" => $currentinvited, "Admin" => $admin);
                 $returnarray[$currentid] = $currentgroup;
             }
-            print_r($returnarray);
+            echo json_encode($returnarray);
         }
     } else {
         echo "Error - authorization mismatch";

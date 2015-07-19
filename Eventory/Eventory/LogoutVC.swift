@@ -1,4 +1,4 @@
-//
+//  
 //  LogoutVC.swift
 //
 //
@@ -28,20 +28,13 @@ class LogoutVC: UIViewController, UITableViewDelegate, UITableViewDataSource, FB
     }
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
         let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
-        ClearProfiles();
+        Profile.ClearProfiles();
         self.performSegueWithIdentifier("LogouttoLogin", sender: self);
     }
     
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {}
     
-    func ClearProfiles () {
-        //Clears profiles only
-        let fetchRequest = NSFetchRequest(entityName: "Profile")
-        let fetchResults = (self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile])!
-        for (var i = 0; i < fetchResults.count ; i++) {
-            self.managedObjectContext?.deleteObject(fetchResults[i]);
-        }
-    }
+
     //Table View methods
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
@@ -64,9 +57,10 @@ class LogoutVC: UIViewController, UITableViewDelegate, UITableViewDataSource, FB
         if (indexPath == NSIndexPath(forRow: 0, inSection: 0)) {
             var cell = tableView.dequeueReusableCellWithIdentifier("Profile") as! ProfileCell;
             //Correct ProfilePicture view
-            cell.ProfilePicture.frame = CGRectMake(self.view.center.x - 75,cell.ProfilePicture.frame.origin.y , 150, 150)
-            cell.LoginButton.frame = CGRectMake(self.view.center.x - 100,192 , 200 , 50)
+            cell.OfflineProfilePicture.frame = CGRectMake(self.view.center.x - 40, cell.OfflineProfilePicture.frame.origin.y, 80, 80);
+            cell.LoginButton.frame = CGRectMake(self.view.center.x - 100,cell.LoginButton.frame.origin.y , 200 , 50)
             cell.LoginButton.delegate = self;
+            cell.OfflineProfilePicture.image = UIImage(data: (Globals.currentprofile?.imagedata)!)
             return cell;
         } else {
             return UITableViewCell();
@@ -75,6 +69,4 @@ class LogoutVC: UIViewController, UITableViewDelegate, UITableViewDataSource, FB
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         //So far add nothing (allows selection = false)
     }
-    
-    
 }

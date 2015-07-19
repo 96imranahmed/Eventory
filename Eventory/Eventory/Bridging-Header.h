@@ -10,4 +10,5 @@
 #define Eventory_Bridging_Header_h
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import "RKDropdownAlert.h"
 #endif

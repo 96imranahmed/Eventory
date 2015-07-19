@@ -13,7 +13,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     @IBOutlet weak var StatusLabel: UILabel!
     @IBOutlet weak var LoginButton: FBSDKLoginButton!
     @IBOutlet weak var ProfilePicture: FBSDKProfilePictureView!
-    var URLStub: String!;
+    let URLStub: String! = NSBundle.mainBundle().objectForInfoDictionaryKey("URL Stub") as! String;
     let appName: String! = "Eventory";
     var postresponse:String!;
     //Below declarations allows for the creation of the login-indicator
@@ -21,6 +21,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     var activityIndicator = UIActivityIndicatorView();
     var strLabel = UILabel();
     var canproceed:Bool = false;
+    var currentlyconnected:Bool = false;
     //Core Data Stuff
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
@@ -28,14 +29,12 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         super.viewDidLoad()
         //Check whether network is running or not -> use as basis for offline mode
         if (!Reachability.isConnectedToNetwork()) {
-            NSLog("Not connected to internet!");
-            Globals.connected = false;
+            currentlyconnected = false;
         } else {
-            Globals.connected = true;
+            currentlyconnected = true;
         }
         ProfilePicture.layer.masksToBounds = true;
         ProfilePicture.layer.cornerRadius = ProfilePicture.frame.height/2;
-        URLStub = NSBundle.mainBundle().objectForInfoDictionaryKey("URL Stub") as! String;
         self.LoginButton.delegate = self;
         LoginButton.readPermissions = ["public_profile", "user_friends"]; //Add user_events if required
         LoginButton.loginBehavior = FBSDKLoginBehavior.Web;
@@ -102,7 +101,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             StatusLabel.text = "Login cancelled - try again?";
         }
         else {
-            ClearProfiles();
+            Profile.ClearProfiles();
             progressBarDisplayer("Logging In", true)
             NSLog("Successful login - check permissions and process!");
             checkPermissions();
@@ -168,7 +167,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     }
     func logInProfile() {
         //Get FB data from token
-        let request = FBSDKGraphRequest(graphPath: "/me?fields=id,name,picture", parameters: nil);
+        let request = FBSDKGraphRequest(graphPath: "/me?fields=id,name,picture.width(150).height(150)", parameters: nil);
         let connection = FBSDKGraphRequestConnection();
         connection.addRequest(request, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
             if (error==nil) {
@@ -181,10 +180,9 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
                 let error = Locksmith.saveData([id as! String: FBSDKAccessToken.currentAccessToken().tokenString], forUserAccount: self.appName);
                 //Creates a new save profile of personal profile
-                var personalprofile: Profile;
                 if let moc = self.managedObjectContext {
-                    self.ClearProfileNils();
-                    if (self.CheckProfileifContains("profid", identifier: (id as? String)!)) {
+                    Profile.ClearProfileNils();
+                    if (Profile.CheckProfileifContains("profid", identifier: (id as? String)!)) {
                         let fetchRequest = NSFetchRequest(entityName: "Profile")
                         fetchRequest.fetchLimit = 1;
                         let predicate = NSPredicate(format: "profid == %@",id!);
@@ -193,70 +191,30 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                         Globals.currentprofile = fetchResults?[0];
                         NSLog("Profile already saved in Core Data");
                     } else {
-                        Globals.currentprofile = Profile.createInManagedObjectContext(moc, name: namepost as? String, url: profilepicture as? String, profid: id as? String);
+                        Globals.currentprofile = Profile.createInManagedObjectContext(moc, name: namepost as? String, url: profilepicture as? String, profid: id as? String, isuser: true);
                         NSLog(Globals.currentprofile!.name! + " added and saved to Core Data");
                     }
                 }
             }
         })
-        if (Globals.connected) {
+        if (currentlyconnected) {
             let parameters = ["method": "GET"];
-            let friendrequest = FBSDKGraphRequest(graphPath: "/me?fields=friends.limit(5000)%7Bpicture,name%7D", parameters: parameters, HTTPMethod: "POST");
+            let friendrequest = FBSDKGraphRequest(graphPath: "/me?fields=friends.limit(5000)%7Bpicture.width(150).height(150),name%7D", parameters: parameters, HTTPMethod: "POST");
             connection.addRequest(friendrequest, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
                 //Get friends
-                var friendid = [String]();
-                var friends: AnyObject? = (result as! NSDictionary).valueForKey("friends");
-                var count: NSArray = (friends as! NSDictionary)["data"] as! NSArray;
-                for (var i = 0; i < count.count; i++) {
-                    var currentfriend: NSDictionary = count[i] as! NSDictionary;
-                    let profid = currentfriend.valueForKey("id") as? String;
-                    let namepost = currentfriend.valueForKey("name") as? String;
-                    var profilepicture: AnyObject? = (currentfriend as NSDictionary).valueForKey("picture");
-                    profilepicture = (profilepicture as! NSDictionary).valueForKey("data");
-                    let profilepictureurl = (profilepicture as! NSDictionary).valueForKey("url") as? String;
-                    if (self.CheckProfileifContains("profid", identifier: profid!)){
-                        let fetchRequest = NSFetchRequest(entityName: "Profile")
-                        fetchRequest.fetchLimit = 1;
-                        let predicate = NSPredicate(format: "profid == %@", profid!)
-                        fetchRequest.predicate = predicate
-                        if let fetchResults = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]{
-                            var currententry = fetchResults[0];
-                            if (currententry.url == profilepictureurl) {
-                            } else {
-                                self.managedObjectContext?.deleteObject(currententry)
-                                currententry = Profile.createInManagedObjectContext(self.managedObjectContext!, name: namepost!, url: profilepictureurl!, profid: profid!);
-                            }
-                        }
-                    } else {
-                        //If not already in list - create entry
-                        var currententry = Profile.createInManagedObjectContext(self.managedObjectContext!, name: namepost!, url: profilepictureurl!, profid: profid!);
-                    }
-                    friendid.append(profid!)
-                    //Globals.friendlist.append(currententry);
-                }
-                //Remove any deleted friends
-                let fetchRequest = NSFetchRequest(entityName: "Profile")
-                if let fetchResults = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]{
-                    var checkfriends = friendid;
-                    checkfriends.append(FBSDKAccessToken.currentAccessToken().userID);
-                    for (var i = 0; i<fetchResults.count; i++){
-                        if contains(checkfriends, fetchResults[i].profid!) {
-                        } else {
-                        self.managedObjectContext?.deleteObject(fetchResults[i]);
-                        }
-                    }
-                }
+                var friendid = Profile.saveFriendstoCoreData(result);
                 //Upload values to Eventory
                 var params = Dictionary<String, AnyObject>();
                 params["name"] = Globals.currentprofile!.name;
                 params["url"] = Globals.currentprofile!.url;
-                params["profid"] = Globals.currentprofile!.profid;
                 params["id"] = friendid;
-                params["token"] = FBSDKAccessToken.currentAccessToken().tokenString;
-                self.postToServer("profile.php", postdata: params);
+                Reachability.postToServer("profile.php", postdata: params, customselector:nil);
                 self.messageFrame.removeFromSuperview()
                 (UIApplication.sharedApplication().delegate as! AppDelegate).saveContext();
                 self.canproceed = true;
+                var paramstwo = Dictionary<String,AnyObject>();
+                paramstwo["type"] = "0";
+                Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad")
                 if (self.isViewLoaded()) {
                     self.performSegueWithIdentifier("LogintoLanding", sender: self);
                 }
@@ -270,6 +228,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 self.view.hidden = false;
                 NSLog("No internet connection!");
                 var alert = UIAlertController(title: "No internet connection!", message: "You have not logged in and have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
                 self.presentViewController(alert, animated: true, completion: nil)
             } else {
                 //Load saved profile (offline mode - but check for token expiry first!)
@@ -278,6 +237,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     NSLog("Profile expired!");
                     self.view.hidden = false;
                     var alert = UIAlertController(title: "No internet connection!", message: "Your access token has expired and you have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
                     self.presentViewController(alert, animated: true, completion: nil)
                 } else {
                     //Actually load this profile
@@ -285,66 +245,23 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     let predicate = NSPredicate(format: "profid == %@", FBSDKProfile.currentProfile().userID)
                     fetchRequest.predicate = predicate
                     if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
+                        if (fetchResults.count>0) {
                         Globals.currentprofile = fetchResults[0];
                         NSLog(Globals.currentprofile!.name! + " loaded from Core Data as primary profile!");
+                        }
                     }
                     self.canproceed = true;
                 }
             }
             if (!Reachability.isConnectedToNetwork()) {
-                Globals.connected = false;
+                currentlyconnected = false;
             } else {
-                Globals.connected = true;
+                currentlyconnected = true;
             }
         }
-    }
-    func postToServer(stub: NSString, postdata: Dictionary<String, AnyObject>) -> Void {
-        let (dictionary, error) = Locksmith.loadDataForUserAccount("Eventory")
-        //Clean Values by escaping
-        var dictsend = Dictionary<String, String>()
-        for (key, value) in postdata {
-            if let stringArray = value as? [String] {
-                for (var i=0; i<stringArray.count; i++) {
-                    var newkey = (key as String) + "[" + (i.description) + "]";
-                    dictsend[newkey] = stringArray[i];//stringArray[i].stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())
-                }
-            }
-            else {
-                //var escapedval = value.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())
-                dictsend[key as String] = value as? String;
-            }
-        }
-        //Convert values into string
-        var contentBodyAsString = "";
-        var firstOneAdded = false
-        let contentKeys:Array<String> = Array(dictsend.keys)
-        for contentKey in contentKeys {
-            if(!firstOneAdded) {
-                contentBodyAsString += contentKey + "=" + dictsend[contentKey]!
-                firstOneAdded = true
-            }
-            else {
-                contentBodyAsString += "&" + contentKey + "=" + dictsend[contentKey]!
-            }
-        }
-        contentBodyAsString = contentBodyAsString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-        let urlstring = URLStub + (stub as String);
-        let url = NSURL(string: urlstring)!;
-        let session = NSURLSession.sharedSession();
-        let request = NSMutableURLRequest(URL: url);
-        request.HTTPMethod = "POST";
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type");
-        request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
-            (data, response, error) in
-            //let subString = (response.description as NSString).containsString("Error") - Checks for error
-            let dataoutput = String(NSString(data: data, encoding: NSUTF8StringEncoding)!)
-        }
-        task.resume()
     }
     
     func progressBarDisplayer(msg:String, _ indicator:Bool ) {
-        println(msg)
         strLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 50))
         strLabel.text = msg
         strLabel.textColor = UIColor.whiteColor()
@@ -360,38 +277,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         messageFrame.addSubview(strLabel)
         view.addSubview(messageFrame)
     }
-    
-    func ClearProfileNils () {
-        let fetchRequest = NSFetchRequest(entityName: "Profile")
-        let predicate = NSPredicate(format: "profid == nil OR profid == ''");
-        fetchRequest.predicate = predicate;
-        let fetchResults = (self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile])!
-        for (var i = 0; i < fetchResults.count ; i++) {
-            self.managedObjectContext?.deleteObject(fetchResults[i]);
-        }
-    }
-    
-    func CheckProfileifContains(column: String, identifier: String) -> Bool {
-        let fetchRequest = NSFetchRequest(entityName: "Profile")
-        fetchRequest.fetchLimit = 1;
-        var formatted = column + " == '" + identifier + "'";
-        let predicate = NSPredicate(format: formatted);
-        fetchRequest.predicate = predicate
-        let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile];
-            if (fetchResults!.count>0){
-                return true;
-            } else {
-                return false;
-            }
-    }
-    func ClearProfiles () {
-        //Clears profiles only
-        let fetchRequest = NSFetchRequest(entityName: "Profile")
-        let fetchResults = (self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile])!
-        for (var i = 0; i < fetchResults.count ; i++) {
-            self.managedObjectContext?.deleteObject(fetchResults[i]);
-        }
-    }
-    
+        
 }
 

@@ -13,13 +13,19 @@ class LandingVC: UIViewController {
     @IBOutlet weak var navpic: UIBarButtonItem!
     @IBOutlet weak var navprofilelabel: UILabel!
     @IBOutlet weak var navtitle: UIView!
+  var picbutton:UIButton = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton;
     override func viewDidLoad() {
         super.viewDidLoad()
         //Create button
-        var image:UIImage = UIImage(data: Globals.currentprofile!.imagedata!)!;
-        var picbutton:UIButton = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton;
-        picbutton.setImage(image, forState: UIControlState.Normal)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "PPUpdated", name: "PPUpdated", object: nil);
+        let image = Globals.currentprofile?.imagedata
+        
         picbutton.frame = CGRectMake(0, 0, 28, 28);
+        if (image?.length == 0) {
+            picbutton.setImage(UIImage(named: "unkownprofile.png"), forState: UIControlState.Normal)
+        } else {
+            picbutton.setImage(UIImage(data: Globals.currentprofile!.imagedata!)!, forState: UIControlState.Normal)
+        }
         picbutton.layer.masksToBounds = true;
         picbutton.layer.cornerRadius = picbutton.frame.height/2;
         picbutton.addTarget(self, action: Selector("ProfileViewLoad:"), forControlEvents: UIControlEvents.TouchDown)
@@ -28,7 +34,9 @@ class LandingVC: UIViewController {
         navprofilelabel.text = getTitle() +  ", " + getFirstName(FBSDKProfile.currentProfile().name +  "!");
         navprofilelabel.center = navtitle.center;
     }
-    
+    func PPUpdated () {
+        picbutton.setImage(UIImage(data: Globals.currentprofile!.imagedata!)!, forState: UIControlState.Normal)
+    }
     func ProfileViewLoad (sender: UIButton!) {
         self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
 

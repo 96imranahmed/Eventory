@@ -7,9 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D81B455D1B5AD12200DF7899 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B455C1B5AD12200DF7899 /* Profile.swift */; };
+		D81B455F1B5AD15800DF7899 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B455E1B5AD15800DF7899 /* Group.swift */; };
+		D81B45621B5AE13200DF7899 /* GroupCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B45611B5AE13200DF7899 /* GroupCell.swift */; };
 		D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FCE1B4B1355007A747F /* Locksmith.swift */; };
 		D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */; };
 		D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */; };
+		D84F14A41B563D190081B5E8 /* FriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84F14A31B563D190081B5E8 /* FriendCell.swift */; };
+		D84F14A81B582CF30081B5E8 /* unknownprofile.png in Resources */ = {isa = PBXBuildFile; fileRef = D84F14A71B582CF30081B5E8 /* unknownprofile.png */; };
 		D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7071B489D8400E85674 /* AppDelegate.swift */; };
 		D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7091B489D8400E85674 /* LoginVC.swift */; };
 		D855B70D1B489D8400E85674 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D855B70B1B489D8400E85674 /* Main.storyboard */; };
@@ -18,11 +23,12 @@
 		D855B71E1B489D8400E85674 /* EventoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B71D1B489D8400E85674 /* EventoryTests.swift */; };
 		D855B72A1B489DE500E85674 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */; };
 		D855B72B1B489DE500E85674 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */; };
-		D855B72E1B48A50900E85674 /* unknownprofile.gif in Resources */ = {isa = PBXBuildFile; fileRef = D855B72D1B48A50900E85674 /* unknownprofile.gif */; };
+		D88747591B583A9000373791 /* RKDropdownAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = D88747581B583A9000373791 /* RKDropdownAlert.m */; };
 		D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE121B52BCE100F3151A /* LandingVC.swift */; };
 		D89DBE151B52BD2E00F3151A /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE141B52BD2E00F3151A /* CommonUtils.swift */; };
 		D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE181B54385900F3151A /* LogoutVC.swift */; };
 		D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE1A1B54515900F3151A /* ProfileCell.swift */; };
+		D89DBE1E1B55C73000F3151A /* FriendListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE1D1B55C73000F3151A /* FriendListVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,9 +42,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D81B455C1B5AD12200DF7899 /* Profile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		D81B455E1B5AD15800DF7899 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		D81B45611B5AE13200DF7899 /* GroupCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCell.swift; sourceTree = "<group>"; };
 		D82E8FCE1B4B1355007A747F /* Locksmith.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locksmith.swift; sourceTree = "<group>"; };
 		D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocksmithRequest.swift; sourceTree = "<group>"; };
 		D82E8FDA1B4E5350007A747F /* Eventory.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Eventory.xcdatamodel; sourceTree = "<group>"; };
+		D84F14A31B563D190081B5E8 /* FriendCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCell.swift; sourceTree = "<group>"; };
+		D84F14A71B582CF30081B5E8 /* unknownprofile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unknownprofile.png; sourceTree = "<group>"; };
 		D855B7021B489D8400E85674 /* Eventory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eventory.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D855B7061B489D8400E85674 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D855B7071B489D8400E85674 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -52,11 +63,13 @@
 		D855B7271B489DA100E85674 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../FBSDKLoginKit.framework; sourceTree = "<group>"; };
-		D855B72D1B48A50900E85674 /* unknownprofile.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = unknownprofile.gif; sourceTree = "<group>"; };
+		D88747571B583A9000373791 /* RKDropdownAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDropdownAlert.h; sourceTree = "<group>"; };
+		D88747581B583A9000373791 /* RKDropdownAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDropdownAlert.m; sourceTree = "<group>"; };
 		D89DBE121B52BCE100F3151A /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		D89DBE141B52BD2E00F3151A /* CommonUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonUtils.swift; sourceTree = "<group>"; };
 		D89DBE181B54385900F3151A /* LogoutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoutVC.swift; sourceTree = "<group>"; };
 		D89DBE1A1B54515900F3151A /* ProfileCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
+		D89DBE1D1B55C73000F3151A /* FriendListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendListVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,9 +92,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D81B45601B5AD17500DF7899 /* Base Classes */ = {
+			isa = PBXGroup;
+			children = (
+				D89DBE141B52BD2E00F3151A /* CommonUtils.swift */,
+				D81B455C1B5AD12200DF7899 /* Profile.swift */,
+				D81B455E1B5AD15800DF7899 /* Group.swift */,
+			);
+			name = "Base Classes";
+			sourceTree = "<group>";
+		};
 		D82E8FD21B4B135C007A747F /* Supporting Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D88747571B583A9000373791 /* RKDropdownAlert.h */,
+				D88747581B583A9000373791 /* RKDropdownAlert.m */,
 				D82E8FCE1B4B1355007A747F /* Locksmith.swift */,
 				D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */,
 			);
@@ -114,11 +139,12 @@
 				D855B7091B489D8400E85674 /* LoginVC.swift */,
 				D89DBE181B54385900F3151A /* LogoutVC.swift */,
 				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
-				D89DBE141B52BD2E00F3151A /* CommonUtils.swift */,
+				D89DBE1D1B55C73000F3151A /* FriendListVC.swift */,
 				D855B70B1B489D8400E85674 /* Main.storyboard */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
 				D855B7271B489DA100E85674 /* Bridging-Header.h */,
+				D81B45601B5AD17500DF7899 /* Base Classes */,
 				D89DBE1C1B54516200F3151A /* Custom Cells */,
 				D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */,
 				D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */,
@@ -157,7 +183,7 @@
 		D855B72C1B48A4F600E85674 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				D855B72D1B48A50900E85674 /* unknownprofile.gif */,
+				D84F14A71B582CF30081B5E8 /* unknownprofile.png */,
 			);
 			name = Assets;
 			sourceTree = "<group>";
@@ -166,6 +192,8 @@
 			isa = PBXGroup;
 			children = (
 				D89DBE1A1B54515900F3151A /* ProfileCell.swift */,
+				D81B45611B5AE13200DF7899 /* GroupCell.swift */,
+				D84F14A31B563D190081B5E8 /* FriendCell.swift */,
 			);
 			name = "Custom Cells";
 			sourceTree = "<group>";
@@ -251,9 +279,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D855B70D1B489D8400E85674 /* Main.storyboard in Resources */,
+				D84F14A81B582CF30081B5E8 /* unknownprofile.png in Resources */,
 				D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */,
 				D855B70F1B489D8400E85674 /* Images.xcassets in Resources */,
-				D855B72E1B48A50900E85674 /* unknownprofile.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,9 +299,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D81B45621B5AE13200DF7899 /* GroupCell.swift in Sources */,
+				D84F14A41B563D190081B5E8 /* FriendCell.swift in Sources */,
+				D89DBE1E1B55C73000F3151A /* FriendListVC.swift in Sources */,
+				D88747591B583A9000373791 /* RKDropdownAlert.m in Sources */,
+				D81B455D1B5AD12200DF7899 /* Profile.swift in Sources */,
 				D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */,
 				D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */,
 				D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */,
+				D81B455F1B5AD15800DF7899 /* Group.swift in Sources */,
 				D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */,
 				D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */,
 				D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */,

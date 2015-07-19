@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "Eventory.FriendListVC.tableView (Eventory.FriendListVC)(ObjectiveC.UITableView, cellForRowAtIndexPath : ObjectiveC.NSIndexPath) -&gt; ObjectiveC.UITableViewCell:FriendListVC.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Eventory.LandingVC.viewDidLoad (Eventory.LandingVC)() -&gt; ():LandingVC.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "(UIImage?)image">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "static Eventory.Profile.createInManagedObjectContext (Eventory.Profile.Type)(ObjectiveC.NSManagedObjectContext, name : Swift.Optional&lt;Swift.String&gt;, url : Swift.Optional&lt;Swift.String&gt;, profid : Swift.Optional&lt;Swift.String&gt;, isuser : Swift.Optional&lt;Swift.Bool&gt;) -&gt; Eventory.Profile:CommonUtils.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Eventory.FriendListVC.viewDidLoad (Eventory.FriendListVC)() -&gt; ():FriendListVC.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

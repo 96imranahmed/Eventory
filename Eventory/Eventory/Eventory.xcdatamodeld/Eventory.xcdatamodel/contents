@@ -2,6 +2,8 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14E46" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Group" representedClassName="Eventory.Group" syncable="YES">
         <attribute name="groupid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="invitedstring" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isadmin" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="memberstring" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
@@ -12,7 +14,7 @@
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Group" positionX="-54" positionY="18" width="128" height="90"/>
+        <element name="Group" positionX="-54" positionY="18" width="128" height="120"/>
         <element name="Profile" positionX="-36" positionY="45" width="128" height="105"/>
     </elements>
 </model>
