@@ -24,7 +24,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     var currentlyconnected:Bool = false;
     //Core Data Stuff
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-    
+  
     override func viewDidLoad() {
         super.viewDidLoad()
         //Check whether network is running or not -> use as basis for offline mode
@@ -41,7 +41,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector:"observeProfileChange:", name: FBSDKProfileDidChangeNotification, object: nil);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "observeTokenChange:", name: FBSDKAccessTokenDidChangeNotification, object: nil);
         if (FBSDKProfile.currentProfile()==nil) {
-            NSLog("No profile loaded");
         } else {
             progressBarDisplayer("Logging In", true)
             StatusLabel.text = "Logged in as " + FBSDKProfile.currentProfile().name;
@@ -54,7 +53,9 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(true);
         if (canproceed) {
-            self.performSegueWithIdentifier("LogintoLanding", sender: self);
+            dispatch_async(dispatch_get_main_queue(), {
+                self.performSegueWithIdentifier("LogintoLanding", sender: self);
+            })
         }
     }
     override func didReceiveMemoryWarning() {
@@ -63,22 +64,18 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
-        NSLog("Logged out (after user press)!");
         let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
         StatusLabel.text = "Successfully Logged Out!";
     }
     
     func rerequestPermissions() {
-        NSLog("Rerequesting Permissions");
         var login = FBSDKLoginManager.new();
         login.logOut();
         login.logInWithReadPermissions(["public_profile", "user_friends"], handler: { (result:FBSDKLoginManagerLoginResult!, error:NSError!) -> Void in
             if error != nil {
-                NSLog("Unknown Error");
                 return;
             }
             if (result.isCancelled) {
-                NSLog("Rerequest permissions cancelled - logging out");
                 login.logOut();
                 self.StatusLabel.text = "Login cancelled - try again?";
                 return;
@@ -87,7 +84,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         })  //Add user_events if required
     }
     func forceLogout() {
-        NSLog("Forced logout");
         var login = FBSDKLoginManager.new();
         login.logOut();
         let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
@@ -103,22 +99,18 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         else {
             Profile.ClearProfiles();
             progressBarDisplayer("Logging In", true)
-            NSLog("Successful login - check permissions and process!");
             checkPermissions();
         }
     }
     func observeProfileChange(notification: NSNotification?) {
         if (FBSDKProfile.currentProfile()==nil) {
-            NSLog("No profile loaded");
         } else {
-            NSLog("Profile already stored");
             StatusLabel.text = "Logged in as " + FBSDKProfile.currentProfile().name;
         }
         
     }
     
     func observeTokenChange(notification: NSNotification?) {
-        NSLog("Token has changed");
         if ((FBSDKAccessToken.currentAccessToken())==nil) {
         } else {
             self.observeProfileChange(nil);
@@ -189,10 +181,8 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                         fetchRequest.predicate = predicate
                         let fetchResults = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile];
                         Globals.currentprofile = fetchResults?[0];
-                        NSLog("Profile already saved in Core Data");
                     } else {
                         Globals.currentprofile = Profile.createInManagedObjectContext(moc, name: namepost as? String, url: profilepicture as? String, profid: id as? String, isuser: true);
-                        NSLog(Globals.currentprofile!.name! + " added and saved to Core Data");
                     }
                 }
             }
@@ -216,7 +206,13 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 paramstwo["type"] = "0";
                 Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad")
                 if (self.isViewLoaded()) {
-                    self.performSegueWithIdentifier("LogintoLanding", sender: self);
+                    if (FBSDKProfile.currentProfile().name != nil) {
+                        dispatch_async(dispatch_get_main_queue(), {
+                           self.performSegueWithIdentifier("LogintoLanding", sender: self);
+                        })
+                    } else {
+                        self.forceLogout();
+                    }
                 }
             })
             connection.start();
@@ -226,7 +222,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             if (FBSDKProfile.currentProfile() == nil) {
                 //Create alert view - notifies that there is no saved profile to load at all
                 self.view.hidden = false;
-                NSLog("No internet connection!");
+                //NSLog("No internet connection!");
                 var alert = UIAlertController(title: "No internet connection!", message: "You have not logged in and have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
                 self.presentViewController(alert, animated: true, completion: nil)
@@ -234,7 +230,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 //Load saved profile (offline mode - but check for token expiry first!)
                 if (FBSDKAccessToken.currentAccessToken().expirationDate.timeIntervalSinceNow <= 0) {
                     //Profile has expired
-                    NSLog("Profile expired!");
+                    //NSLog("Profile expired!");
                     self.view.hidden = false;
                     var alert = UIAlertController(title: "No internet connection!", message: "Your access token has expired and you have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
@@ -247,7 +243,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
                         if (fetchResults.count>0) {
                         Globals.currentprofile = fetchResults[0];
-                        NSLog(Globals.currentprofile!.name! + " loaded from Core Data as primary profile!");
                         }
                     }
                     self.canproceed = true;

@@ -8,6 +8,8 @@
 
 import Foundation
 import CoreData;
+import SystemConfiguration;
+
 class Main {
     var currentprofile:Profile?;
     var currentgroup:Group?;
@@ -21,24 +23,21 @@ class Main {
 
 
 public class Reachability {
-    class func isConnectedToNetwork()->Bool{
-        var Status:Bool = false
-        let url = NSURL(string: "http://google.com/")
-        let request = NSMutableURLRequest(URL: url!)
-        request.HTTPMethod = "HEAD"
-        request.cachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
-        request.timeoutInterval = 3;
-        var response: NSURLResponse?
-        var data = NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: nil) as NSData?
-        if let httpResponse = response as? NSHTTPURLResponse {
-            if httpResponse.statusCode == 200 {
-                Status = true
-            }
+    class func isConnectedToNetwork()->Bool
+    {
+        var zeroAddress = sockaddr_in(sin_len: 0, sin_family: 0, sin_port: 0, sin_addr: in_addr(s_addr: 0), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
+        zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
+            SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0)).takeRetainedValue()
         }
-        if (!Status) {
-            NSLog("OFFLINE!");
+        var flags: SCNetworkReachabilityFlags = 0
+        if SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) == 0 {
+            return false
         }
-        return Status
+        let isReachable = (flags & UInt32(kSCNetworkFlagsReachable)) != 0
+        let needsConnection = (flags & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
+        return (isReachable && !needsConnection) ? true : false;
     }
     
     class func postToServer(stub: String, postdata: Dictionary<String, AnyObject>, customselector: String?) -> Void {
@@ -86,6 +85,14 @@ public class Reachability {
             if let sendto = customselector {
                 if (sendto == "MainGroupLoad") {
                     Group.saveGrouptoCoreData(data);
+                } else if (sendto == "GroupRefresh") {
+                    var params = Dictionary<String,AnyObject>();
+                    params["type"] = "0";
+                    Reachability.postToServer("group_get.php", postdata: params, customselector: "MainGroupLoad")
+                } else if (sendto == "UpdateGroupMemberList") {
+                    var friends:[Profile] = Group.parseProfileGet(data);
+                    var params:Dictionary = ["Friends":friends];
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_List_Updated", object: self, userInfo: params);
                 }
             }
         }

@@ -110,6 +110,7 @@ class Profile : NSManagedObject {
             }
         }
         NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Friends_Saved", object: self, userInfo: nil);
+        ctx?.save(nil);
         return friendid;
     }
     class func ClearProfiles () {
@@ -160,12 +161,26 @@ class Profile : NSManagedObject {
     }
     class func SortFriends(input:[Profile]!) -> [Profile]! {
         var friends = input;
-        var currentprof:Profile? = friends.filter({return $0.profid == FBSDKAccessToken.currentAccessToken().userID})[0]
-        if let check = currentprof {
-            friends.removeAtIndex(find(friends,currentprof!)!)
+        if (friends.count>0) {
+            if contains(friends, Globals.currentprofile!) {
+                friends.removeAtIndex(find(friends,Globals.currentprofile!)!)
+            }
+            friends.sort({self.getLastName($0.name!)>self.getLastName($1.name!)});
+            friends = friends.reverse();
         }
-        friends.sort({self.getLastName($0.name!)>self.getLastName($1.name!)});
-        friends = friends.reverse();
         return friends;
     }
+    class func downloadUnknownPictureAsync(input:Profile) {
+        let imageRequest: NSURLRequest = NSURLRequest(URL: NSURL(string: input.url!)!);
+        let queue: NSOperationQueue = NSOperationQueue.mainQueue()
+        NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+            if data != nil {
+                var params = Dictionary<String,AnyObject>();
+                params["ID"] = input.profid;
+                params["Data"] = data;
+                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Picture_Updated", object: self, userInfo: params);
+            }
+        })
+    }
+    
 }

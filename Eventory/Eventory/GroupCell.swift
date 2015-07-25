@@ -8,17 +8,16 @@
 
 import UIKit
 
-class GroupCell: UITableViewCell {
+class GroupCell: SWTableViewCell {
     @IBOutlet weak var memberlabel: UILabel!
-    @IBOutlet weak var grouplabel: UILabel!
-    var groupimage: UIImageView = UIImageView(frame: CGRectMake(15, 10, 50, 50));
+    @IBOutlet weak var adminlabel: UILabel!
+    @IBOutlet weak var groupimage: UIImageView!
+    @IBOutlet weak var grouptextfield: UITextField!
     var memberlist:String!
     override func awakeFromNib() {
         super.awakeFromNib()
         groupimage.layer.masksToBounds = true;
         groupimage.layer.cornerRadius = 25;
-        self.addSubview(groupimage);
-        // Initialization code
     }
     
     override func setSelected(selected: Bool, animated: Bool) {

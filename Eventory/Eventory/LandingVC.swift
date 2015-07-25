@@ -19,7 +19,6 @@ class LandingVC: UIViewController {
         //Create button
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "PPUpdated", name: "PPUpdated", object: nil);
         let image = Globals.currentprofile?.imagedata
-        
         picbutton.frame = CGRectMake(0, 0, 28, 28);
         if (image?.length == 0) {
             picbutton.setImage(UIImage(named: "unkownprofile.png"), forState: UIControlState.Normal)
@@ -32,14 +31,14 @@ class LandingVC: UIViewController {
         var barbutton:UIBarButtonItem = UIBarButtonItem(customView: picbutton);
         self.navigationItem.rightBarButtonItem = barbutton;
         navprofilelabel.text = getTitle() +  ", " + getFirstName(FBSDKProfile.currentProfile().name +  "!");
-        navprofilelabel.center = navtitle.center;
     }
     func PPUpdated () {
         picbutton.setImage(UIImage(data: Globals.currentprofile!.imagedata!)!, forState: UIControlState.Normal)
     }
     func ProfileViewLoad (sender: UIButton!) {
-        self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
-
+        dispatch_async(dispatch_get_main_queue(), {
+            self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
+        })
     }
 
     override func didReceiveMemoryWarning() {

@@ -29,6 +29,19 @@
 		D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE181B54385900F3151A /* LogoutVC.swift */; };
 		D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE1A1B54515900F3151A /* ProfileCell.swift */; };
 		D89DBE1E1B55C73000F3151A /* FriendListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE1D1B55C73000F3151A /* FriendListVC.swift */; };
+		D8A36F4E1B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F431B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m */; };
+		D8A36F4F1B5DA1F00026C3A0 /* SWCellScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F451B5DA1F00026C3A0 /* SWCellScrollView.m */; };
+		D8A36F501B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F471B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m */; };
+		D8A36F511B5DA1F00026C3A0 /* SWTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F491B5DA1F00026C3A0 /* SWTableViewCell.m */; };
+		D8A36F521B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F4B1B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.m */; };
+		D8A36F531B5DA1F00026C3A0 /* SWUtilityButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F4D1B5DA1F00026C3A0 /* SWUtilityButtonView.m */; };
+		D8A36F5D1B5DAF3F0026C3A0 /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F5A1B5DAF3F0026C3A0 /* add.png */; };
+		D8A36F5E1B5DAF3F0026C3A0 /* sub.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F5B1B5DAF3F0026C3A0 /* sub.png */; };
+		D8A36F5F1B5DAF3F0026C3A0 /* delete.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F5C1B5DAF3F0026C3A0 /* delete.png */; };
+		D8A36F611B5DB19E0026C3A0 /* exit.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F601B5DB19E0026C3A0 /* exit.png */; };
+		D8A36F641B5EDCE70026C3A0 /* group_add.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F621B5EDCE70026C3A0 /* group_add.png */; };
+		D8A36F651B5EDCE70026C3A0 /* group_list.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F631B5EDCE70026C3A0 /* group_list.png */; };
+		D8D868191B62A17500CF63B7 /* GroupListPopoverVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +83,25 @@
 		D89DBE181B54385900F3151A /* LogoutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoutVC.swift; sourceTree = "<group>"; };
 		D89DBE1A1B54515900F3151A /* ProfileCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		D89DBE1D1B55C73000F3151A /* FriendListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendListVC.swift; sourceTree = "<group>"; };
+		D8A36F421B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+SWUtilityButtons.h"; sourceTree = "<group>"; };
+		D8A36F431B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+SWUtilityButtons.m"; sourceTree = "<group>"; };
+		D8A36F441B5DA1F00026C3A0 /* SWCellScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWCellScrollView.h; sourceTree = "<group>"; };
+		D8A36F451B5DA1F00026C3A0 /* SWCellScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWCellScrollView.m; sourceTree = "<group>"; };
+		D8A36F461B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWLongPressGestureRecognizer.h; sourceTree = "<group>"; };
+		D8A36F471B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWLongPressGestureRecognizer.m; sourceTree = "<group>"; };
+		D8A36F481B5DA1F00026C3A0 /* SWTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWTableViewCell.h; sourceTree = "<group>"; };
+		D8A36F491B5DA1F00026C3A0 /* SWTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWTableViewCell.m; sourceTree = "<group>"; };
+		D8A36F4A1B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWUtilityButtonTapGestureRecognizer.h; sourceTree = "<group>"; };
+		D8A36F4B1B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWUtilityButtonTapGestureRecognizer.m; sourceTree = "<group>"; };
+		D8A36F4C1B5DA1F00026C3A0 /* SWUtilityButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWUtilityButtonView.h; sourceTree = "<group>"; };
+		D8A36F4D1B5DA1F00026C3A0 /* SWUtilityButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWUtilityButtonView.m; sourceTree = "<group>"; };
+		D8A36F5A1B5DAF3F0026C3A0 /* add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add.png; path = ../add.png; sourceTree = "<group>"; };
+		D8A36F5B1B5DAF3F0026C3A0 /* sub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sub.png; path = ../sub.png; sourceTree = "<group>"; };
+		D8A36F5C1B5DAF3F0026C3A0 /* delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = delete.png; path = ../delete.png; sourceTree = "<group>"; };
+		D8A36F601B5DB19E0026C3A0 /* exit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = exit.png; sourceTree = "<group>"; };
+		D8A36F621B5EDCE70026C3A0 /* group_add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = group_add.png; path = ../group_add.png; sourceTree = "<group>"; };
+		D8A36F631B5EDCE70026C3A0 /* group_list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = group_list.png; path = ../group_list.png; sourceTree = "<group>"; };
+		D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupListPopoverVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +137,7 @@
 		D82E8FD21B4B135C007A747F /* Supporting Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D8A36F411B5CD9C80026C3A0 /* SWTableViewCell */,
 				D88747571B583A9000373791 /* RKDropdownAlert.h */,
 				D88747581B583A9000373791 /* RKDropdownAlert.m */,
 				D82E8FCE1B4B1355007A747F /* Locksmith.swift */,
@@ -140,6 +173,7 @@
 				D89DBE181B54385900F3151A /* LogoutVC.swift */,
 				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
 				D89DBE1D1B55C73000F3151A /* FriendListVC.swift */,
+				D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */,
 				D855B70B1B489D8400E85674 /* Main.storyboard */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
@@ -183,6 +217,12 @@
 		D855B72C1B48A4F600E85674 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D8A36F621B5EDCE70026C3A0 /* group_add.png */,
+				D8A36F631B5EDCE70026C3A0 /* group_list.png */,
+				D8A36F5A1B5DAF3F0026C3A0 /* add.png */,
+				D8A36F5B1B5DAF3F0026C3A0 /* sub.png */,
+				D8A36F5C1B5DAF3F0026C3A0 /* delete.png */,
+				D8A36F601B5DB19E0026C3A0 /* exit.png */,
 				D84F14A71B582CF30081B5E8 /* unknownprofile.png */,
 			);
 			name = Assets;
@@ -196,6 +236,26 @@
 				D84F14A31B563D190081B5E8 /* FriendCell.swift */,
 			);
 			name = "Custom Cells";
+			sourceTree = "<group>";
+		};
+		D8A36F411B5CD9C80026C3A0 /* SWTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				D8A36F421B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.h */,
+				D8A36F431B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m */,
+				D8A36F441B5DA1F00026C3A0 /* SWCellScrollView.h */,
+				D8A36F451B5DA1F00026C3A0 /* SWCellScrollView.m */,
+				D8A36F461B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.h */,
+				D8A36F471B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m */,
+				D8A36F481B5DA1F00026C3A0 /* SWTableViewCell.h */,
+				D8A36F491B5DA1F00026C3A0 /* SWTableViewCell.m */,
+				D8A36F4A1B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.h */,
+				D8A36F4B1B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.m */,
+				D8A36F4C1B5DA1F00026C3A0 /* SWUtilityButtonView.h */,
+				D8A36F4D1B5DA1F00026C3A0 /* SWUtilityButtonView.m */,
+			);
+			name = SWTableViewCell;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -278,10 +338,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8A36F5D1B5DAF3F0026C3A0 /* add.png in Resources */,
 				D855B70D1B489D8400E85674 /* Main.storyboard in Resources */,
+				D8A36F611B5DB19E0026C3A0 /* exit.png in Resources */,
 				D84F14A81B582CF30081B5E8 /* unknownprofile.png in Resources */,
+				D8A36F5E1B5DAF3F0026C3A0 /* sub.png in Resources */,
 				D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */,
 				D855B70F1B489D8400E85674 /* Images.xcassets in Resources */,
+				D8A36F5F1B5DAF3F0026C3A0 /* delete.png in Resources */,
+				D8A36F641B5EDCE70026C3A0 /* group_add.png in Resources */,
+				D8A36F651B5EDCE70026C3A0 /* group_list.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,19 +367,26 @@
 			files = (
 				D81B45621B5AE13200DF7899 /* GroupCell.swift in Sources */,
 				D84F14A41B563D190081B5E8 /* FriendCell.swift in Sources */,
+				D8A36F521B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.m in Sources */,
 				D89DBE1E1B55C73000F3151A /* FriendListVC.swift in Sources */,
 				D88747591B583A9000373791 /* RKDropdownAlert.m in Sources */,
 				D81B455D1B5AD12200DF7899 /* Profile.swift in Sources */,
+				D8A36F501B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m in Sources */,
 				D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */,
+				D8A36F511B5DA1F00026C3A0 /* SWTableViewCell.m in Sources */,
 				D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */,
 				D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */,
 				D81B455F1B5AD15800DF7899 /* Group.swift in Sources */,
+				D8D868191B62A17500CF63B7 /* GroupListPopoverVC.swift in Sources */,
 				D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */,
+				D8A36F4E1B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m in Sources */,
 				D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */,
 				D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */,
+				D8A36F531B5DA1F00026C3A0 /* SWUtilityButtonView.m in Sources */,
 				D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */,
 				D89DBE151B52BD2E00F3151A /* CommonUtils.swift in Sources */,
 				D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */,
+				D8A36F4F1B5DA1F00026C3A0 /* SWCellScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

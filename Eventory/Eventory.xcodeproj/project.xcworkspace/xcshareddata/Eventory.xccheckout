@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>A3C429B9-190A-4565-8B72-52DE509B2E47</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>Eventory</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>C4622DFE5BF5CFCE2EBEE56B75CF4BD9D0BD0BDF</key>
 		<string>https://bitbucket.org/96imranahmed/eventory.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Eventory/Eventory.xcodeproj/project.xcworkspace</string>
+	<string>Eventory/Eventory.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>C4622DFE5BF5CFCE2EBEE56B75CF4BD9D0BD0BDF</key>

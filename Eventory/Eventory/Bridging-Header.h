@@ -11,4 +11,10 @@
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import "RKDropdownAlert.h"
+#import "SWTableViewCell.h"
+#import "SWCellScrollView.h"
+#import "SWLongPressGestureRecognizer.h"
+#import "SWUtilityButtonTapGestureRecognizer.h"
+#import "NSMutableArray+SWUtilityButtons.h"
+#import "SWUtilityButtonView.h"
 #endif
