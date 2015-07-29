@@ -17,4 +17,5 @@
 #import "SWUtilityButtonTapGestureRecognizer.h"
 #import "NSMutableArray+SWUtilityButtons.h"
 #import "SWUtilityButtonView.h"
+#import "MarqueeLabel.h"
 #endif

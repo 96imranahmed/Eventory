@@ -173,7 +173,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 let error = Locksmith.saveData([id as! String: FBSDKAccessToken.currentAccessToken().tokenString], forUserAccount: self.appName);
                 //Creates a new save profile of personal profile
                 if let moc = self.managedObjectContext {
-                    Profile.ClearProfileNils();
+                    //Profile.ClearProfileNils();
                     if (Profile.CheckProfileifContains("profid", identifier: (id as? String)!)) {
                         let fetchRequest = NSFetchRequest(entityName: "Profile")
                         fetchRequest.fetchLimit = 1;

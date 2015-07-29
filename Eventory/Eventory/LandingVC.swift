@@ -9,33 +9,46 @@
 import UIKit
 import CoreData
 
-class LandingVC: UIViewController {
-    @IBOutlet weak var navpic: UIBarButtonItem!
-    @IBOutlet weak var navprofilelabel: UILabel!
-    @IBOutlet weak var navtitle: UIView!
-  var picbutton:UIButton = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton;
+class LandingVC: UIViewController, UIGestureRecognizerDelegate {
+    var picbutton: UIImageView! = UIImageView(frame: CGRectMake(0, 1, 30, 30));
+    var navprofilelabel: UILabel! = UILabel(frame: CGRectMake(0, 6, 214, 20));
+    var navtitle: UIView! = UIView(frame: CGRectMake(0, 0, 0, 0));
     override func viewDidLoad() {
         super.viewDidLoad()
         //Create button
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "PPUpdated", name: "PPUpdated", object: nil);
         let image = Globals.currentprofile?.imagedata
-        picbutton.frame = CGRectMake(0, 0, 28, 28);
         if (image?.length == 0) {
-            picbutton.setImage(UIImage(named: "unkownprofile.png"), forState: UIControlState.Normal)
+            picbutton.image = UIImage(named: "unkownprofile.png")
         } else {
-            picbutton.setImage(UIImage(data: Globals.currentprofile!.imagedata!)!, forState: UIControlState.Normal)
+            picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
         }
         picbutton.layer.masksToBounds = true;
         picbutton.layer.cornerRadius = picbutton.frame.height/2;
-        picbutton.addTarget(self, action: Selector("ProfileViewLoad:"), forControlEvents: UIControlEvents.TouchDown)
-        var barbutton:UIBarButtonItem = UIBarButtonItem(customView: picbutton);
-        self.navigationItem.rightBarButtonItem = barbutton;
+        let tap = UITapGestureRecognizer(target: self, action: Selector("ProfileViewLoad:"))
+        tap.delegate = self
+        navtitle.addGestureRecognizer(tap)
         navprofilelabel.text = getTitle() +  ", " + getFirstName(FBSDKProfile.currentProfile().name +  "!");
+        let reqsize = navprofilelabel.sizeThatFits(CGSizeMake(self.navtitle.frame.size.width, 30))
+        navprofilelabel.frame.size = reqsize;
+        picbutton.frame = CGRectMake((reqsize.width + 8), 1, 30, 30);
+        navtitle.addSubview(picbutton);
+        navtitle.addSubview(navprofilelabel);
+        navtitle.frame = CGRectMake(0, 0, navprofilelabel.frame.size.width + 38, 33);
+        navtitle.center = CGPointMake(self.view.center.x, 16.5);
+        navtitle.autoresizesSubviews = false;
+        self.navigationItem.titleView = navtitle;
+        let frame = navtitle.frame;
+        let center = navtitle.center;
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(true);
     }
     func PPUpdated () {
-        picbutton.setImage(UIImage(data: Globals.currentprofile!.imagedata!)!, forState: UIControlState.Normal)
+        picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
     }
-    func ProfileViewLoad (sender: UIButton!) {
+    func ProfileViewLoad (sender: UITapGestureRecognizer) {
         dispatch_async(dispatch_get_main_queue(), {
             self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
         })
@@ -53,7 +66,7 @@ class LandingVC: UIViewController {
 
     func getTitle() -> String {
         var now:NSDate = NSDate();
-        var possiblelists:[String] = ["Hi", "Howdy", "Hey"];
+        var possiblelists:[String] = ["Hi", "Howdy", "Hey", "Hello", "Heya", "Greetings"];
         let cal = NSCalendar.currentCalendar();
         let comps = cal.components(NSCalendarUnit.CalendarUnitHour, fromDate: now);
         let hour = comps.hour;

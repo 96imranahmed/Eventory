@@ -15,17 +15,22 @@ class Group: NSManagedObject {
     @NSManaged var memberstring:String?;
     @NSManaged var invitedstring:String?;
     @NSManaged var isadmin:Bool;
-    convenience init (name:String?, groupid:String?, memberstring: String?, invitedstring: String?, isadmin:Bool) {
+    convenience init (name:String?, groupid:String?, memberstring: String?, invitedstring: String?, isadmin:Bool, save:Bool) {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext;
         var entity = NSEntityDescription.entityForName("Group", inManagedObjectContext: ctx!)
-        self.init(entity: entity!, insertIntoManagedObjectContext: ctx)
+        if (save) {
+            self.init(entity: entity!, insertIntoManagedObjectContext: ctx);
+        } else {
+            self.init(entity: entity!, insertIntoManagedObjectContext: nil);
+        }
         self.name = name;
         self.groupid = groupid;
         self.memberstring = memberstring!;
         self.isadmin = isadmin
         self.invitedstring = invitedstring!;
     }
+    //MARK: Core Data Methods
     class func createInManagedObjectContext(moc: NSManagedObjectContext,name:String?, groupid:String?, memberstring:String?, invitedstring: String?,isadmin:Bool) -> Group {
         let savedprofile = NSEntityDescription.insertNewObjectForEntityForName("Group", inManagedObjectContext: moc) as! Group
         savedprofile.name = name;
@@ -72,12 +77,6 @@ class Group: NSManagedObject {
             return false;
         }
     }
-    class func SortGroups(input:[Group]!) -> [Group]! {
-        var groups = input;
-        groups.sort({($0.name!)>($1.name!)});
-        groups = groups.reverse();
-        return groups;
-    }
     class func saveGrouptoCoreData(outputdata: NSData?){
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext
@@ -117,6 +116,13 @@ class Group: NSManagedObject {
             ctx?.save(nil);
         }
     }
+    //MARK: Group Sort Methods
+    class func SortGroups(input:[Group]!) -> [Group]! {
+        var groups = input;
+        groups.sort({($0.name!)>($1.name!)});
+        groups = groups.reverse();
+        return groups;
+    }
     class func shuffle<C: MutableCollectionType where C.Index == Int>(var list: C) -> C {
         let c = count(list)
         if c < 2 { return list }
@@ -126,44 +132,50 @@ class Group: NSManagedObject {
         }
         return list
     }
-    class func returnSavedFriends(memberlist:String?) ->[Profile]? {
-        if (memberlist == "" || memberlist == nil) {
+    //MARK: Group Parse Methods
+    class func returnSavedFriends(memberlist:String, membersfind:Bool) ->[Profile]? {
+        if (memberlist == "") {
             return nil;
         } else {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let ctx = appDelegate.managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "Profile");
             fetchRequest.fetchLimit = 1;
-            var members:[String] = (memberlist?.componentsSeparatedByString(";"))!;
+            var members:[String] = (memberlist.componentsSeparatedByString(";"));
             if (members[0] != "") {
                 var output:[Profile]!=[];
                 var nonfriends:[String]! = [];
                 for (var i = 0; i<members.count; i++){
-                    let predicate = NSPredicate(format: "groupid == %@", members[i]);
+                    let predicate = NSPredicate(format: "profid == %@", members[i]);
                     fetchRequest.predicate = predicate;
                     var currentprof:[Profile]? = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
                     if let check = currentprof {
                         if (check[0].profid == FBSDKAccessToken.currentAccessToken().userID) {
-                            check[0].name = "You";
-                            output.insert(check[0], atIndex: 0)
-                        }
+                            let myprofile = Profile(name: "You", url: Globals.currentprofile!.url, profid: FBSDKAccessToken.currentAccessToken().userID, imagedata: Globals.currentprofile!.imagedata, save: false)
+                            output.insert(myprofile, atIndex: 0)
+                        } else {
                         output.append(check[0]);
+                        }
                     } else {
                         nonfriends.append(members[i]);
                     }
                 }
-                if (Reachability.isConnectedToNetwork()) {
+                if (Reachability.isConnectedToNetwork() && nonfriends.count>0) {
                     var params = Dictionary<String,AnyObject>();
                     params["id"] = nonfriends;
-                    Reachability.postToServer("profile_get.php", postdata: params, customselector: "UpdateGroupMemberList")
+                    if (membersfind) {
+                        Reachability.postToServer("profile_get.php", postdata: params, customselector: "UpdateGroupMemberList");
+                    } else {
+                        Reachability.postToServer("profile_get.php", postdata: params, customselector: "UpdateGroupInvitedList");
+                    }
                 } else {
                     if (nonfriends.count>1) {
                         var name:String = "And " + nonfriends.count.description + " other non-friends";
-                        var others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")));
+                        var others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")), save: false);
                         output.append(others);
                     } else if (nonfriends.count == 1) {
                         var name:String = "And one other non-friend";
-                        var others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")));
+                        var others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")), save: false);
                         output.append(others);
                     }
                 }
@@ -183,7 +195,7 @@ class Group: NSManagedObject {
                 let name:String = ((currentprofile as? NSDictionary)?.valueForKey("Name")!)! as! String;
                 let id:String = ((currentprofile as? NSDictionary)?.valueForKey("Profid")!)! as! String;
                 let url:String = ((currentprofile as? NSDictionary)?.valueForKey("Url")!)! as! String;
-                var insert:Profile = Profile(name: name, url: url, profid: id, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")));
+                var insert:Profile = Profile(name: name, url: url, profid: id, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")), save: false);
                 output.append(insert)
             }
             return output;
@@ -191,7 +203,7 @@ class Group: NSManagedObject {
             return nil;
         }
     }
-
+    //MARK: Group Cell Methods
     class func generateGroupImage(memberlist: String?) -> UIImage {
         if (memberlist=="" || memberlist == nil) {
             return UIImage(named: "unknownprofile.png")!;
@@ -199,13 +211,13 @@ class Group: NSManagedObject {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let ctx = appDelegate.managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "Profile")
-            var friendList = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
+            var FriendList = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
             var actualimage:[NSData!]=[];
             var members:[String] = (memberlist?.componentsSeparatedByString(";"))!;
             if (members[0] != "") {
                 members = self.shuffle(members);
                 for (var i = 0; i<members.count; i++){
-                    var currentprof:Profile? = friendList!.filter({return $0.profid == members[i]})[0]
+                    var currentprof:Profile? = FriendList!.filter({return $0.profid == members[i]})[0]
                     if let check = currentprof {
                         actualimage.append(check.imagedata!);
                     }
@@ -300,7 +312,7 @@ class Group: NSManagedObject {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let ctx = appDelegate.managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "Profile")
-            var friendList = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
+            var FriendList = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
             var isingroup:Bool = false;
             var output:String = "";
             let limit = 3;
@@ -316,7 +328,7 @@ class Group: NSManagedObject {
                 //Check friends
                 var actual:[String!]=[];
                 for (var i = 0; i<members.count; i++){
-                    var currentprof:Profile? = friendList!.filter({return $0.profid == members[i]})[0]
+                    var currentprof:Profile? = FriendList!.filter({return $0.profid == members[i]})[0]
                     if let check = currentprof {
                         actual.append(Profile.getFirstName(currentprof!.name!));
                     }

@@ -13,10 +13,8 @@ import SystemConfiguration;
 class Main {
     var currentprofile:Profile?;
     var currentgroup:Group?;
-    var friendlist:[Profile?];
-    init (currentprofile:Profile, friendlist:[Profile?], currentgroup:Group) {
+    init (currentprofile:Profile, currentgroup:Group) {
         self.currentprofile = currentprofile;
-        self.friendlist = friendlist;
         self.currentgroup = currentgroup;
     }
 }
@@ -93,6 +91,10 @@ public class Reachability {
                     var friends:[Profile] = Group.parseProfileGet(data);
                     var params:Dictionary = ["Friends":friends];
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_List_Updated", object: self, userInfo: params);
+                } else if (sendto == "UpdateGroupInvitedList") {
+                    var friends:[Profile] = Group.parseProfileGet(data);
+                    var params:Dictionary = ["Friends":friends];
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_List_Updated", object: self, userInfo: params);
                 }
             }
         }
@@ -100,7 +102,6 @@ public class Reachability {
     }
 
 }
-var demoprofile = Profile(name: "", url: "", profid: "", imagedata: nil);
-var demofriendlist = [Profile?]();
-var demogroup = Group(name: "", groupid: "", memberstring: "", invitedstring: "", isadmin: false);
-var Globals = Main(currentprofile: demoprofile , friendlist: demofriendlist , currentgroup: demogroup);
+var demoprofile = Profile(name: "", url: "", profid: "", imagedata: nil, save: false);
+var demogroup = Group(name: "", groupid: "", memberstring: "", invitedstring: "", isadmin: false, save: false);
+var Globals = Main(currentprofile: demoprofile, currentgroup: demogroup);

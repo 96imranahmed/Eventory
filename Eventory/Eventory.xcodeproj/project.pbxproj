@@ -42,6 +42,10 @@
 		D8A36F641B5EDCE70026C3A0 /* group_add.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F621B5EDCE70026C3A0 /* group_add.png */; };
 		D8A36F651B5EDCE70026C3A0 /* group_list.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F631B5EDCE70026C3A0 /* group_list.png */; };
 		D8D868191B62A17500CF63B7 /* GroupListPopoverVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */; };
+		D8F2F8981B661BE800D3DA8E /* InviteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F8971B661BE800D3DA8E /* InviteVC.swift */; };
+		D8F2F89A1B66E76A00D3DA8E /* GroupCellEmpty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */; };
+		D8F2F89D1B684F3900D3DA8E /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F89B1B684F3900D3DA8E /* MarqueeLabel.m */; };
+		D8F2F89F1B68D62C00D3DA8E /* GroupCreateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F89E1B68D62C00D3DA8E /* GroupCreateVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +106,11 @@
 		D8A36F621B5EDCE70026C3A0 /* group_add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = group_add.png; path = ../group_add.png; sourceTree = "<group>"; };
 		D8A36F631B5EDCE70026C3A0 /* group_list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = group_list.png; path = ../group_list.png; sourceTree = "<group>"; };
 		D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupListPopoverVC.swift; sourceTree = "<group>"; };
+		D8F2F8971B661BE800D3DA8E /* InviteVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteVC.swift; sourceTree = "<group>"; };
+		D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCellEmpty.swift; sourceTree = "<group>"; };
+		D8F2F89B1B684F3900D3DA8E /* MarqueeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarqueeLabel.m; sourceTree = "<group>"; };
+		D8F2F89C1B684F3900D3DA8E /* MarqueeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarqueeLabel.h; sourceTree = "<group>"; };
+		D8F2F89E1B68D62C00D3DA8E /* GroupCreateVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCreateVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +146,8 @@
 		D82E8FD21B4B135C007A747F /* Supporting Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D8F2F89B1B684F3900D3DA8E /* MarqueeLabel.m */,
+				D8F2F89C1B684F3900D3DA8E /* MarqueeLabel.h */,
 				D8A36F411B5CD9C80026C3A0 /* SWTableViewCell */,
 				D88747571B583A9000373791 /* RKDropdownAlert.h */,
 				D88747581B583A9000373791 /* RKDropdownAlert.m */,
@@ -168,16 +179,13 @@
 			isa = PBXGroup;
 			children = (
 				D855B7071B489D8400E85674 /* AppDelegate.swift */,
-				D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */,
-				D855B7091B489D8400E85674 /* LoginVC.swift */,
-				D89DBE181B54385900F3151A /* LogoutVC.swift */,
 				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
-				D89DBE1D1B55C73000F3151A /* FriendListVC.swift */,
-				D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */,
 				D855B70B1B489D8400E85674 /* Main.storyboard */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
 				D855B7271B489DA100E85674 /* Bridging-Header.h */,
+				D8F2F8A11B69974300D3DA8E /* Login/Logout & CoreData Controllers */,
+				D8F2F8A01B69972400D3DA8E /* Group & Friends View Controllers */,
 				D81B45601B5AD17500DF7899 /* Base Classes */,
 				D89DBE1C1B54516200F3151A /* Custom Cells */,
 				D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */,
@@ -233,6 +241,7 @@
 			children = (
 				D89DBE1A1B54515900F3151A /* ProfileCell.swift */,
 				D81B45611B5AE13200DF7899 /* GroupCell.swift */,
+				D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */,
 				D84F14A31B563D190081B5E8 /* FriendCell.swift */,
 			);
 			name = "Custom Cells";
@@ -256,6 +265,27 @@
 			);
 			name = SWTableViewCell;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		D8F2F8A01B69972400D3DA8E /* Group & Friends View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				D89DBE1D1B55C73000F3151A /* FriendListVC.swift */,
+				D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */,
+				D8F2F8971B661BE800D3DA8E /* InviteVC.swift */,
+				D8F2F89E1B68D62C00D3DA8E /* GroupCreateVC.swift */,
+			);
+			name = "Group & Friends View Controllers";
+			sourceTree = "<group>";
+		};
+		D8F2F8A11B69974300D3DA8E /* Login/Logout & CoreData Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */,
+				D855B7091B489D8400E85674 /* LoginVC.swift */,
+				D89DBE181B54385900F3151A /* LogoutVC.swift */,
+			);
+			name = "Login/Logout & CoreData Controllers";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -365,6 +395,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8F2F89D1B684F3900D3DA8E /* MarqueeLabel.m in Sources */,
 				D81B45621B5AE13200DF7899 /* GroupCell.swift in Sources */,
 				D84F14A41B563D190081B5E8 /* FriendCell.swift in Sources */,
 				D8A36F521B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.m in Sources */,
@@ -376,10 +407,13 @@
 				D8A36F511B5DA1F00026C3A0 /* SWTableViewCell.m in Sources */,
 				D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */,
 				D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */,
+				D8F2F89A1B66E76A00D3DA8E /* GroupCellEmpty.swift in Sources */,
 				D81B455F1B5AD15800DF7899 /* Group.swift in Sources */,
 				D8D868191B62A17500CF63B7 /* GroupListPopoverVC.swift in Sources */,
 				D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */,
 				D8A36F4E1B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m in Sources */,
+				D8F2F8981B661BE800D3DA8E /* InviteVC.swift in Sources */,
+				D8F2F89F1B68D62C00D3DA8E /* GroupCreateVC.swift in Sources */,
 				D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */,
 				D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */,
 				D8A36F531B5DA1F00026C3A0 /* SWUtilityButtonView.m in Sources */,
