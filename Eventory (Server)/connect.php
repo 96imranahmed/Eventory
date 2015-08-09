@@ -59,6 +59,7 @@ class Connect {
             if (($key = array_search($value, $currentarray)) !== false) {
                 unset($currentarray[$key]);
             } else {
+                
             }
             if (count($currentarray) < 1) {
                 $current = null;
@@ -118,7 +119,7 @@ class Connect {
         if (FALSE === $result) {
             return false;
         } else {
-            
+
             if (strpos($result, $id) !== false) {
                 return true;
             } else {
@@ -167,12 +168,73 @@ class Connect {
         $current = $currentrow[$column];
         return $current;
     }
+
 //Get row at a certain point
-     public function GetRow($pdo, $tablename, $id) {
+    public function GetRow($pdo, $tablename, $id) {
         $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
         $prepsql->execute();
         $currentrow = $prepsql->fetch();
         return $currentrow;
     }
 
+    //Add dictionary to list
+    public function AddItemtoList($pdo, $tablename, $id, $column, $value, $duplicateref) {
+        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
+        $prepsql->execute();
+        $currentrow = $prepsql->fetch();
+        $current = $currentrow[$column];
+        if ($current == null) {
+            $current = serialize($value);
+        } else {
+            if ($current == "") {
+                $current = serialize($value);
+            } else {
+                $currentarray = unserialize($current);
+                $unique = true;
+                foreach ($currentarray as $index => $loop) {
+                    if ($loop[$duplicateref] == $value[$duplicateref]) {
+                        $unique = false;
+                    }
+                }
+                if ($unique) {
+                    array_push($currentarray, $value);
+                    $current = implode(";", $currentarray);
+                }
+                $current = serialize($current);
+            }
+        }
+        $postsql = $pdo->prepare("UPDATE $tablename SET $column='$current' WHERE id=$id");
+        $postsql->execute();
+    }
+    //Remove item from list
+    public function RemoveItemfromList($pdo, $tablename, $id, $column, $item, $duplicateref) {
+        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
+        $prepsql->execute();
+        $currentrow = $prepsql->fetch();
+        $current = $currentrow[$column];
+        if ($current == null || $current == "") {
+            $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
+            $postsql->execute();
+        } else {
+            $currentarray = unserialize($current);
+            $position = null;
+             foreach ($currentarray as $index => $loop) {
+                    if ($loop[$duplicateref] == $item) {
+                        $position = $index;
+                    }
+             }
+             if ($position != null) {
+                 unset($currentarray[$position]);
+             }
+            if (count($currentarray) < 1) {
+                $current = null;
+                $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
+                $postsql->execute();
+            } else {
+                $current = serialize($currentarray);
+                $postsql = $pdo->prepare("UPDATE $tablename SET $column='$current' WHERE id=$id");
+                $postsql->execute();
+            }
+        }
+    }
 }

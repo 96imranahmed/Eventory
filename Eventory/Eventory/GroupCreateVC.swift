@@ -100,7 +100,7 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     }
     func InvitePressed(sender: UIBarButtonItem) {
         if (groupname.text == "") {
-            let color = UIColor(red: 52/255, green: 152/255, blue: 219/255, alpha: 1.0)
+            let color = Schemes.returnColor("Peter River", alpha: 1.0);
             RKDropdownAlert.title("No Name!", message: "Please enter a name for your group!", backgroundColor: color, textColor: UIColor.whiteColor())
         } else {
             if (!Reachability.isConnectedToNetwork()) {
@@ -319,7 +319,7 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
                 var currentgroup = GroupList[indexPath.row];
                 cell.grouptextfield.text = currentgroup.name;
                 cell.groupimage.image = UIImage(named: "unkownprofile.png");
-                cell.memberlabel.text = Group.getMemberString(currentgroup.memberstring);
+                cell.memberlabel.text = Group.getMemberString(currentgroup.memberstring!);
                 cell.memberlist = currentgroup.memberstring;
                 cell.groupimage.image = Group.generateGroupImage(currentgroup.memberstring);
                 var combined:[String] = added;

@@ -40,6 +40,21 @@ class Profile : NSManagedObject {
         return savedprofile;
     }
     
+    class func fetchProfileforID(id: String) -> Profile! {
+        let fetchRequest = NSFetchRequest(entityName: "Profile")
+        fetchRequest.fetchLimit = 1;
+        let predicate = NSPredicate(format: "profid == '" + id + "'");
+        fetchRequest.predicate = predicate
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let ctx = appDelegate.managedObjectContext;
+        if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
+            var currentprof:Profile = fetchResults[0];
+           return currentprof
+        } else {
+            return nil
+        }
+
+    }
     
     class func ClearProfiles () {
         //Clears profiles only
@@ -165,9 +180,9 @@ class Profile : NSManagedObject {
                 params["ID"] = input.profid;
                 params["Data"] = data;
                 if membersfind {
-                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Picture_Updated", object: self, userInfo: params);
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Picture_Updated", object: self, userInfo: params);
                 } else {
-                 NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_Picture_Updated", object: self, userInfo: params);    
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_Picture_Updated", object: self, userInfo: params);
                 }
             }
         })

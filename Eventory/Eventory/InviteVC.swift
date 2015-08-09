@@ -238,7 +238,7 @@ class InviteVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 var currentgroup = GroupList[indexPath.row];
                 cell.grouptextfield.text = currentgroup.name;
                 cell.groupimage.image = UIImage(named: "unkownprofile.png");
-                cell.memberlabel.text = Group.getMemberString(currentgroup.memberstring);
+                cell.memberlabel.text = Group.getMemberString(currentgroup.memberstring!);
                 cell.memberlist = currentgroup.memberstring;
                 cell.groupimage.image = Group.generateGroupImage(currentgroup.memberstring);
                 var combined:[String] = added;

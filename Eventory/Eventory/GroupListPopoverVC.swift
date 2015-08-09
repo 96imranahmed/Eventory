@@ -9,7 +9,12 @@
 import UIKit
 
 class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    @IBOutlet weak var container: UIView!
+    var groupimage: UIImageView! = UIImageView(frame: CGRectMake(8, 10, 50, 50))
+    var grouplabel: UILabel! = UILabel(frame: CGRectMake(66, 24, 400, 21))
+    var groupnameholderview: UIView! = UIView(frame: CGRectMake(0, 70, 300, 65))
     var currentgroup:Group?;
+    var width:CGFloat = 0;
     @IBOutlet weak var grouplist: UITableView!
     var memberlist:[Profile]! = [];
     var invitedlist:[Profile]! = [];
@@ -23,6 +28,21 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateMemberPicture:", name: "Eventory_Group_Picture_Updated", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateInvitedList:", name: "Eventory_Group_Invited_List_Updated", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateInvitedPicture:", name: "Eventory_Group_Invited_Picture_Updated", object: nil)
+        groupimage.layer.masksToBounds = true;
+        groupimage.layer.cornerRadius = 25;
+        groupimage.image = Group.generateGroupImage(currentgroup?.memberstring)
+        grouplabel.text = currentgroup?.name;
+        grouplabel.frame.size = grouplabel.sizeThatFits(CGSizeMake(width - 66, 65))
+        //NSLog(grouplabel.frame.width.description);
+        //NSLog((grouplabel.frame.width + 66).description)
+        groupnameholderview.addSubview(groupimage)
+        groupnameholderview.addSubview(grouplabel)
+        groupnameholderview.frame.size = CGSize(width: grouplabel.frame.width + 66, height: 65)
+        //groupnameholderview.sizeThatFits(CGSizeMake(width, 65))
+        //NSLog(groupnameholderview.center.x.description);
+        //container.setNeedsDisplayInRect(CGRectMake(0,0,50 + 8 + grouplabel.frame.size.width, 65));
+        container.addSubview(groupnameholderview)
+        groupnameholderview.center = CGPointMake(width/2 - 2 , 32.5)
         // Do any additional setup after loading the view.
     }
     
@@ -111,16 +131,16 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         if (section==0) {
             if (memberlist.count>0) {
                 //Members First
-                return "'" + currentgroup!.name! + "' Group Members";
+                return "Group Members" //"'" + currentgroup!.name! + "' Group Members";
             } else if (invitedlist.count>0 && memberlist.count == 0) {
                 //Invited Only
-                return "'" + currentgroup!.name! + "' Invited Members";
+                return  "Invited Members" //"'" + currentgroup!.name! + "' Invited Members";
             } else {
                 return nil;
             }
         } else if (section == 1) {
             //Invited Second
-            return "'" + currentgroup!.name! + "' Invited Members";
+            return "Invited Members" //"'" + currentgroup!.name! + "' Invited Members";
         } else {
             return nil;
         }

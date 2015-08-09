@@ -40,8 +40,8 @@ if ($safe) {
                 //Add on to people accepted
                 $connection->AddtoList($connectinfo, "Groups", $groupid, "people_accepted", $profid); //Add to group list of accepted friends
                 $connection->AddtoList($connectinfo, "Profiles", $profid, "groups_accepted", $groupid); //Add to profile list of accepted groups
-                $connection->RemovefromList($connectinfo, "Notifications", $profid, "groups_pending", $groupid);
-                $connection->RemovefromList($connectinfo, "Notifications", $profid, "groups_pending_unread", $groupid); //Clear "pending" notification -NOTE unseen notificaiton is cleared elsewhere
+                $connection->RemoveItemfromList($connectinfo, "Notifications", $profid, "groups_pending", $groupid, "groupid");
+                $connection->RemoveItemfromList($connectinfo, "Notifications", $profid, "groups_pending_unread", $groupid, "groupid");
                 //(Notify group inviter that a new user has accepted group request?
                 if ($checkdeclined == false && $checkleft == false) {
                     CreateNotification(2, $connectinfo, $targetid, $profid, $groupid);
@@ -58,8 +58,8 @@ if ($safe) {
                 if ($check == true && $checkdeclined == false && $checkleft == false) {
                     //Add on to people declined
                     $connection->AddtoList($connectinfo, "Profiles", $profid, "groups_declined", $groupid); //Add to profile list of declined group
-                    $connection->RemovefromList($connectinfo, "Notifications", $profid, "groups_pending", $groupid); //Clear "pending" notification
-                    $connection->RemovefromList($connectinfo, "Notifications", $profid, "groups_pending_unread", $groupid);
+                    $connection->RemoveItemfromList($connectinfo, "Notifications", $profid, "groups_pending", $groupid, "groupid"); //Clear "pending" notification
+                    $connection->RemoveItemfromList($connectinfo, "Notifications", $profid, "groups_pending_unread", $groupid, "groupid");
                     //(Notify group inviter that a new user has declined group request?)
                     CreateNotification(3, $connectinfo, $targetid, $profid, $groupid);
                 }

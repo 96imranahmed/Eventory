@@ -201,12 +201,23 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
     }
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if (tableView == self.friendview) {
-            if (section == 0) {
-                return "Groups";
-            } else if (section == 1) {
-                return "Friends";
-            } else {
+            if (GroupList.count == 0 && FriendList.count == 0) {
                 return nil;
+            }
+            if (GroupList.count == 0) {
+                if (section == 0) {
+                    return "Friends";
+                } else {
+                    return nil;
+                }
+            } else {
+                if (section == 0) {
+                    return "Groups";
+                } else if (section == 1) {
+                    return "Friends";
+                } else {
+                    return nil;
+                }
             }
         } else {
             return nil;
@@ -214,12 +225,23 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (tableView == self.friendview) {
-            if (section == 0) {
-                return GroupList.count;
-            } else if (section == 1) {
-                return FriendList.count;
-            } else {
+            if (GroupList.count == 0 && FriendList.count == 0) {
                 return 0;
+            }
+            if (GroupList.count == 0) {
+                if (section == 0) {
+                    return FriendList.count;
+                } else {
+                    return 0;
+                }
+            } else {
+                if (section == 0) {
+                    return GroupList.count;
+                } else if (section == 1) {
+                    return FriendList.count;
+                } else {
+                    return 0;
+                }
             }
         } else {
             return 0;
@@ -227,43 +249,55 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
     }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if (tableView == self.friendview) {
-            if (indexPath.section == 0) {
-                var cell = tableView.dequeueReusableCellWithIdentifier("Group") as! GroupCell;
-                var currentprof = GroupList[indexPath.row];
-                cell.grouptextfield.text = currentprof.name;
-                var right:NSMutableArray = NSMutableArray();
-                var left:NSMutableArray = NSMutableArray();
-                var imagesize:CGSize = CGSizeMake(20,20);
-                left.sw_addUtilityButtonWithColor(UIColor.orangeColor(), icon: imageResize(UIImage(named:"group_list.png")!, sizeChange:imagesize));
-                left.sw_addUtilityButtonWithColor(UIColor.greenColor(), icon: imageResize(UIImage(named: "group_add.png")!, sizeChange: imagesize));
-                right.sw_addUtilityButtonWithColor(UIColor.grayColor(), icon: imageResize(UIImage(named: "exit.png")!, sizeChange: imagesize));
-                if (currentprof.isadmin) {
-                    cell.grouptextfield.enabled = true;
-                    cell.adminlabel.hidden = false;
-                    right.sw_addUtilityButtonWithColor(UIColor.redColor(), icon: imageResize(UIImage(named: "delete.png")!, sizeChange: imagesize));
+            if (GroupList.count == 0) {
+                if (indexPath.section == 0) {
+                    var cell = tableView.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
+                    cell.friendlabel.text = FriendList[indexPath.row].name;
+                    cell.friendimage.image = UIImage(data: FriendList[indexPath.row].imagedata!);
+                    cell.profid = FriendList[indexPath.row].profid;
+                    return cell;
                 } else {
-                    cell.grouptextfield.enabled = false;
-                    cell.adminlabel.hidden = true;
+                    return UITableViewCell();
                 }
-                cell.setLeftUtilityButtons(left as [AnyObject], withButtonWidth: 40);
-                cell.setRightUtilityButtons(right as [AnyObject], withButtonWidth: 40);
-                cell.groupimage.image = UIImage(named: "unkownprofile.png");
-                cell.memberlabel.text = Group.getMemberString(currentprof.memberstring);
-                cell.grouptextfield.delegate = self;
-                cell.memberlist = currentprof.memberstring;
-                cell.delegate = self;
-                if (groupsupdated) {
-                    cell.groupimage.image = Group.generateGroupImage(currentprof.memberstring);
-                }
-                return cell;
-            } else if (indexPath.section == 1) {
-                var cell = tableView.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
-                cell.friendlabel.text = FriendList[indexPath.row].name;
-                cell.friendimage.image = UIImage(data: FriendList[indexPath.row].imagedata!);
-                cell.profid = FriendList[indexPath.row].profid;
-                return cell;
             } else {
-                return UITableViewCell();
+                if (indexPath.section == 0) {
+                    var cell = tableView.dequeueReusableCellWithIdentifier("Group") as! GroupCell;
+                    var currentprof = GroupList[indexPath.row];
+                    cell.grouptextfield.text = currentprof.name;
+                    var right:NSMutableArray = NSMutableArray();
+                    var left:NSMutableArray = NSMutableArray();
+                    var imagesize:CGSize = CGSizeMake(20,20);
+                    left.sw_addUtilityButtonWithColor(Schemes.returnColor("Carrot", alpha: 1.0), icon: imageResize(UIImage(named:"group_list.png")!, sizeChange:imagesize));
+                    left.sw_addUtilityButtonWithColor(Schemes.returnColor("Nephritis", alpha: 1.0), icon: imageResize(UIImage(named: "group_add.png")!, sizeChange: imagesize));
+                    right.sw_addUtilityButtonWithColor(Schemes.returnColor("Concrete", alpha: 1.0), icon: imageResize(UIImage(named: "exit.png")!, sizeChange: imagesize));
+                    if (currentprof.isadmin) {
+                        cell.grouptextfield.enabled = true;
+                        cell.adminlabel.hidden = false;
+                        right.sw_addUtilityButtonWithColor(Schemes.returnColor("Alizarin", alpha: 1.0), icon: imageResize(UIImage(named: "delete.png")!, sizeChange: imagesize));
+                    } else {
+                        cell.grouptextfield.enabled = false;
+                        cell.adminlabel.hidden = true;
+                    }
+                    cell.setLeftUtilityButtons(left as [AnyObject], withButtonWidth: 40);
+                    cell.setRightUtilityButtons(right as [AnyObject], withButtonWidth: 40);
+                    cell.groupimage.image = UIImage(named: "unkownprofile.png");
+                    cell.memberlabel.text = Group.getMemberString(currentprof.memberstring!);
+                    cell.grouptextfield.delegate = self;
+                    cell.memberlist = currentprof.memberstring;
+                    cell.delegate = self;
+                    if (groupsupdated) {
+                        cell.groupimage.image = Group.generateGroupImage(currentprof.memberstring);
+                    }
+                    return cell;
+                } else if (indexPath.section == 1) {
+                    var cell = tableView.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
+                    cell.friendlabel.text = FriendList[indexPath.row].name;
+                    cell.friendimage.image = UIImage(data: FriendList[indexPath.row].imagedata!);
+                    cell.profid = FriendList[indexPath.row].profid;
+                    return cell;
+                } else {
+                    return UITableViewCell();
+                }
             }
         } else {
             return UITableViewCell();
@@ -374,6 +408,7 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                 height = 2*((Int(self.view.center.y)-64));
             }
             var width = (Int(self.view.frame.size.width)-75);
+            popoverVC.width = CGFloat(width);
             popoverVC.preferredContentSize = CGSizeMake(CGFloat(width), CGFloat(height))
             popoverVC.modalPresentationStyle = .Popover
             let popover = popoverVC.popoverPresentationController!
@@ -401,7 +436,7 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             popover.sourceRect = self.view.frame;
             popover.permittedArrowDirections = UIPopoverArrowDirection.allZeros;
             presentViewController(popoverVC, animated: true, completion: nil);
-
+            
         }
     }
     func swipeableTableViewCell(cell: SWTableViewCell!, didTriggerRightUtilityButtonWithIndex index: Int) {

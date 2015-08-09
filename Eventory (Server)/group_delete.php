@@ -33,8 +33,8 @@ if ($safe) {
                     $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_accepted", $groupid);
                     $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_declined", $groupid);
                     $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_left", $groupid);
-                    $connection->RemovefromList($connectinfo, "Notifications", $invitee, "groups_pending", $groupid);
-                    $connection->RemovefromList($connectinfo, "Notifications", $invitee, "groups_pending_unread", $groupid);
+                    $connection->RemoveItemfromList($connectinfo, "Notifications", $invitee, "groups_pending", $groupid, "groupid");
+                    $connection->RemoveItemfromList($connectinfo, "Notifications", $invitee, "groups_pending_unread", $groupid, "groupid");
                 }
             }
             $sql = $connectinfo->prepare("DELETE FROM Groups WHERE id ='$groupid'");

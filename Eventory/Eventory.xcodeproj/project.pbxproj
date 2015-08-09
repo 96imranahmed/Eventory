@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D80221BA1B6A0EFC000D26D9 /* NotificationsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80221B91B6A0EFC000D26D9 /* NotificationsVC.swift */; };
+		D80221BC1B6BF715000D26D9 /* NotificationDecisionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80221BB1B6BF715000D26D9 /* NotificationDecisionCell.swift */; };
+		D80221BE1B71F962000D26D9 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80221BD1B71F962000D26D9 /* Notification.swift */; };
 		D81B455D1B5AD12200DF7899 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B455C1B5AD12200DF7899 /* Profile.swift */; };
 		D81B455F1B5AD15800DF7899 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B455E1B5AD15800DF7899 /* Group.swift */; };
 		D81B45621B5AE13200DF7899 /* GroupCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B45611B5AE13200DF7899 /* GroupCell.swift */; };
@@ -24,6 +27,7 @@
 		D855B72A1B489DE500E85674 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */; };
 		D855B72B1B489DE500E85674 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */; };
 		D88747591B583A9000373791 /* RKDropdownAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = D88747581B583A9000373791 /* RKDropdownAlert.m */; };
+		D88EF3521B76C27500F7197D /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = D88EF3511B76C27500F7197D /* star.png */; };
 		D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE121B52BCE100F3151A /* LandingVC.swift */; };
 		D89DBE151B52BD2E00F3151A /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE141B52BD2E00F3151A /* CommonUtils.swift */; };
 		D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE181B54385900F3151A /* LogoutVC.swift */; };
@@ -46,6 +50,7 @@
 		D8F2F89A1B66E76A00D3DA8E /* GroupCellEmpty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */; };
 		D8F2F89D1B684F3900D3DA8E /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F89B1B684F3900D3DA8E /* MarqueeLabel.m */; };
 		D8F2F89F1B68D62C00D3DA8E /* GroupCreateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F89E1B68D62C00D3DA8E /* GroupCreateVC.swift */; };
+		D8F2F8A31B6998C500D3DA8E /* bell.png in Resources */ = {isa = PBXBuildFile; fileRef = D8F2F8A21B6998C500D3DA8E /* bell.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +64,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D80221B91B6A0EFC000D26D9 /* NotificationsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationsVC.swift; path = ../NotificationsVC.swift; sourceTree = "<group>"; };
+		D80221BB1B6BF715000D26D9 /* NotificationDecisionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationDecisionCell.swift; sourceTree = "<group>"; };
+		D80221BD1B71F962000D26D9 /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		D81B455C1B5AD12200DF7899 /* Profile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		D81B455E1B5AD15800DF7899 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		D81B45611B5AE13200DF7899 /* GroupCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCell.swift; sourceTree = "<group>"; };
@@ -82,6 +90,7 @@
 		D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		D88747571B583A9000373791 /* RKDropdownAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDropdownAlert.h; sourceTree = "<group>"; };
 		D88747581B583A9000373791 /* RKDropdownAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDropdownAlert.m; sourceTree = "<group>"; };
+		D88EF3511B76C27500F7197D /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = star.png; path = ../star.png; sourceTree = "<group>"; };
 		D89DBE121B52BCE100F3151A /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		D89DBE141B52BD2E00F3151A /* CommonUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonUtils.swift; sourceTree = "<group>"; };
 		D89DBE181B54385900F3151A /* LogoutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoutVC.swift; sourceTree = "<group>"; };
@@ -111,6 +120,7 @@
 		D8F2F89B1B684F3900D3DA8E /* MarqueeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarqueeLabel.m; sourceTree = "<group>"; };
 		D8F2F89C1B684F3900D3DA8E /* MarqueeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarqueeLabel.h; sourceTree = "<group>"; };
 		D8F2F89E1B68D62C00D3DA8E /* GroupCreateVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCreateVC.swift; sourceTree = "<group>"; };
+		D8F2F8A21B6998C500D3DA8E /* bell.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bell.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +148,7 @@
 			children = (
 				D89DBE141B52BD2E00F3151A /* CommonUtils.swift */,
 				D81B455C1B5AD12200DF7899 /* Profile.swift */,
+				D80221BD1B71F962000D26D9 /* Notification.swift */,
 				D81B455E1B5AD15800DF7899 /* Group.swift */,
 			);
 			name = "Base Classes";
@@ -146,9 +157,9 @@
 		D82E8FD21B4B135C007A747F /* Supporting Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D8A36F411B5CD9C80026C3A0 /* SWTableViewCell */,
 				D8F2F89B1B684F3900D3DA8E /* MarqueeLabel.m */,
 				D8F2F89C1B684F3900D3DA8E /* MarqueeLabel.h */,
-				D8A36F411B5CD9C80026C3A0 /* SWTableViewCell */,
 				D88747571B583A9000373791 /* RKDropdownAlert.h */,
 				D88747581B583A9000373791 /* RKDropdownAlert.m */,
 				D82E8FCE1B4B1355007A747F /* Locksmith.swift */,
@@ -180,6 +191,7 @@
 			children = (
 				D855B7071B489D8400E85674 /* AppDelegate.swift */,
 				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
+				D80221B91B6A0EFC000D26D9 /* NotificationsVC.swift */,
 				D855B70B1B489D8400E85674 /* Main.storyboard */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
@@ -225,6 +237,7 @@
 		D855B72C1B48A4F600E85674 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D8F2F8A21B6998C500D3DA8E /* bell.png */,
 				D8A36F621B5EDCE70026C3A0 /* group_add.png */,
 				D8A36F631B5EDCE70026C3A0 /* group_list.png */,
 				D8A36F5A1B5DAF3F0026C3A0 /* add.png */,
@@ -232,6 +245,7 @@
 				D8A36F5C1B5DAF3F0026C3A0 /* delete.png */,
 				D8A36F601B5DB19E0026C3A0 /* exit.png */,
 				D84F14A71B582CF30081B5E8 /* unknownprofile.png */,
+				D88EF3511B76C27500F7197D /* star.png */,
 			);
 			name = Assets;
 			sourceTree = "<group>";
@@ -243,6 +257,7 @@
 				D81B45611B5AE13200DF7899 /* GroupCell.swift */,
 				D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */,
 				D84F14A31B563D190081B5E8 /* FriendCell.swift */,
+				D80221BB1B6BF715000D26D9 /* NotificationDecisionCell.swift */,
 			);
 			name = "Custom Cells";
 			sourceTree = "<group>";
@@ -372,8 +387,10 @@
 				D855B70D1B489D8400E85674 /* Main.storyboard in Resources */,
 				D8A36F611B5DB19E0026C3A0 /* exit.png in Resources */,
 				D84F14A81B582CF30081B5E8 /* unknownprofile.png in Resources */,
+				D88EF3521B76C27500F7197D /* star.png in Resources */,
 				D8A36F5E1B5DAF3F0026C3A0 /* sub.png in Resources */,
 				D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */,
+				D8F2F8A31B6998C500D3DA8E /* bell.png in Resources */,
 				D855B70F1B489D8400E85674 /* Images.xcassets in Resources */,
 				D8A36F5F1B5DAF3F0026C3A0 /* delete.png in Resources */,
 				D8A36F641B5EDCE70026C3A0 /* group_add.png in Resources */,
@@ -396,6 +413,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8F2F89D1B684F3900D3DA8E /* MarqueeLabel.m in Sources */,
+				D80221BA1B6A0EFC000D26D9 /* NotificationsVC.swift in Sources */,
 				D81B45621B5AE13200DF7899 /* GroupCell.swift in Sources */,
 				D84F14A41B563D190081B5E8 /* FriendCell.swift in Sources */,
 				D8A36F521B5DA1F00026C3A0 /* SWUtilityButtonTapGestureRecognizer.m in Sources */,
@@ -415,11 +433,13 @@
 				D8F2F8981B661BE800D3DA8E /* InviteVC.swift in Sources */,
 				D8F2F89F1B68D62C00D3DA8E /* GroupCreateVC.swift in Sources */,
 				D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */,
+				D80221BE1B71F962000D26D9 /* Notification.swift in Sources */,
 				D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */,
 				D8A36F531B5DA1F00026C3A0 /* SWUtilityButtonView.m in Sources */,
 				D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */,
 				D89DBE151B52BD2E00F3151A /* CommonUtils.swift in Sources */,
 				D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */,
+				D80221BC1B6BF715000D26D9 /* NotificationDecisionCell.swift in Sources */,
 				D8A36F4F1B5DA1F00026C3A0 /* SWCellScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

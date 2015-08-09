@@ -28,7 +28,14 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         let tap = UITapGestureRecognizer(target: self, action: Selector("ProfileViewLoad:"))
         tap.delegate = self
         navtitle.addGestureRecognizer(tap)
-        navprofilelabel.text = getTitle() +  ", " + getFirstName(FBSDKProfile.currentProfile().name +  "!");
+        if let name = Globals.currentprofile?.name {
+        navprofilelabel.text = getTitle() +  ", " + getFirstName(name) +  "!";
+        } else {
+            NSLog("Forced logout - Profile error?");
+            dispatch_async(dispatch_get_main_queue(), {
+                self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
+            })
+        }
         let reqsize = navprofilelabel.sizeThatFits(CGSizeMake(self.navtitle.frame.size.width, 30))
         navprofilelabel.frame.size = reqsize;
         picbutton.frame = CGRectMake((reqsize.width + 8), 1, 30, 30);
@@ -38,6 +45,7 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         navtitle.center = CGPointMake(self.view.center.x, 16.5);
         navtitle.autoresizesSubviews = false;
         self.navigationItem.titleView = navtitle;
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: imageResize(UIImage(named: "bell.png")!, sizeChange: CGSizeMake(25, 25)), style: UIBarButtonItemStyle.Plain, target: self, action: "NotificationsDidTap:");
         let frame = navtitle.frame;
         let center = navtitle.center;
     }
@@ -45,12 +53,25 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(true);
     }
+    func imageResize (imageObj:UIImage, sizeChange:CGSize)-> UIImage{
+        let hasAlpha = true;
+        let scale: CGFloat = 0.0 // Automatically use scale factor of main screen
+        UIGraphicsBeginImageContextWithOptions(sizeChange, !hasAlpha, scale)
+        imageObj.drawInRect(CGRect(origin: CGPointZero, size: sizeChange))
+        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
+        return scaledImage
+    }
     func PPUpdated () {
         picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
     }
     func ProfileViewLoad (sender: UITapGestureRecognizer) {
         dispatch_async(dispatch_get_main_queue(), {
             self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
+        })
+    }
+    func NotificationsDidTap(sender: AnyObject) {
+        dispatch_async(dispatch_get_main_queue(), {
+            self.performSegueWithIdentifier("LandingtoNotifications", sender: nil);
         })
     }
 

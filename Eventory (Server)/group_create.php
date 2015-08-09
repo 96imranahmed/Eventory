@@ -48,8 +48,9 @@ if ($safe) {
             $postsql = $connectinfo->prepare("UPDATE Groups SET people_added = '$addedstring' WHERE id='$groupid'");
             $postsql->execute();
             foreach ($idarray as $id) {
-                $connection->AddtoList($connectinfo, "Notifications", $id, "groups_pending", $groupid);
-                $connection->AddtoList($connectinfo, "Notifications", $id, "groups_pending_unread", $groupid);
+                $params = ["groupid" => $groupid, "sourceid" => $profid, "date" => time()];
+                $connection->AddItemtoList($connectinfo, "Notifications", $id, "groups_pending_unread", $params, "groupid");
+                $connection->AddItemtoList($connectinfo, "Notifications", $id, "groups_pending", $params, "groupid");
                 //Add to unread notifications for that particular id
                 CreateNotification(1, $connectinfo, $id, $starter, $groupid);
             }

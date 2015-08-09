@@ -111,10 +111,10 @@ class Group: NSManagedObject {
                     grouplist.append(currententry);
                 }
             }
-            var params:Dictionary = ["Groups":grouplist];
-            NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params);
             ctx?.save(nil);
         }
+        var params:Dictionary = ["Groups":grouplist];
+        NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params);
     }
     //MARK: Group Sort Methods
     class func SortGroups(input:[Group]!) -> [Group]! {
@@ -154,7 +154,7 @@ class Group: NSManagedObject {
                             let myprofile = Profile(name: "You", url: Globals.currentprofile!.url, profid: FBSDKAccessToken.currentAccessToken().userID, imagedata: Globals.currentprofile!.imagedata, save: false)
                             output.insert(myprofile, atIndex: 0)
                         } else {
-                        output.append(check[0]);
+                            output.append(check[0]);
                         }
                     } else {
                         nonfriends.append(members[i]);
@@ -305,8 +305,8 @@ class Group: NSManagedObject {
         var cropped:UIImage = UIImage(CGImage:imageRef)!
         return cropped
     }
-    class func getMemberString(memberlist: String?) -> String {
-        if (memberlist == nil || memberlist==""){
+    class func getMemberString(memberlist: String) -> String {
+        if (memberlist==""){
             return "";
         } else {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -316,14 +316,16 @@ class Group: NSManagedObject {
             var isingroup:Bool = false;
             var output:String = "";
             let limit = 3;
-            var members:[String]! = (memberlist?.componentsSeparatedByString(";"))!;
+            var members:[String]! = (memberlist.componentsSeparatedByString(";"));
             members = self.shuffle(members);
             //Check me
             if (members[0] != "") {
-                var currentprof:String? = members.filter({return $0 == Globals.currentprofile?.profid})[0]
-                if let check = currentprof {
-                    isingroup=true;
-                    members = members.filter({return $0 != Globals.currentprofile?.profid})
+                if memberlist.rangeOfString((Globals.currentprofile?.profid!)!) != nil {
+                    var currentprof:String? = members.filter({return $0 == Globals.currentprofile?.profid})[0]
+                    if let check = currentprof {
+                        isingroup=true;
+                        members = members.filter({return $0 != Globals.currentprofile?.profid})
+                    }
                 }
                 //Check friends
                 var actual:[String!]=[];
@@ -347,13 +349,17 @@ class Group: NSManagedObject {
                                 output = actual[0];
                             }
                         } else {
-                            if (isingroup) {
-                                output = "You, ";
+                            if (actual.count == 2 && !isingroup) {
+                                output = actual[0] + " and " + actual[1];
+                            } else {
+                                if (isingroup) {
+                                    output = "You, ";
+                                }
+                                for (var i=0; i<actual.count-1;i++) {
+                                    output =   output + actual[i] + ", ";
+                                }
+                                output = output + "and " + actual[actual.count-1];
                             }
-                            for (var i=0; i<actual.count-1;i++) {
-                                output =   output + actual[i] + ", ";
-                            }
-                            output = output + "and " + actual[actual.count-1];
                         }
                     }
                 } else {

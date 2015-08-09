@@ -24,7 +24,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     var currentlyconnected:Bool = false;
     //Core Data Stuff
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-  
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //Check whether network is running or not -> use as basis for offline mode
@@ -41,6 +41,15 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         NSNotificationCenter.defaultCenter().addObserver(self, selector:"observeProfileChange:", name: FBSDKProfileDidChangeNotification, object: nil);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "observeTokenChange:", name: FBSDKAccessTokenDidChangeNotification, object: nil);
         if (FBSDKProfile.currentProfile()==nil) {
+            if (FBSDKAccessToken.currentAccessToken() == nil) {
+                
+            } else {
+                StatusLabel.text = "SDK Error" //Try grab from NSData if possible
+                if let item: Profile = Profile.fetchProfileforID(FBSDKAccessToken.currentAccessToken().userID) {
+                    FBSDKProfile.setCurrentProfile(FBSDKProfile(userID: FBSDKAccessToken.currentAccessToken().userID, firstName: Profile.getFirstName(item.name!) , middleName: nil, lastName: Profile.getLastName(item.name!), name: item.name, linkURL: nil, refreshDate: FBSDKAccessToken.currentAccessToken().refreshDate))
+                    checkPermissions();
+                }
+            }
         } else {
             progressBarDisplayer("Logging In", true)
             StatusLabel.text = "Logged in as " + FBSDKProfile.currentProfile().name;
@@ -97,7 +106,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             StatusLabel.text = "Login cancelled - try again?";
         }
         else {
-            Profile.ClearProfiles();
+            Main.clearAll();
             progressBarDisplayer("Logging In", true)
             checkPermissions();
         }
@@ -208,7 +217,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 if (self.isViewLoaded()) {
                     if (FBSDKProfile.currentProfile().name != nil) {
                         dispatch_async(dispatch_get_main_queue(), {
-                           self.performSegueWithIdentifier("LogintoLanding", sender: self);
+                            self.performSegueWithIdentifier("LogintoLanding", sender: self);
                         })
                     } else {
                         self.forceLogout();
@@ -219,30 +228,34 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         } else {
             self.messageFrame.removeFromSuperview()
             //Process offline login
-            if (FBSDKProfile.currentProfile() == nil) {
+            if (FBSDKAccessToken.currentAccessToken() == nil) {
                 //Create alert view - notifies that there is no saved profile to load at all
                 self.view.hidden = false;
                 //NSLog("No internet connection!");
-                var alert = UIAlertController(title: "No internet connection!", message: "You have not logged in and have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
+                dispatch_async(dispatch_get_main_queue(), {
+                    var alert = UIAlertController(title: "No internet connection!", message: "You have not logged in and have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alert, animated: true, completion: nil)
+                })
             } else {
                 //Load saved profile (offline mode - but check for token expiry first!)
                 if (FBSDKAccessToken.currentAccessToken().expirationDate.timeIntervalSinceNow <= 0) {
                     //Profile has expired
                     //NSLog("Profile expired!");
                     self.view.hidden = false;
-                    var alert = UIAlertController(title: "No internet connection!", message: "Your access token has expired and you have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                    self.presentViewController(alert, animated: true, completion: nil)
+                    dispatch_async(dispatch_get_main_queue(), {
+                        var alert = UIAlertController(title: "No internet connection!", message: "Your access token has expired and you have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                        self.presentViewController(alert, animated: true, completion: nil)
+                    })
                 } else {
                     //Actually load this profile
                     let fetchRequest = NSFetchRequest(entityName: "Profile")
-                    let predicate = NSPredicate(format: "profid == %@", FBSDKProfile.currentProfile().userID)
+                    let predicate = NSPredicate(format: "profid == %@", FBSDKAccessToken.currentAccessToken().userID)
                     fetchRequest.predicate = predicate
                     if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
                         if (fetchResults.count>0) {
-                        Globals.currentprofile = fetchResults[0];
+                            Globals.currentprofile = fetchResults[0];
                         }
                     }
                     self.canproceed = true;
@@ -272,6 +285,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         messageFrame.addSubview(strLabel)
         view.addSubview(messageFrame)
     }
-        
+    
 }
 

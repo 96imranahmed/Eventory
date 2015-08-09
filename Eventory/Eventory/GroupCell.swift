@@ -18,6 +18,7 @@ class GroupCell: SWTableViewCell {
         super.awakeFromNib()
         groupimage.layer.masksToBounds = true;
         groupimage.layer.cornerRadius = 25;
+        adminlabel.textColor = Schemes.returnColor("Nephritis", alpha: 1.0);
     }
     
     

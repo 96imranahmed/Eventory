@@ -28,7 +28,9 @@ class LogoutVC: UIViewController, UITableViewDelegate, UITableViewDataSource, FB
     }
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
         let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
-        Profile.ClearProfiles();
+        Main.clearAll();
+        var login = FBSDKLoginManager.new();
+        login.logOut();
         dispatch_async(dispatch_get_main_queue(), {
             self.performSegueWithIdentifier("LogouttoLogin", sender: self);
         })

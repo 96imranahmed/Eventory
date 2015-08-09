@@ -706,6 +706,7 @@ static NSString * const kTableViewPanState = @"state";
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    //NSLog(@"%f",scrollView.contentOffset.x);
     if (scrollView.contentOffset.x > [self leftUtilityButtonsWidth])
     {
         if ([self rightUtilityButtonsWidth] > 0)
