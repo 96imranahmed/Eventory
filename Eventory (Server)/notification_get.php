@@ -16,8 +16,18 @@ if (array_key_exists('token', $_POST)) {
 if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
+        $notificationarray = [];
         $row = $connection->GetRow($connectinfo, "Notifications", $profid);
-        
+        foreach (array_values($row) as $value) {
+            if ($value == null || $value == "") {
+            } else {
+                $notificationarray = $notificationarray + unserialize($value);
+            }
+        }
+        echo json_encode($notificationarray);
+        foreach (array_keys($row) as $value) {
+            $connection->SetRead($connectinfo, $profid, $value);
+        }
     } else {
         echo "Error - authorization mismatch";
     }

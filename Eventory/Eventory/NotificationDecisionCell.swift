@@ -9,8 +9,7 @@
 import UIKit
 
 class NotificationDecisionCell: SWTableViewCell {
-    var notification: Notification = Notification(type: nil, sourceID: nil, destinationID: nil, decided: nil, text: nil, data: nil);
-    var type: String = "";
+    var notification: Notification = Notification(type: 0, sourceID: nil, decided: nil, text: "", read: false, notifdata: nil, date: NSDate(timeIntervalSinceNow: 0));
     var unseen: Bool = false;
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var picture: UIImageView!

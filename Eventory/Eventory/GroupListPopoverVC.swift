@@ -31,7 +31,11 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         groupimage.layer.masksToBounds = true;
         groupimage.layer.cornerRadius = 25;
         groupimage.image = Group.generateGroupImage(currentgroup?.memberstring)
+        if (currentgroup?.isadmin == true) {
+        grouplabel.text = (currentgroup?.name)!;
+        } else {
         grouplabel.text = currentgroup?.name;
+        }
         grouplabel.frame.size = grouplabel.sizeThatFits(CGSizeMake(width - 66, 65))
         //NSLog(grouplabel.frame.width.description);
         //NSLog((grouplabel.frame.width + 66).description)

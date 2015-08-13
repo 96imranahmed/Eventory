@@ -189,7 +189,6 @@
 		D855B7041B489D8400E85674 /* Eventory */ = {
 			isa = PBXGroup;
 			children = (
-				D855B7071B489D8400E85674 /* AppDelegate.swift */,
 				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
 				D80221B91B6A0EFC000D26D9 /* NotificationsVC.swift */,
 				D855B70B1B489D8400E85674 /* Main.storyboard */,
@@ -299,6 +298,7 @@
 				D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */,
 				D855B7091B489D8400E85674 /* LoginVC.swift */,
 				D89DBE181B54385900F3151A /* LogoutVC.swift */,
+				D855B7071B489D8400E85674 /* AppDelegate.swift */,
 			);
 			name = "Login/Logout & CoreData Controllers";
 			sourceTree = "<group>";

@@ -49,9 +49,7 @@ if ($safe) {
             $postsql->execute();
             foreach ($idarray as $id) {
                 $params = ["groupid" => $groupid, "sourceid" => $profid, "date" => time()];
-                $connection->AddItemtoList($connectinfo, "Notifications", $id, "groups_pending_unread", $params, "groupid");
-                $connection->AddItemtoList($connectinfo, "Notifications", $id, "groups_pending", $params, "groupid");
-                //Add to unread notifications for that particular id
+                //Add to notifications for that particular id
                 CreateNotification(1, $connectinfo, $id, $starter, $groupid);
             }
         } catch (PDOException $e) {

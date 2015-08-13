@@ -26,9 +26,9 @@ class Group: NSManagedObject {
         }
         self.name = name;
         self.groupid = groupid;
-        self.memberstring = memberstring!;
+        self.memberstring = memberstring;
         self.isadmin = isadmin
-        self.invitedstring = invitedstring!;
+        self.invitedstring = invitedstring;
     }
     //MARK: Core Data Methods
     class func createInManagedObjectContext(moc: NSManagedObjectContext,name:String?, groupid:String?, memberstring:String?, invitedstring: String?,isadmin:Bool) -> Group {
@@ -203,6 +203,54 @@ class Group: NSManagedObject {
             return nil;
         }
     }
+    class func downloadGroupASync(id: String) {
+        if (Reachability.isConnectedToNetwork()) {
+            let URLStub: String! = NSBundle.mainBundle().objectForInfoDictionaryKey("URL Stub") as! String;
+            //Clean Values by escaping
+            var dictsend = Dictionary<String, String>()
+            dictsend["profid"] = FBSDKAccessToken.currentAccessToken().userID;
+            dictsend["token"] = FBSDKAccessToken.currentAccessToken().tokenString;
+            dictsend["groupid"] = id;
+            var contentBodyAsString = "";
+            var firstOneAdded = false
+            let contentKeys:Array<String> = Array(dictsend.keys)
+            for contentKey in contentKeys {
+                if(!firstOneAdded) {
+                    contentBodyAsString += contentKey + "=" + dictsend[contentKey]!
+                    firstOneAdded = true
+                }
+                else {
+                    contentBodyAsString += "&" + contentKey + "=" + dictsend[contentKey]!
+                }
+            }
+            let urlstring = URLStub + "group_single_get.php";
+            let url = NSURL(string: urlstring)!;
+            let session = NSURLSession.sharedSession();
+            let request = NSMutableURLRequest(URL: url);
+            var error: NSError? = nil;
+            request.HTTPMethod = "POST";
+            request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type");
+            request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
+            contentBodyAsString = contentBodyAsString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+            let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
+                (data, response, error) in
+                if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? Dictionary<String,AnyObject>
+                {
+                let name:String = results["Name"] as! String;
+                let admin:Bool = results["Admin"] as! Bool;
+                let id:String = results["GroupID"] as! String;
+                let members:NSArray = results["Members"] as! NSArray;
+                let invited:NSArray = results["Invited"] as! NSArray;
+                let memberstring = members.componentsJoinedByString(";");
+                let invitedstring = invited.componentsJoinedByString(";");
+                var params = Dictionary<String,AnyObject>();
+                params["Group"] = Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false);
+                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Single_Done", object: self, userInfo: params);
+                }
+            }
+            task.resume()
+        }
+    }
     //MARK: Group Cell Methods
     class func generateGroupImage(memberlist: String?) -> UIImage {
         if (memberlist=="" || memberlist == nil) {
@@ -236,8 +284,12 @@ class Group: NSManagedObject {
                         if (i>actualimage.count-1) {
                             imagearray.append(UIImage(named: "unknownprofile.png")!);
                         } else {
+                            if (actualimage[i].length > 0) {
                             var image:UIImage? = UIImage(data: actualimage[i]);
                             imagearray.append(UIImage(data: actualimage[i])!);
+                            } else {
+                                imagearray.append(UIImage(named: "unknownprofile.png")!);
+                            }
                         }
                     }
                     var leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));

@@ -54,7 +54,7 @@ if ($check) {
             }
             $prepsql = $connectinfo->prepare("INSERT INTO Profiles (id, name, token, url) VALUES ('$profid','$name','$token','$profurl') ON DUPLICATE KEY UPDATE name=VALUES(name), token=VALUES(token), url=VALUES(url)");
             $prepsql->execute();
-            $notifysql = $connectinfo->prepare("INSERT INTO Notifications (id, friends_new_unseen) VALUES ('$profid', null) ON DUPLICATE KEY UPDATE id=id");
+            $notifysql = $connectinfo->prepare("INSERT INTO Notifications (id, friends_new_unseen, numberunseen) VALUES ('$profid', null, 0) ON DUPLICATE KEY UPDATE id=id");
             $notifysql->execute();
         } catch (PDOException $e) {
             echo 'Error - ' . $e->GetMessage();

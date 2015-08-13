@@ -1,5 +1,4 @@
 <?php
-
 $safe = true;
 include_once 'connect.php';
 include_once 'notification_create.php';
@@ -62,9 +61,6 @@ if ($safe) {
                 foreach ($idarray as $id) {
                     CreateNotification(1, $connectinfo, $id, $profid, $groupid); //Send them a notification
                     $connection->AddtoList($connectinfo, "Groups", $groupid, "people_requested", $id);
-                    $params = ["groupid" => $groupid, "sourceid" => $profid, "date" => time()];
-                    $connection->AddItemtoList($connectinfo, "Notifications", $id, "groups_pending_unread", $params, "groupid");
-                    $connection->AddItemtoList($connectinfo, "Notifications", $id, "groups_pending", $params, "groupid");
                 }
             } else {
                 if ($check) {

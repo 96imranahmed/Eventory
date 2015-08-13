@@ -110,9 +110,6 @@ public class Reachability {
             }
         }
         dictsend["profid"] = FBSDKAccessToken.currentAccessToken().userID;
-        if (customselector != nil) {
-            //NSLog(customselector! + ":" + FBSDKAccessToken.currentAccessToken().userID);
-        }
         dictsend["token"] = FBSDKAccessToken.currentAccessToken().tokenString;
         //Convert values into string
         var contentBodyAsString = "";
@@ -137,6 +134,7 @@ public class Reachability {
         request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
             (data, response, error) in
+            NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
             //let subString = (response.description as NSString).containsString("Error") - Checks for error
             if let sendto = customselector {
                 if (sendto == "MainGroupLoad") {
@@ -153,6 +151,8 @@ public class Reachability {
                     var friends:[Profile] = Group.parseProfileGet(data);
                     var params:Dictionary = ["Friends":friends];
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_List_Updated", object: self, userInfo: params);
+                } else if (sendto == "Refresh") {
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Refresh_Trigger", object: self, userInfo: nil);
                 }
             }
         }

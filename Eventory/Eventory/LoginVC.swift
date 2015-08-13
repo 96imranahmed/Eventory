@@ -106,7 +106,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             StatusLabel.text = "Login cancelled - try again?";
         }
         else {
-            Main.clearAll();
             progressBarDisplayer("Logging In", true)
             checkPermissions();
         }
@@ -182,7 +181,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 let error = Locksmith.saveData([id as! String: FBSDKAccessToken.currentAccessToken().tokenString], forUserAccount: self.appName);
                 //Creates a new save profile of personal profile
                 if let moc = self.managedObjectContext {
-                    //Profile.ClearProfileNils();
                     if (Profile.CheckProfileifContains("profid", identifier: (id as? String)!)) {
                         let fetchRequest = NSFetchRequest(entityName: "Profile")
                         fetchRequest.fetchLimit = 1;
@@ -201,19 +199,22 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             let friendrequest = FBSDKGraphRequest(graphPath: "/me?fields=friends.limit(5000)%7Bpicture.width(150).height(150),name%7D", parameters: parameters, HTTPMethod: "POST");
             connection.addRequest(friendrequest, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
                 //Get friends
-                var friendid = Profile.saveFriendstoCoreData(result);
+                if (result != nil) {
+                    Main.clearAll();
+                    var friendid = Profile.saveFriendstoCoreData(result);
+                    var params = Dictionary<String, AnyObject>();
+                    params["name"] = Globals.currentprofile!.name;
+                    params["url"] = Globals.currentprofile!.url;
+                    params["id"] = friendid;
+                    Reachability.postToServer("profile.php", postdata: params, customselector:nil);
+                    var paramstwo = Dictionary<String,AnyObject>();
+                    paramstwo["type"] = "0";
+                    Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad")
+                }
                 //Upload values to Eventory
-                var params = Dictionary<String, AnyObject>();
-                params["name"] = Globals.currentprofile!.name;
-                params["url"] = Globals.currentprofile!.url;
-                params["id"] = friendid;
-                Reachability.postToServer("profile.php", postdata: params, customselector:nil);
                 self.messageFrame.removeFromSuperview()
                 (UIApplication.sharedApplication().delegate as! AppDelegate).saveContext();
                 self.canproceed = true;
-                var paramstwo = Dictionary<String,AnyObject>();
-                paramstwo["type"] = "0";
-                Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad")
                 if (self.isViewLoaded()) {
                     if (FBSDKProfile.currentProfile().name != nil) {
                         dispatch_async(dispatch_get_main_queue(), {

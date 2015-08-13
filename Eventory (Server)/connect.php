@@ -176,7 +176,38 @@ class Connect {
         $currentrow = $prepsql->fetch();
         return $currentrow;
     }
-
+    public function UpdateScore($pdo, $id, $change) {
+        $prepsql = $pdo->prepare("SELECT * FROM Profiles WHERE id = '$id' LIMIT 1");
+        $prepsql->execute();
+        $currentrow = $prepsql->fetch();
+        $current = intval($currentrow["score"])  + intval($change);
+        if ($current < 0) {
+            $current = 0;
+        }
+        $postsql = $pdo->prepare("UPDATE Profiles SET score='$current' WHERE id=$id");
+        $postsql->execute();
+    }
+    //Increments unseen notification count
+    public function IncrementNotification($pdo, $id) {
+        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
+        $prepsql->execute();
+        $currentrow = $prepsql->fetch();
+        $current = intval($currentrow["numberunseen"])  + 1;
+        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen='$current' WHERE id=$id");
+        $postsql->execute();
+    }
+    //Decrements unseen notification count
+    public function DecrementNotification($pdo, $id) {
+         $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
+        $prepsql->execute();
+        $currentrow = $prepsql->fetch();
+        $current = intval($currentrow["numberunseen"])  - 1;
+        if ($current<0) {
+            $current = 0;
+        }
+        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen='$current' WHERE id=$id");
+        $postsql->execute();
+    }
     //Add dictionary to list
     public function AddItemtoList($pdo, $tablename, $id, $column, $value, $duplicateref) {
         $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
@@ -199,6 +230,9 @@ class Connect {
                 if ($unique) {
                     array_push($currentarray, $value);
                     $current = implode(";", $currentarray);
+                    if ($tablename === "Notifications") {                
+                    self::IncrementNotification($pdo, $id);
+                    }
                 }
                 $current = serialize($current);
             }
@@ -206,6 +240,7 @@ class Connect {
         $postsql = $pdo->prepare("UPDATE $tablename SET $column='$current' WHERE id=$id");
         $postsql->execute();
     }
+
     //Remove item from list
     public function RemoveItemfromList($pdo, $tablename, $id, $column, $item, $duplicateref) {
         $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
@@ -218,14 +253,14 @@ class Connect {
         } else {
             $currentarray = unserialize($current);
             $position = null;
-             foreach ($currentarray as $index => $loop) {
-                    if ($loop[$duplicateref] == $item) {
-                        $position = $index;
-                    }
-             }
-             if ($position != null) {
-                 unset($currentarray[$position]);
-             }
+            foreach ($currentarray as $index => $loop) {
+                if ($loop[$duplicateref] == $item) {
+                    $position = $index;
+                }
+            }
+            if ($position != null) {
+                unset($currentarray[$position]);
+            }
             if (count($currentarray) < 1) {
                 $current = null;
                 $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
@@ -237,4 +272,27 @@ class Connect {
             }
         }
     }
+    //Set read receipt
+    public function SetRead($pdo, $id, $column) {
+        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
+        $prepsql->execute();
+        $currentrow = $prepsql->fetch();
+        $current = $currentrow[$column];
+        if ($current == null || $current == "") {
+            $postsql = $pdo->prepare("UPDATE Notifications SET $column = null WHERE id=$id");
+            $postsql->execute();
+        } else {
+            $currentarray = unserialize($current);
+            foreach ($currentarray as $index => $loop) {
+                if ($loop["read"] == false) {
+                    $loop["read"] = true;
+                    self::DecrementNotification($pdo, $id);
+                }
+            }
+            $current = serialize($currentarray);
+            $postsql = $pdo->prepare("UPDATE Notifications SET $column='$current' WHERE id=$id");
+            $postsql->execute();
+        }
+    }
+
 }

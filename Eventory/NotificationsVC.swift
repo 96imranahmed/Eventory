@@ -8,9 +8,10 @@
 
 import UIKit
 
-class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, SWTableViewCellDelegate{
+class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate, SWTableViewCellDelegate, UIPopoverPresentationControllerDelegate {
     @IBOutlet weak var notificationtable: UITableView!
     //Cell swipe
+    let refreshControl = UIRefreshControl()
     var preoffset = 0;
     var lastOffset: CGPoint = CGPointMake(0, 0);
     var lastOffsetCapture: NSTimeInterval = 0.0;
@@ -22,17 +23,84 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.navigationItem.title = "Notifications"
         notificationtable.dataSource = self;
         notificationtable.delegate = self;
-        for (var i = 0; i < 6; i++) {
-            notificationlist.append(Notification(type: 1, sourceID: "Me", destinationID: "To", decided: nil, text: i.description, data: nil));
+        refreshControl.addTarget(self, action: "refresh:", forControlEvents: .ValueChanged)
+        refreshControl.attributedTitle = NSAttributedString(string: "Refreshing...");
+        notificationtable.addSubview(refreshControl)
+        if (Reachability.isConnectedToNetwork()) {
+            Notification.getNotifications();
+        } else {
+            RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
         }
-        notificationlist.sort({($0.notificationtype! < $1.notificationtype)});
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshnotifications:", name: "Eventory_Notifications_Done", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "autorefresh:", name: "Eventory_Refresh_Trigger", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "groupdownload:", name: "Eventory_Group_Single_Done", object: nil)
         // Do any additional setup after loading the view.
+    }
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        return UIModalPresentationStyle.None
     }
     override func viewDidAppear(animated: Bool) {
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    //MARK: Update/Refresh functions
+    func refreshnotifications(notification: NSNotification) {
+        let notif = notification.userInfo!["Notifications"] as! [Notification]!;
+        if (notif.count>0) {
+            notificationlist = notif;
+            notificationlist.sort({($0.notificationtype! < $1.notificationtype)});
+            dispatch_async(dispatch_get_main_queue()){
+                UIView.transitionWithView(self.notificationtable, duration:0.1, options: UIViewAnimationOptions.TransitionCrossDissolve,
+                    animations: {
+                        self.notificationtable.reloadData();
+                    },
+                    completion: nil)
+            }
+        }
+    }
+    func groupdownload(notification: NSNotification) {
+        let currentgroup = notification.userInfo!["Group"] as! Group!;
+        let popoverVC = storyboard?.instantiateViewControllerWithIdentifier("PopoverGroupList") as! GroupListPopoverVC!
+        popoverVC.currentgroup = currentgroup;
+        var members:[String] = (currentgroup.memberstring?.componentsSeparatedByString(";"))!;
+        var invited:[String] = (currentgroup.invitedstring?.componentsSeparatedByString(";"))!;
+        var height:Int;
+        if (members.count>0 && invited.count>0) {
+            height = members.count*70 + invited.count*70 + 44;
+        } else if (members.count>0){
+            height = members.count*70 + 22;
+        } else {
+            height = invited.count*70 + 22;
+        }
+        if (height > 2*((Int(self.view.center.y)-64))) {
+            height = 2*((Int(self.view.center.y)-64));
+        }
+        var width = (Int(self.view.frame.size.width)-75);
+        popoverVC.width = CGFloat(width);
+        popoverVC.preferredContentSize = CGSizeMake(CGFloat(width), CGFloat(height))
+        popoverVC.modalPresentationStyle = .Popover
+        let popover = popoverVC.popoverPresentationController!
+        popover.delegate = self
+        popover.sourceView  = self.view
+        popover.sourceRect = self.view.frame;
+        popover.permittedArrowDirections = UIPopoverArrowDirection.allZeros;
+        presentViewController(popoverVC, animated: true, completion: nil);
+    }
+    func autorefresh(notification: NSNotification) {
+        if (Reachability.isConnectedToNetwork()) {
+            Notification.getNotifications();
+        }
+    }
+
+    func refresh(refreshControl: UIRefreshControl) {
+        if (Reachability.isConnectedToNetwork()) {
+            Notification.getNotifications();
+        } else {
+            RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
+        }
+        refreshControl.endRefreshing();
     }
     //MARK: Table View Methods
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -99,6 +167,19 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         let cell = notificationtable.cellForRowAtIndexPath(index) as! NotificationDecisionCell;
         var animation: UITableViewRowAnimation;
         animation = UITableViewRowAnimation.Fade;
+        let procnotif = notificationlist[index.row];
+            if (procnotif.notificationtype == 1) {
+                if let text = procnotif.notifdata {
+                    let pos = text.rangeOfString(":", options: .BackwardsSearch)?.startIndex
+                    let groupidpost = text.substringFromIndex(pos!)
+                    var params = Dictionary<String,AnyObject>();
+                    params["accepted"] = accepted;
+                    params["groupid"] = groupidpost;
+                    Reachability.postToServer("group_decision.php", postdata: params, customselector: "Refresh");
+                }
+               
+        }
+        
         notificationlist.removeAtIndex(index.row);
         if (notificationtable.numberOfRowsInSection(index.section) == 1) {
             //Delete section

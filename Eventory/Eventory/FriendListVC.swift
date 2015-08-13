@@ -177,7 +177,9 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         let friendrequest = FBSDKGraphRequest(graphPath: "/me?fields=friends.limit(5000)%7Bpicture.width(150).height(150),name%7D", parameters: parameters, HTTPMethod: "POST");
         connection.addRequest(friendrequest, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
             if (Reachability.isConnectedToNetwork()) {
+                if (result != nil) {
                 var friendid = Profile.saveFriendstoCoreData(result);
+                }
                 var fetchRequest = NSFetchRequest(entityName: "Profile")
                 self.FriendList = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
                 var paramstwo = Dictionary<String,AnyObject>();
@@ -281,9 +283,11 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                     cell.setLeftUtilityButtons(left as [AnyObject], withButtonWidth: 40);
                     cell.setRightUtilityButtons(right as [AnyObject], withButtonWidth: 40);
                     cell.groupimage.image = UIImage(named: "unkownprofile.png");
+                    if (currentprof.memberstring != nil) {
                     cell.memberlabel.text = Group.getMemberString(currentprof.memberstring!);
-                    cell.grouptextfield.delegate = self;
                     cell.memberlist = currentprof.memberstring;
+                    }
+                    cell.grouptextfield.delegate = self;
                     cell.delegate = self;
                     if (groupsupdated) {
                         cell.groupimage.image = Group.generateGroupImage(currentprof.memberstring);
