@@ -106,6 +106,10 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
             if (!Reachability.isConnectedToNetwork()) {
             RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
             } else {
+                var params = Dictionary<String,AnyObject>();
+                params["name"] = groupname.text;
+                params["id"] = added;
+                Reachability.postToServer("group_create.php", postdata: params, customselector: "GroupRefresh");
                 self.dismissViewControllerAnimated(true, completion: nil);
             }
         }

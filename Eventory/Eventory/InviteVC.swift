@@ -14,6 +14,8 @@ class InviteVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var invitedetail: UINavigationItem!
     var memberstring:String = "";
     var itemname:String = "";
+    var itemtype:String = "";
+    var itemid:String = "";
     var FriendList:[Profile] = [];
     var GroupList:[Group] = [];
     var nogroups:Bool = false;
@@ -92,6 +94,13 @@ class InviteVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if (!Reachability.isConnectedToNetwork()) {
             RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
         } else {
+            if (itemtype == "Group" && itemid != "") {
+                //Add to a group
+                var params = Dictionary<String,AnyObject>();
+                params["groupid"] = itemid;
+                params["id"] = added;
+                Reachability.postToServer("group_add.php", postdata: params, customselector: "GroupRefresh");
+            }
             self.dismissViewControllerAnimated(true, completion: nil);
         }
     }

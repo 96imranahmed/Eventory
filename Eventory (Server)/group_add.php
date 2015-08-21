@@ -41,7 +41,7 @@ if ($safe) {
         foreach ($idarray as $id) {
             $checkinvite = $connection->ListCheck($connectinfo, "Groups", $groupid, "people_requested", $id); //Requested (invited) people check
             if ($checkinvite) {
-                array_push($idtodelete, $id);
+                $idtodelete[] = $id;
             }
         }
         foreach ($idtodelete as $key) {

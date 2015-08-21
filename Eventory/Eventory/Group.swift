@@ -86,8 +86,7 @@ class Group: NSManagedObject {
         {
             Group.ClearGroups();
             var currententry: Group;
-            for (var i = 0; i < results.count; i++) {
-                var currentgroup: AnyObject? = (results as NSDictionary).valueForKey((i+1).description);
+            for (grouplistindex, currentgroup) in results {
                 let name:String = ((currentgroup as? NSDictionary)?.valueForKey("Name")!)! as! String;
                 let admin:Bool = ((currentgroup as? NSDictionary)?.valueForKey("Admin")!)! as! Bool;
                 let id:String = ((currentgroup as? NSDictionary)?.valueForKey("GroupID")!)! as! String;

@@ -166,10 +166,12 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             UIView.transitionWithView(self.friendview, duration:0.1, options: UIViewAnimationOptions.TransitionCrossDissolve,
                 animations: {
                     self.friendview.reloadData();
+                    if (self.refreshControl.refreshing) {
+                        self.refreshControl.endRefreshing()
+                    }
                 },
                 completion: nil)
         }
-        refreshControl.endRefreshing()
     }
     func getData() {
         let connection = FBSDKGraphRequestConnection();
@@ -178,7 +180,7 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         connection.addRequest(friendrequest, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
             if (Reachability.isConnectedToNetwork()) {
                 if (result != nil) {
-                var friendid = Profile.saveFriendstoCoreData(result);
+                    var friendid = Profile.saveFriendstoCoreData(result);
                 }
                 var fetchRequest = NSFetchRequest(entityName: "Profile")
                 self.FriendList = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
@@ -284,8 +286,8 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                     cell.setRightUtilityButtons(right as [AnyObject], withButtonWidth: 40);
                     cell.groupimage.image = UIImage(named: "unkownprofile.png");
                     if (currentprof.memberstring != nil) {
-                    cell.memberlabel.text = Group.getMemberString(currentprof.memberstring!);
-                    cell.memberlist = currentprof.memberstring;
+                        cell.memberlabel.text = Group.getMemberString(currentprof.memberstring!);
+                        cell.memberlist = currentprof.memberstring;
                     }
                     cell.grouptextfield.delegate = self;
                     cell.delegate = self;
@@ -426,6 +428,8 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             let popoverVC = storyboard?.instantiateViewControllerWithIdentifier("InviteVC") as! InviteVC!
             popoverVC.memberstring = GroupList[indexpath.row].invitedstring!;
             popoverVC.itemname = GroupList[indexpath.row].name!
+            popoverVC.itemtype = "Group";
+            popoverVC.itemid = GroupList[indexpath.row].groupid!;
             var sendGroupList = GroupList;
             sendGroupList.removeAtIndex(indexpath.row);
             popoverVC.GroupList = sendGroupList;
@@ -452,12 +456,9 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             }))
             alert.addAction(UIAlertAction(title: "Yep!", style: .Default, handler: { action in
                 if (Reachability.isConnectedToNetwork()) {
-                    /*
                     var params = Dictionary<String,AnyObject>();
                     params["groupid"] = self.GroupList[indexpath.row].groupid;
-                    params["name"] = textField.text;
-                    Reachability.postToServer("group_rename.php", postdata: params, customselector: "GroupRefresh")
-                    */
+                    Reachability.postToServer("group_leave.php", postdata: params, customselector: "GroupRefresh");
                 } else {
                     RKDropdownAlert.title("Can't Leave!", message: "You are currently not connected to the internet! :(");
                 }
@@ -471,12 +472,9 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             }))
             alert.addAction(UIAlertAction(title: "Yep!", style: .Default, handler: { action in
                 if (Reachability.isConnectedToNetwork()) {
-                    /*
                     var params = Dictionary<String,AnyObject>();
                     params["groupid"] = self.GroupList[indexpath.row].groupid;
-                    params["name"] = textField.text;
-                    Reachability.postToServer("group_rename.php", postdata: params, customselector: "GroupRefresh")
-                    */
+                    Reachability.postToServer("group_delete.php", postdata: params, customselector: "GroupRefresh");
                 } else {
                     RKDropdownAlert.title("Can't Delete!", message: "You are currently not connected to the internet! :(");
                 }

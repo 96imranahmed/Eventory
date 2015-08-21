@@ -49,11 +49,11 @@ class Profile : NSManagedObject {
         let ctx = appDelegate.managedObjectContext;
         if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
             var currentprof:Profile = fetchResults[0];
-           return currentprof
+            return currentprof
         } else {
             return nil
         }
-
+        
     }
     
     class func ClearProfiles () {
@@ -63,8 +63,12 @@ class Profile : NSManagedObject {
         let fetchRequest = NSFetchRequest(entityName: "Profile")
         let fetchResults = (ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile])!
         for (var i = 0; i < fetchResults.count ; i++) {
-            if (fetchResults[i].profid != FBSDKAccessToken.currentAccessToken().userID) {
-            ctx?.deleteObject(fetchResults[i]);
+            if (FBSDKAccessToken.currentAccessToken() != nil) {
+                if (fetchResults[i].profid != FBSDKAccessToken.currentAccessToken().userID) {
+                    ctx?.deleteObject(fetchResults[i]);
+                }
+            } else {
+                ctx?.deleteObject(fetchResults[i]);
             }
         }
         ctx?.save(nil)

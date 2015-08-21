@@ -22,6 +22,8 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     var strLabel = UILabel();
     var canproceed:Bool = false;
     var currentlyconnected:Bool = false;
+    var profdl = false;
+    var frdl = false;
     //Core Data Stuff
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
@@ -124,7 +126,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             self.observeProfileChange(nil);
         }
     }
-    
     func checkPermissions() {
         var currentpermissions:Int = 0;
         if (FBSDKAccessToken.currentAccessToken().permissions.contains("user_friends")) {
@@ -170,6 +171,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         let request = FBSDKGraphRequest(graphPath: "/me?fields=id,name,picture.width(150).height(150)", parameters: nil);
         let connection = FBSDKGraphRequestConnection();
         connection.addRequest(request, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
+            self.profdl = true;
             if (error==nil) {
                 var id: NSString? = (result as! NSDictionary).valueForKey("id") as? NSString;
                 var namepost: NSString? = (result as! NSDictionary).valueForKey("name") as? NSString;
@@ -199,6 +201,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             let friendrequest = FBSDKGraphRequest(graphPath: "/me?fields=friends.limit(5000)%7Bpicture.width(150).height(150),name%7D", parameters: parameters, HTTPMethod: "POST");
             connection.addRequest(friendrequest, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
                 //Get friends
+                self.frdl = true;
                 if (result != nil) {
                     Main.clearAll();
                     var friendid = Profile.saveFriendstoCoreData(result);
@@ -215,6 +218,8 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 self.messageFrame.removeFromSuperview()
                 (UIApplication.sharedApplication().delegate as! AppDelegate).saveContext();
                 self.canproceed = true;
+                self.frdl = false;
+                self.profdl = false
                 if (self.isViewLoaded()) {
                     if (FBSDKProfile.currentProfile().name != nil) {
                         dispatch_async(dispatch_get_main_queue(), {
@@ -226,6 +231,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 }
             })
             connection.start();
+            let timer = NSTimer.scheduledTimerWithTimeInterval(4.0, target: self, selector: Selector("timeout"), userInfo: nil, repeats: false);
         } else {
             self.messageFrame.removeFromSuperview()
             //Process offline login
@@ -269,7 +275,11 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             }
         }
     }
-    
+    func timeout() {
+        if (profdl == false && frdl == false) {
+            //Delete
+        }
+    }
     func progressBarDisplayer(msg:String, _ indicator:Bool ) {
         strLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 50))
         strLabel.text = msg

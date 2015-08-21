@@ -154,6 +154,7 @@ public class Reachability {
                 } else if (sendto == "Refresh") {
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Refresh_Trigger", object: self, userInfo: nil);
                 }
+            } else {
             }
         }
         task.resume()

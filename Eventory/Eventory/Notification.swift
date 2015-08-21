@@ -75,12 +75,13 @@ class Notification {
             contentBodyAsString = contentBodyAsString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
             let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
                 (data, response, error) in
+                 NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
                 if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? Dictionary<String,AnyObject>
                 {
+                   
                     if (results.count > 0) {
                         var output = [Notification]();
-                        for (var i = 0; i < results.count; i++) {
-                            let current: AnyObject? = (results as NSDictionary).valueForKey((i+1).description);
+                         for (notificationindex, current) in results {
                             let sourceid:String = ((current as? NSDictionary)?.valueForKey("sourceid")!)! as! String;
                             let interval:Double = ((current as? NSDictionary)?.valueForKey("date"))! as! Double;
                             let date:NSDate = NSDate(timeIntervalSinceNow: interval);

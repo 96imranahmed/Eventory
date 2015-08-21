@@ -31,6 +31,7 @@ class LogoutVC: UIViewController, UITableViewDelegate, UITableViewDataSource, FB
         Main.clearAll();
         var login = FBSDKLoginManager.new();
         login.logOut();
+        Globals.currentprofile=nil;
         dispatch_async(dispatch_get_main_queue(), {
             self.performSegueWithIdentifier("LogouttoLogin", sender: self);
         })

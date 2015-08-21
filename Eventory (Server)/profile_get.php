@@ -32,7 +32,7 @@ if ($safe) {
             $id = $row["id"];
             $url = $row["url"];
             $currentprofile = array("Name" => $name, "Profid" => $id, "Url" => $url);
-            array_push($output, $currentprofile);
+            $output[] = $currentprofile;
         }
         echo json_encode($output);
     } else {

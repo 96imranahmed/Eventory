@@ -11,8 +11,9 @@ function CreateNotification($type, $pdo, $targetid, $starterid, $valuein) {
         //Notify that you have been invited to a new group
         $groupname = $connection->GetNamebyId($pdo, $valuein, 1);
         $notification = strtok(($connection->GetNamebyId($pdo, $starterid, 0)), " ") . ' invited you to join ' . $groupname;
-        $params = ["sourceid" => $starterid, "date" => time(), "type" => 1, "text" => $notification, "read" => false, "data" => "groupid:".$valuein];
-        $connection->AddItemtoList($pdo, "Notifications", $targetid, "groups_pending", $params, "groupid");       
+        $params = ["sourceid" => $starterid, "date" => time(), "type" => 1, "text" => $notification, "isread" => 0, "data" => "groupid:".$valuein];
+        $connection->AddItemtoList($pdo, "Notifications", $targetid, "groups_pending", $params, "data"); 
+        echo 
         PasstoParse($targetid, $notification);
     } elseif ($type == 2) {
         //Notify that a person has accepted your group join request
