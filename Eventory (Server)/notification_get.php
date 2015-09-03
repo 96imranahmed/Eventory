@@ -1,6 +1,12 @@
 <?php
 
+function sortbydate($a, $b) {
+    return $a["date"] - $b["date"];
+}
+
 $safe = true;
+$safelimit = true;
+$haslimit = true;
 include 'connect.php';
 $connection = new Connect();
 $connectinfo = $connection->GetConnection();
@@ -14,15 +20,27 @@ if (array_key_exists('token', $_POST)) {
 } else {
     $safe = false;
 }
+if (array_key_exists('limit', $_POST)) {
+    $limitnumber = filter_input(INPUT_POST, 'limit');
+} else {
+    $haslimit = false;
+}
+if (array_key_exists('page', $_POST)) {
+    $limitpage = filter_input(INPUT_POST, 'page');
+} else {
+    $safelimit = false;
+}
 if ($safe) {
+    //Possibly check if the name is correct - invited you to join x but x might be changed to y in that time!
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
         $notificationarray = [];
         $row = $connection->GetRow($connectinfo, "Notifications", $profid);
         $count = intval(count($row)) / 2;
+        $readstring = [];
         for ($i = 2; $i < $count; $i++) {
-            $name = array_keys($row)[2 * $i + 1];
-            $value = $row[$name];
+            $name = array_keys($row)[$i * 2];
+            $value = $row[$i];
             if ($value == null || $value == "") {
                 
             } else {
@@ -45,44 +63,33 @@ if ($safe) {
                                 $notificationarray[] = $add[i];
                             }
                         } else {
-                            $notificationarray[] = unserialize($add);
+                            $notificationarray[] = ($add);
                         }
                     }
-                }
-                $prepsql = $connectinfo->prepare("SELECT * FROM Notifications WHERE id = '$profid' LIMIT 1");
-                $prepsql->execute();
-                $currentrow = $prepsql->fetch();
-                $current = $currentrow[$name];
-                if ($current == null || $current == "") {
-                    $postsql = $connectinfo->prepare("UPDATE Notifications SET $name = null WHERE id=$profid");
-                    $postsql->execute();
-                } else {
-                    var_dump($current);
-                    $currentarray = unserialize($current);
-                    var_dump($currentarray);
-                    if (is_array($currentarray)) {
-                        echo("Is Array    ");
-                        if ($currentarray["isread"] == null) {
-                            echo("Is null    ");
-                            for ($i = 0; $i < count($currentarray); $i++) {
-                                $loop = $currentarray[i];
-                                $loop["isread"] = 1;
-                                $currentarray[i] = $loop;
-                            }
-                        } else {
-                            $currentarray["isread"] = 1;
-                        }
-                    } else {
-                        echo("Is not array");
-                    }
-                    //echo($current);
-                    $current = serialize($currentarray);
-                    //$postsql = $connectinfo->prepare("UPDATE Notifications SET $name='$current' WHERE id=$profid");
-                    //$postsql->execute();
                 }
             }
         }
-        echo json_encode($notificationarray);
+        usort($notificationarray, "sortbydate");
+        if ($haslimit) {
+            if ($safelimit) {
+                try {
+                    $limitstart = $limitnumber * $limitpage;
+                    $output = array_slice($notificationarray[0], $limitstart, $limitnumber, true);
+                    $sendout = [$output];
+                    array_unshift($output, ["numberunseen" => $row["numberunseen"]]);
+                    echo json_encode($output);
+                } catch (Exception $e) {
+                    array_unshift($notificationarray, ["numberunseen" => $row["numberunseen"]]);
+                    echo json_encode($notificationarray);
+                }
+            } else {
+                array_unshift($notificationarray, ["numberunseen" => $row["numberunseen"]]);
+                echo json_encode($notificationarray);
+            }
+        } else {
+            array_unshift($notificationarray, ["numberunseen" => $row["numberunseen"]]);
+            echo json_encode($notificationarray);
+        }
     } else {
         echo "Error - authorization mismatch";
     }

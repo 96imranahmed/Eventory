@@ -13,16 +13,23 @@ import SystemConfiguration;
 class Main {
     var currentprofile:Profile?;
     var currentgroup:Group?;
-    init (currentprofile:Profile, currentgroup:Group) {
+    var notifications:[Notification];
+    var unreadnotificationcount:Int;
+    init (currentprofile:Profile, currentgroup:Group, notifications:[Notification], unreadnotificationcount:Int) {
         self.currentprofile = currentprofile;
         self.currentgroup = currentgroup;
+        self.notifications = notifications;
+        self.unreadnotificationcount = unreadnotificationcount;
+
     }
     class func clearAll() {
         Profile.ClearProfiles();
         Group.ClearGroups();
     }
 }
-
+public struct Constants {
+    static let notificationloadlimit = 10;
+}
 public class Schemes
 {
     class func returnColor(name: String, alpha: CGFloat) -> UIColor {
@@ -134,7 +141,7 @@ public class Reachability {
         request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
             (data, response, error) in
-            NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
+            //NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
             //let subString = (response.description as NSString).containsString("Error") - Checks for error
             if let sendto = customselector {
                 if (sendto == "MainGroupLoad") {
@@ -161,6 +168,7 @@ public class Reachability {
     }
     
 }
+var demonotif = [];
 var demoprofile = Profile(name: "", url: "", profid: "", imagedata: nil, save: false);
 var demogroup = Group(name: "", groupid: "", memberstring: "", invitedstring: "", isadmin: false, save: false);
-var Globals = Main(currentprofile: demoprofile, currentgroup: demogroup);
+var Globals = Main(currentprofile: demoprofile, currentgroup: demogroup,notifications: demonotif as! [Notification], unreadnotificationcount: 0);

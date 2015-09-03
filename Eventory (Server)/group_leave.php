@@ -41,7 +41,7 @@ if ($safe) {
                             $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_accepted", $groupid);
                             $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_declined", $groupid);
                             $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_left", $groupid);
-                            $connection->RemoveItemfromList($connectinfo, "Notifications", $profid, "groups_pending", "groupid:"+$groupid, "data");
+                            $connection->RemoveItemfromList($connectinfo, "Notifications", $invitee, "groups_pending", "groupid:".strval($groupid), "data");
                             
                         }
                     }

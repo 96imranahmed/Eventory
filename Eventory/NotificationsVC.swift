@@ -12,22 +12,31 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     @IBOutlet weak var notificationtable: UITableView!
     //Cell swipe
     let refreshControl = UIRefreshControl()
+    var activityIndicator = UIActivityIndicatorView();
     var preoffset = 0;
     var lastOffset: CGPoint = CGPointMake(0, 0);
     var lastOffsetCapture: NSTimeInterval = 0.0;
     var isScrollingFast: Bool = false;
     var notificationlist:[Notification] = [];
     var cellcheck = ["Disabled" : false, "Index" : NSIndexPath(forRow: 0, inSection: 0)]
+    var pagenumber = 0;
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Notifications"
+        notificationlist = Globals.notifications;
         notificationtable.dataSource = self;
         notificationtable.delegate = self;
         refreshControl.addTarget(self, action: "refresh:", forControlEvents: .ValueChanged)
         refreshControl.attributedTitle = NSAttributedString(string: "Refreshing...");
         notificationtable.addSubview(refreshControl)
         if (Reachability.isConnectedToNetwork()) {
-            Notification.getNotifications();
+            Notification.getNotifications(Constants.notificationloadlimit, page: 0);
+            pagenumber++;
+            activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.White)
+            activityIndicator.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+            activityIndicator.center = notificationtable.center;
+            activityIndicator.startAnimating()
+            notificationtable.addSubview(activityIndicator)
         } else {
             RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
         }
@@ -47,14 +56,16 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     //MARK: Update/Refresh functions
     func refreshnotifications(notification: NSNotification) {
-        let notif = notification.userInfo!["Notifications"] as! [Notification]!;
-        if (notif.count>0) {
-            notificationlist = notif;
+        if (Globals.notifications.count>0) {
+            notificationlist = Globals.notifications;
             notificationlist.sort({($0.notificationtype! < $1.notificationtype)});
             dispatch_async(dispatch_get_main_queue()){
                 UIView.transitionWithView(self.notificationtable, duration:0.1, options: UIViewAnimationOptions.TransitionCrossDissolve,
                     animations: {
                         self.notificationtable.reloadData();
+                        if self.activityIndicator.isAnimating() {
+                        self.activityIndicator.stopAnimating();
+                        }
                     },
                     completion: nil)
             }
@@ -90,13 +101,12 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     func autorefresh(notification: NSNotification) {
         if (Reachability.isConnectedToNetwork()) {
-            Notification.getNotifications();
+            Notification.getNotifications(Constants.notificationloadlimit, page: 0);
         }
     }
-
     func refresh(refreshControl: UIRefreshControl) {
         if (Reachability.isConnectedToNetwork()) {
-            Notification.getNotifications();
+            Notification.getNotifications(Constants.notificationloadlimit, page: 0);
         } else {
             RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
         }
@@ -120,6 +130,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         let currentnotification = notificationlist[indexPath.row];
         var cell = tableView.dequeueReusableCellWithIdentifier("DecisionCell") as! NotificationDecisionCell;
         cell.notification = currentnotification;
+        cell.picture.image = Profile.getPicturefromCoreData(currentnotification.sourceID!);
         cell.unseen = true;
         cell.title.text = currentnotification.text;
         cell.setDecisionLayout(currentnotification.notificationtype)
@@ -171,7 +182,8 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             if (procnotif.notificationtype == 1) {
                 if let text = procnotif.notifdata {
                     let pos = text.rangeOfString(":", options: .BackwardsSearch)?.startIndex
-                    let groupidpost = text.substringFromIndex(pos!)
+                    var groupidpost = text.substringFromIndex(pos!)
+                    groupidpost = dropFirst(groupidpost);
                     var params = Dictionary<String,AnyObject>();
                     params["accepted"] = accepted;
                     params["groupid"] = groupidpost;

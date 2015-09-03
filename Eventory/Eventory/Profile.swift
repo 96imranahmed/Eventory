@@ -177,7 +177,7 @@ class Profile : NSManagedObject {
         return friendid;
     }
     //MARK: Image Download Methods
-    class func downloadUnknownPictureAsync(input:Profile, membersfind:Bool) {
+    class func downloadUnknownPictureAsync(input:Profile, membersfind:Bool) { //Downloads an unknown profile image based on supplied Profile
         let imageRequest: NSURLRequest = NSURLRequest(URL: NSURL(string: input.url!)!);
         let queue: NSOperationQueue = NSOperationQueue.mainQueue()
         NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
@@ -193,7 +193,7 @@ class Profile : NSManagedObject {
             }
         })
     }
-    class func downloadPictureAsync(URL:String?, id:String?) {
+    class func downloadPictureAsync(URL:String?, id:String?) { //Downloads Profile Picture (doesn't return anything)
         let imageRequest: NSURLRequest = NSURLRequest(URL: NSURL(string: URL!)!);
         let queue: NSOperationQueue = NSOperationQueue.mainQueue()
         NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
@@ -215,6 +215,30 @@ class Profile : NSManagedObject {
                 }
             }
         })
+    }
+    class func getPicturefromCoreData(id: String!) -> UIImage {
+        if let inid = id {
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            let ctx = appDelegate.managedObjectContext
+            let fetchRequest = NSFetchRequest(entityName: "Profile");
+            fetchRequest.fetchLimit = 1;
+            var formatted = "profid == '" + inid + "'";
+            let predicate = NSPredicate(format: formatted);
+            fetchRequest.predicate = predicate
+            let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile];
+            if (fetchResults!.count>0){
+                let imageprof:Profile = fetchResults![0];
+                if let image = UIImage(data: imageprof.imagedata!) {
+                    return image;
+                } else {
+                    return (UIImage(named: "unknownprofile.png"))!;
+                }
+            } else {
+                return (UIImage(named: "unknownprofile.png"))!;
+            }
+        } else {
+            return (UIImage(named: "unknownprofile.png"))!;
+        }
     }
     
     

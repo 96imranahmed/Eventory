@@ -21,6 +21,7 @@ class ProfileCell: UITableViewCell {
         }
         OfflineProfilePicture.layer.masksToBounds = true;
         OfflineProfilePicture.layer.cornerRadius = 40;
+        OfflineProfilePicture.image = UIImage(named: "unkownprofile.png")
         self.addSubview(OfflineProfilePicture);
         self.addSubview(LoginButton)
         // Initialization code

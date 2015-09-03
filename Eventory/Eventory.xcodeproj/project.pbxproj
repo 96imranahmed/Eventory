@@ -33,6 +33,8 @@
 		D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE181B54385900F3151A /* LogoutVC.swift */; };
 		D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE1A1B54515900F3151A /* ProfileCell.swift */; };
 		D89DBE1E1B55C73000F3151A /* FriendListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE1D1B55C73000F3151A /* FriendListVC.swift */; };
+		D8A2E4091B8FDB21006A9A22 /* RKNotificationHub.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A2E4081B8FDB21006A9A22 /* RKNotificationHub.m */; };
+		D8A2E40B1B8FDF10006A9A22 /* earth.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A2E40A1B8FDF10006A9A22 /* earth.png */; };
 		D8A36F4E1B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F431B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m */; };
 		D8A36F4F1B5DA1F00026C3A0 /* SWCellScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F451B5DA1F00026C3A0 /* SWCellScrollView.m */; };
 		D8A36F501B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A36F471B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m */; };
@@ -96,6 +98,9 @@
 		D89DBE181B54385900F3151A /* LogoutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoutVC.swift; sourceTree = "<group>"; };
 		D89DBE1A1B54515900F3151A /* ProfileCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		D89DBE1D1B55C73000F3151A /* FriendListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendListVC.swift; sourceTree = "<group>"; };
+		D8A2E4071B8FDB21006A9A22 /* RKNotificationHub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKNotificationHub.h; sourceTree = "<group>"; };
+		D8A2E4081B8FDB21006A9A22 /* RKNotificationHub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKNotificationHub.m; sourceTree = "<group>"; };
+		D8A2E40A1B8FDF10006A9A22 /* earth.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = earth.png; sourceTree = "<group>"; };
 		D8A36F421B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+SWUtilityButtons.h"; sourceTree = "<group>"; };
 		D8A36F431B5DA1F00026C3A0 /* NSMutableArray+SWUtilityButtons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+SWUtilityButtons.m"; sourceTree = "<group>"; };
 		D8A36F441B5DA1F00026C3A0 /* SWCellScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWCellScrollView.h; sourceTree = "<group>"; };
@@ -162,6 +167,8 @@
 				D8F2F89C1B684F3900D3DA8E /* MarqueeLabel.h */,
 				D88747571B583A9000373791 /* RKDropdownAlert.h */,
 				D88747581B583A9000373791 /* RKDropdownAlert.m */,
+				D8A2E4071B8FDB21006A9A22 /* RKNotificationHub.h */,
+				D8A2E4081B8FDB21006A9A22 /* RKNotificationHub.m */,
 				D82E8FCE1B4B1355007A747F /* Locksmith.swift */,
 				D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */,
 			);
@@ -236,6 +243,7 @@
 		D855B72C1B48A4F600E85674 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				D8A2E40A1B8FDF10006A9A22 /* earth.png */,
 				D8F2F8A21B6998C500D3DA8E /* bell.png */,
 				D8A36F621B5EDCE70026C3A0 /* group_add.png */,
 				D8A36F631B5EDCE70026C3A0 /* group_list.png */,
@@ -389,6 +397,7 @@
 				D84F14A81B582CF30081B5E8 /* unknownprofile.png in Resources */,
 				D88EF3521B76C27500F7197D /* star.png in Resources */,
 				D8A36F5E1B5DAF3F0026C3A0 /* sub.png in Resources */,
+				D8A2E40B1B8FDF10006A9A22 /* earth.png in Resources */,
 				D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */,
 				D8F2F8A31B6998C500D3DA8E /* bell.png in Resources */,
 				D855B70F1B489D8400E85674 /* Images.xcassets in Resources */,
@@ -423,6 +432,7 @@
 				D8A36F501B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m in Sources */,
 				D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */,
 				D8A36F511B5DA1F00026C3A0 /* SWTableViewCell.m in Sources */,
+				D8A2E4091B8FDB21006A9A22 /* RKNotificationHub.m in Sources */,
 				D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */,
 				D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */,
 				D8F2F89A1B66E76A00D3DA8E /* GroupCellEmpty.swift in Sources */,

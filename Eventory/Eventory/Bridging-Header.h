@@ -18,4 +18,5 @@
 #import "NSMutableArray+SWUtilityButtons.h"
 #import "SWUtilityButtonView.h"
 #import "MarqueeLabel.h"
+#import "RKNotificationHub.h"
 #endif

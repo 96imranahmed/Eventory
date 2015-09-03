@@ -1,10 +1,9 @@
 <?php
-
-echo "Blah";
-$currentarray = [["Name" => "Bob", "Age" => 21], ["Name" => "Bill", "Age" => 22], ["Name" => "Jason", "Age" => 23]];
-$item = "Jason";
+$currentarray = unserialize("a:2:{i:0;a:6:{s:8:\"sourceid\";s:17:\"10200598208075829\";s:4:\"date\";i:1440280906;s:4:\"type\";i:1;s:4:\"text\";s:29:\"Lisa invited you to join Blah\";s:6:\"isread\";i:0;s:4:\"data\";s:10:\"groupid:11\";}i:1;a:6:{s:8:\"sourceid\";s:17:\"10200598208075829\";s:4:\"date\";i:1440280993;s:4:\"type\";i:1;s:4:\"text\";s:28:\"Lisa invited you to join Bro\";s:6:\"isread\";i:0;s:4:\"data\";s:10:\"groupid:12\";}}");
+$groupid = 11;
+$item = "groupid:".strval($groupid);
 $unique = true;
-$duplicateref = "Name";
+$duplicateref = "data";
 $removeindex = [];
 for ($i = 0; $i < count($currentarray); $i++) {
     $check = $currentarray[$i];

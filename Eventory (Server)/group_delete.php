@@ -22,7 +22,7 @@ if (array_key_exists('token', $_POST)) {
 if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
-        echo("groupid:"+$groupid);
+        echo("groupid:".strval($groupid));
         $row = $connection->GetRow($connectinfo, "Groups", $groupid);
         $admin = $row["starter"];
         $invitedlist = $row["people_requested"];
@@ -34,7 +34,7 @@ if ($safe) {
                     $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_accepted", $groupid);
                     $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_declined", $groupid);
                     $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_left", $groupid);
-                    $connection->RemoveItemfromList($connectinfo, "Notifications", $profid, "groups_pending", "groupid:" + $groupid, "data");
+                    $connection->RemoveItemfromList($connectinfo, "Notifications", $invitee, "groups_pending", "groupid:".strval($groupid), "data");
                 }
             }
             $sql = $connectinfo->prepare("DELETE FROM Groups WHERE id ='$groupid'");

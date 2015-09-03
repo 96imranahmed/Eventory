@@ -151,7 +151,7 @@
                     </navigationItem>
                     <connections>
                         <segue destination="ylD-dX-pSi" kind="show" identifier="LandingtoLogout" id="Is9-hK-oNY"/>
-                        <segue destination="oIq-3D-YrW" kind="show" identifier="LandingtoNotifications" id="90c-FC-gzZ"/>
+                        <segue destination="oIq-3D-YrW" kind="show" identifier="LandingtoNotifications" id="HgS-N9-Tkg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2c5-rq-cYh" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -213,27 +213,6 @@
                                                     <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap for more Info!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dHP-7Y-6AH">
-                                                    <rect key="frame" x="243" y="59" width="113.5" height="17"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notification" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z83-Vv-XoG">
-                                                    <rect key="frame" x="66" y="23" width="502" height="21"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="21" id="7aI-Cv-1Rw"/>
-                                                        <constraint firstAttribute="height" constant="21" id="LZ2-4n-4WC"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="21"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                    <variation key="default">
-                                                        <mask key="constraints">
-                                                            <exclude reference="7aI-Cv-1Rw"/>
-                                                        </mask>
-                                                    </variation>
-                                                </label>
                                                 <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.png" translatesAutoresizingMaskIntoConstraints="NO" id="yjD-EP-ctw">
                                                     <rect key="frame" x="576" y="26" width="16" height="16"/>
                                                     <constraints>
@@ -241,6 +220,29 @@
                                                         <constraint firstAttribute="width" constant="16" id="h2o-7v-hfs"/>
                                                     </constraints>
                                                 </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notification" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z83-Vv-XoG" customClass="MarqueeLabel">
+                                                    <rect key="frame" x="66" y="23" width="502" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="7aI-Cv-1Rw"/>
+                                                        <constraint firstAttribute="height" constant="21" id="LZ2-4n-4WC"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="scrollDuration">
+                                                            <real key="value" value="2"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="rate">
+                                                            <real key="value" value="0.0"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="7aI-Cv-1Rw"/>
+                                                        </mask>
+                                                    </variation>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="z83-Vv-XoG" firstAttribute="trailing" secondItem="FdH-Ll-h7z" secondAttribute="trailingMargin" constant="-24" id="C6n-y0-b9N"/>
@@ -249,9 +251,7 @@
                                                 <constraint firstAttribute="bottomMargin" secondItem="BU9-f9-7Lb" secondAttribute="bottom" id="M6u-NS-otX"/>
                                                 <constraint firstItem="iqm-Pz-YCz" firstAttribute="leading" secondItem="FdH-Ll-h7z" secondAttribute="leadingMargin" id="Qgt-p4-Cmb"/>
                                                 <constraint firstItem="iBU-4t-0HF" firstAttribute="top" secondItem="iqm-Pz-YCz" secondAttribute="bottom" constant="4.5" id="VJ1-4r-qd5"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="dHP-7Y-6AH" secondAttribute="bottom" id="WoJ-1W-fw3"/>
                                                 <constraint firstItem="BU9-f9-7Lb" firstAttribute="trailing" secondItem="FdH-Ll-h7z" secondAttribute="trailingMargin" id="cnx-Ui-zNq"/>
-                                                <constraint firstAttribute="centerX" secondItem="dHP-7Y-6AH" secondAttribute="centerX" id="id4-NF-rKZ"/>
                                                 <constraint firstItem="z83-Vv-XoG" firstAttribute="top" secondItem="FdH-Ll-h7z" secondAttribute="topMargin" constant="15" id="jjx-op-1Sp"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="iBU-4t-0HF" secondAttribute="bottom" id="kHS-cF-4yg"/>
                                                 <constraint firstItem="z83-Vv-XoG" firstAttribute="leading" secondItem="iqm-Pz-YCz" secondAttribute="trailing" constant="8" id="lD6-Jg-vp5"/>

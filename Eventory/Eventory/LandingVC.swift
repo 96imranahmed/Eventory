@@ -1,6 +1,6 @@
 //
 //  LandingVC.swift
-//  
+//
 //
 //  Created by Imran Ahmed on 12/07/2015.
 //
@@ -10,18 +10,38 @@ import UIKit
 import CoreData
 
 class LandingVC: UIViewController, UIGestureRecognizerDelegate {
+    @IBOutlet var hub: RKNotificationHub!;
     var picbutton: UIImageView! = UIImageView(frame: CGRectMake(0, 1, 30, 30));
     var navprofilelabel: UILabel! = UILabel(frame: CGRectMake(0, 6, 214, 20));
     var navtitle: UIView! = UIView(frame: CGRectMake(0, 0, 0, 0));
     override func viewDidLoad() {
         super.viewDidLoad()
-        //Create button
+        //Create notification page
+        let nview: UIView = UIView(frame: CGRectMake(0, 0, 25, 25));
+        let nimage: UIButton = UIButton(frame: CGRectMake(0, 0, 25, 25));
+        nimage.setBackgroundImage(imageResize(UIImage(named: "bell.png")!, sizeChange: CGSizeMake(25, 25)).imageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate), forState: UIControlState.Normal);
+        nimage.tintColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1);
+        nimage.addTarget(self, action: "NotificationsDidTap:", forControlEvents: UIControlEvents.TouchDown);
+        nview.addSubview(nimage);
+        dispatch_async(dispatch_get_main_queue(), {
+            self.hub = RKNotificationHub(view: nview);
+            self.hub.moveCircleByX(0, y: -5);
+            self.hub.scaleCircleSizeBy(0.6);
+        })
+        var notificationbutton:UIBarButtonItem = UIBarButtonItem(customView: nview);
+        self.navigationItem.rightBarButtonItem = notificationbutton;
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "PPUpdated", name: "PPUpdated", object: nil);
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshnotifications:", name: "Eventory_Notifications_Done", object: nil)
+        //Load user profile
         let image = Globals.currentprofile?.imagedata
-        if (image?.length == 0) {
+        if (Globals.currentprofile == nil) {
             picbutton.image = UIImage(named: "unkownprofile.png")
         } else {
+            if ((image) != nil) {
             picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
+            } else {
+            picbutton.image = UIImage(named: "unkownprofile.png")
+            }
         }
         picbutton.layer.masksToBounds = true;
         picbutton.layer.cornerRadius = picbutton.frame.height/2;
@@ -29,7 +49,7 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         tap.delegate = self
         navtitle.addGestureRecognizer(tap)
         if let name = Globals.currentprofile?.name {
-        navprofilelabel.text = getTitle() +  ", " + getFirstName(name) +  "!";
+            navprofilelabel.text = getTitle() +  ", " + getFirstName(name) +  "!";
         } else {
             NSLog("Forced logout - Profile error?");
             dispatch_async(dispatch_get_main_queue(), {
@@ -45,14 +65,20 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         navtitle.center = CGPointMake(self.view.center.x, 16.5);
         navtitle.autoresizesSubviews = false;
         self.navigationItem.titleView = navtitle;
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: imageResize(UIImage(named: "bell.png")!, sizeChange: CGSizeMake(25, 25)), style: UIBarButtonItemStyle.Plain, target: self, action: "NotificationsDidTap:");
+        //self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: imageResize(UIImage(named: "bell.png")!, sizeChange: CGSizeMake(25, 25)), style: UIBarButtonItemStyle.Plain, target: self, action: "NotificationsDidTap:");
         let frame = navtitle.frame;
         let center = navtitle.center;
+        var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "animateNotifications", userInfo: nil, repeats: true);
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(true);
     }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
     func imageResize (imageObj:UIImage, sizeChange:CGSize)-> UIImage{
         let hasAlpha = true;
         let scale: CGFloat = 0.0 // Automatically use scale factor of main screen
@@ -61,30 +87,46 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
         return scaledImage
     }
+    
+    //MARK: Refresh functions
+    func animateNotifications() {
+        //NSLog("Refreshed with count: " + hub.count.description)
+        dispatch_async(dispatch_get_main_queue(), {
+        self.hub.bump();
+        })
+    }
     func PPUpdated () {
         picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
     }
+    func refreshnotifications(notification: NSNotification) {
+        let count = Globals.unreadnotificationcount;
+        dispatch_async(dispatch_get_main_queue(), {
+            self.hub.decrementBy(self.hub.count)
+            self.hub.incrementBy(UInt(count));
+            self.hub.pop();
+        })
+    }
+    
+    //MARK: Segue Links
     func ProfileViewLoad (sender: UITapGestureRecognizer) {
         dispatch_async(dispatch_get_main_queue(), {
             self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
         })
     }
+    
     func NotificationsDidTap(sender: AnyObject) {
         dispatch_async(dispatch_get_main_queue(), {
             self.performSegueWithIdentifier("LandingtoNotifications", sender: nil);
         })
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
+    
+    //MARK: String functions
     func getFirstName(name: String) -> String {
         var fullNameArr = split(name) {$0 == " "}
         return fullNameArr[0]
     }
-
+    
     func getTitle() -> String {
         var now:NSDate = NSDate();
         var possiblelists:[String] = ["Hi", "Howdy", "Hey", "Hello", "Heya", "Greetings"];
@@ -107,5 +149,5 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         var random = Int(arc4random_uniform(UInt32(possiblelists.count)))
         return possiblelists[random];
     }
- 
+    
 }

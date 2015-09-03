@@ -11,7 +11,7 @@ import UIKit
 class NotificationDecisionCell: SWTableViewCell {
     var notification: Notification = Notification(type: 0, sourceID: nil, decided: nil, text: "", read: false, notifdata: nil, date: NSDate(timeIntervalSinceNow: 0));
     var unseen: Bool = false;
-    @IBOutlet weak var title: UILabel!
+    @IBOutlet weak var title: MarqueeLabel!
     @IBOutlet weak var picture: UIImageView!
     @IBOutlet weak var yeslabel: UILabel!
     @IBOutlet weak var nolabel: UILabel!
@@ -19,6 +19,9 @@ class NotificationDecisionCell: SWTableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         picture.image = UIImage(named: "unknownprofile.png");
+        picture.layer.masksToBounds = true;
+        picture.layer.cornerRadius = 25;
+        title.scrollDuration = 2;
         // Initialization code
     }
     
@@ -34,14 +37,14 @@ class NotificationDecisionCell: SWTableViewCell {
             var right:NSMutableArray = NSMutableArray();
             var left:NSMutableArray = NSMutableArray();
             var imagesize:CGSize = CGSizeMake(20,20);
-            if check == 0 {
+            if check == 1 {
                 left.sw_addUtilityButtonWithColor(Schemes.returnColor("Nephritis", alpha: 1.0), title: "Accept >");
                 right.sw_addUtilityButtonWithColor(Schemes.returnColor("Alizarin", alpha: 1.0), title: "< Decline");
                 yeslabel.text = "Accept >";
                 yeslabel.textColor = Schemes.returnColor("Nephritis", alpha: 1.0)
                 nolabel.text = "< Decline";
                 nolabel.textColor = Schemes.returnColor("Alizarin", alpha: 1.0);
-            } else if check == 1 {
+            } else if check == 0 {
                 left.sw_addUtilityButtonWithColor(Schemes.returnColor("Nephritis", alpha: 1.0), title: "Follow >");
                 right.sw_addUtilityButtonWithColor(Schemes.returnColor("Carrot", alpha: 1.0), title: "< Dismiss");
                 yeslabel.text = "Follow >";

@@ -211,7 +211,17 @@ class Connect {
         $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen='$current' WHERE id=$id");
         $postsql->execute();
     }
-
+    public function DecrementNotificationCount($pdo, $id, $count) {
+        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
+        $prepsql->execute();
+        $currentrow = $prepsql->fetch();
+        $current = intval($currentrow["numberunseen"]) - $count;
+        if ($current < 0) {
+            $current = 0;
+        }
+        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen='$current' WHERE id=$id");
+        $postsql->execute();
+    }
     //Add dictionary to list
     public function AddItemtoList($pdo, $tablename, $id, $column, $value, $duplicateref) {
         $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
@@ -251,6 +261,7 @@ class Connect {
         $prepsql->execute();
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
+        $decrementcount = 0;
         if ($current == null || $current == "") {
             $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
             $postsql->execute();
@@ -261,13 +272,16 @@ class Connect {
                 $check = $currentarray[$i];
                 if ($item == $check[$duplicateref]) {
                     $removeindex[] = $i;
+                    if ($check["isread"] == 0) {
+                        $decrementcount++;
+                    }
                 }
             }
             for ($j = 0; $j < count($removeindex); $j++) {
                 unset($currentarray[$removeindex[$j]-$j]);
-                if ($tablename == "Notifications") {
-                    $this->DecrementNotification($pdo, $id);
-                }
+            }
+            if ($tablename == "Notifications") {
+                    $this->DecrementNotificationCount($pdo, $id, $decrementcount);
             }
             if (count($currentarray) < 1) {
                 $current = null;

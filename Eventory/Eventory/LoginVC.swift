@@ -171,8 +171,8 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         let request = FBSDKGraphRequest(graphPath: "/me?fields=id,name,picture.width(150).height(150)", parameters: nil);
         let connection = FBSDKGraphRequestConnection();
         connection.addRequest(request, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
-            self.profdl = true;
             if (error==nil) {
+                self.profdl = true;
                 var id: NSString? = (result as! NSDictionary).valueForKey("id") as? NSString;
                 var namepost: NSString? = (result as! NSDictionary).valueForKey("name") as? NSString;
                 var profilepicture:AnyObject? = (result as! NSDictionary).valueForKey("picture");
@@ -201,8 +201,8 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             let friendrequest = FBSDKGraphRequest(graphPath: "/me?fields=friends.limit(5000)%7Bpicture.width(150).height(150),name%7D", parameters: parameters, HTTPMethod: "POST");
             connection.addRequest(friendrequest, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
                 //Get friends
-                self.frdl = true;
                 if (result != nil) {
+                    self.frdl = true;
                     Main.clearAll();
                     var friendid = Profile.saveFriendstoCoreData(result);
                     var params = Dictionary<String, AnyObject>();
@@ -214,15 +214,13 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     paramstwo["type"] = "0";
                     Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad")
                 }
-                //Upload values to Eventory
                 self.messageFrame.removeFromSuperview()
                 (UIApplication.sharedApplication().delegate as! AppDelegate).saveContext();
                 self.canproceed = true;
-                self.frdl = false;
-                self.profdl = false
                 if (self.isViewLoaded()) {
                     if (FBSDKProfile.currentProfile().name != nil) {
                         dispatch_async(dispatch_get_main_queue(), {
+                            Notification.getNotifications(Constants.notificationloadlimit, page: 0);
                             self.performSegueWithIdentifier("LogintoLanding", sender: self);
                         })
                     } else {
@@ -277,7 +275,12 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     }
     func timeout() {
         if (profdl == false && frdl == false) {
-            //Delete
+            NSLog("Manual Login");
+            let profiletosync:Profile = Profile.fetchProfileforID(FBSDKAccessToken.currentAccessToken().userID);
+                Globals.currentprofile = profiletosync;
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.performSegueWithIdentifier("LogintoLanding", sender: self);
+                })
         }
     }
     func progressBarDisplayer(msg:String, _ indicator:Bool ) {
