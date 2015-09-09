@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -479,9 +479,18 @@
                     </view>
                     <connections>
                         <outlet property="friendview" destination="uhl-5J-aFg" id="GhF-eq-6bg"/>
+                        <outlet property="searchDisplayController" destination="hJg-os-pMA" id="mf2-5z-It2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zTz-Ob-V8l" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="hJg-os-pMA">
+                    <connections>
+                        <outlet property="delegate" destination="lCv-h3-Goc" id="8K4-59-B3v"/>
+                        <outlet property="searchContentsController" destination="lCv-h3-Goc" id="N3s-ZM-zFL"/>
+                        <outlet property="searchResultsDataSource" destination="lCv-h3-Goc" id="N5x-Xo-Pha"/>
+                        <outlet property="searchResultsDelegate" destination="lCv-h3-Goc" id="Pfx-x9-VWq"/>
+                    </connections>
+                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="2511" y="242"/>
         </scene>

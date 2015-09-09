@@ -82,38 +82,44 @@ class Group: NSManagedObject {
         let ctx = appDelegate.managedObjectContext
         var error: NSError?
         var grouplist:[Group!]!=[];
-        if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(outputdata!, options: nil, error: &error) as? Dictionary<String,AnyObject>
-        {
+        if outputdata?.length == 0 {
             Group.ClearGroups();
-            var currententry: Group;
-            for (grouplistindex, currentgroup) in results {
-                let name:String = ((currentgroup as? NSDictionary)?.valueForKey("Name")!)! as! String;
-                let admin:Bool = ((currentgroup as? NSDictionary)?.valueForKey("Admin")!)! as! Bool;
-                let id:String = ((currentgroup as? NSDictionary)?.valueForKey("GroupID")!)! as! String;
-                let members:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Members")!)! as! NSArray;
-                let invited:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Invited")!)! as! NSArray;
-                let memberstring = members.componentsJoinedByString(";");
-                let invitedstring = invited.componentsJoinedByString(";");
-                if (Group.CheckGroupifContains("groupid", identifier: id)) {
-                    let fetchRequest = NSFetchRequest(entityName: "Group")
-                    fetchRequest.fetchLimit = 1;
-                    let predicate = NSPredicate(format: "groupid == %@", id)
-                    fetchRequest.predicate = predicate
-                    if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Group]{
-                        currententry = fetchResults[0];
-                        ctx?.deleteObject(currententry)
+            var params:Dictionary = ["Groups":grouplist];
+            NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params);
+        } else {
+            if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(outputdata!, options: nil, error: &error) as? Dictionary<String,AnyObject>
+            {
+                Group.ClearGroups();
+                var currententry: Group;
+                for (grouplistindex, currentgroup) in results {
+                    let name:String = ((currentgroup as? NSDictionary)?.valueForKey("Name")!)! as! String;
+                    let admin:Bool = ((currentgroup as? NSDictionary)?.valueForKey("Admin")!)! as! Bool;
+                    let id:String = ((currentgroup as? NSDictionary)?.valueForKey("GroupID")!)! as! String;
+                    let members:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Members")!)! as! NSArray;
+                    let invited:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Invited")!)! as! NSArray;
+                    let memberstring = members.componentsJoinedByString(";");
+                    let invitedstring = invited.componentsJoinedByString(";");
+                    if (Group.CheckGroupifContains("groupid", identifier: id)) {
+                        let fetchRequest = NSFetchRequest(entityName: "Group")
+                        fetchRequest.fetchLimit = 1;
+                        let predicate = NSPredicate(format: "groupid == %@", id)
+                        fetchRequest.predicate = predicate
+                        if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Group]{
+                            currententry = fetchResults[0];
+                            ctx?.deleteObject(currententry)
+                            currententry = Group.createInManagedObjectContext(ctx!, name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin);
+                            grouplist.append(currententry);
+                        }
+                    } else {
                         currententry = Group.createInManagedObjectContext(ctx!, name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin);
                         grouplist.append(currententry);
                     }
-                } else {
-                    currententry = Group.createInManagedObjectContext(ctx!, name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin);
-                    grouplist.append(currententry);
                 }
+                ctx?.save(nil);
+                var params:Dictionary = ["Groups":grouplist];
+                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params);
             }
-            ctx?.save(nil);
         }
-        var params:Dictionary = ["Groups":grouplist];
-        NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params);
     }
     //MARK: Group Sort Methods
     class func SortGroups(input:[Group]!) -> [Group]! {
@@ -235,16 +241,16 @@ class Group: NSManagedObject {
                 (data, response, error) in
                 if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? Dictionary<String,AnyObject>
                 {
-                let name:String = results["Name"] as! String;
-                let admin:Bool = results["Admin"] as! Bool;
-                let id:String = results["GroupID"] as! String;
-                let members:NSArray = results["Members"] as! NSArray;
-                let invited:NSArray = results["Invited"] as! NSArray;
-                let memberstring = members.componentsJoinedByString(";");
-                let invitedstring = invited.componentsJoinedByString(";");
-                var params = Dictionary<String,AnyObject>();
-                params["Group"] = Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false);
-                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Single_Done", object: self, userInfo: params);
+                    let name:String = results["Name"] as! String;
+                    let admin:Bool = results["Admin"] as! Bool;
+                    let id:String = results["GroupID"] as! String;
+                    let members:NSArray = results["Members"] as! NSArray;
+                    let invited:NSArray = results["Invited"] as! NSArray;
+                    let memberstring = members.componentsJoinedByString(";");
+                    let invitedstring = invited.componentsJoinedByString(";");
+                    var params = Dictionary<String,AnyObject>();
+                    params["Group"] = Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false);
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Single_Done", object: self, userInfo: params);
                 }
             }
             task.resume()
@@ -284,8 +290,8 @@ class Group: NSManagedObject {
                             imagearray.append(UIImage(named: "unknownprofile.png")!);
                         } else {
                             if (actualimage[i].length > 0) {
-                            var image:UIImage? = UIImage(data: actualimage[i]);
-                            imagearray.append(UIImage(data: actualimage[i])!);
+                                var image:UIImage? = UIImage(data: actualimage[i]);
+                                imagearray.append(UIImage(data: actualimage[i])!);
                             } else {
                                 imagearray.append(UIImage(named: "unknownprofile.png")!);
                             }

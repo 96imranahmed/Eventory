@@ -209,7 +209,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     params["name"] = Globals.currentprofile!.name;
                     params["url"] = Globals.currentprofile!.url;
                     params["id"] = friendid;
-                    Reachability.postToServer("profile.php", postdata: params, customselector:nil);
+                    Reachability.postToServer("profile.php", postdata: params, customselector:"NotificationTrigger");
                     var paramstwo = Dictionary<String,AnyObject>();
                     paramstwo["type"] = "0";
                     Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad")
@@ -220,7 +220,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 if (self.isViewLoaded()) {
                     if (FBSDKProfile.currentProfile().name != nil) {
                         dispatch_async(dispatch_get_main_queue(), {
-                            Notification.getNotifications(Constants.notificationloadlimit, page: 0);
                             self.performSegueWithIdentifier("LogintoLanding", sender: self);
                         })
                     } else {

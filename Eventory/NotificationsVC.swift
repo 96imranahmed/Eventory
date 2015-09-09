@@ -20,6 +20,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     var notificationlist:[Notification] = [];
     var cellcheck = ["Disabled" : false, "Index" : NSIndexPath(forRow: 0, inSection: 0)]
     var pagenumber = 0;
+    var isUpdating:Bool = false;
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "Notifications"
@@ -32,11 +33,12 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         if (Reachability.isConnectedToNetwork()) {
             Notification.getNotifications(Constants.notificationloadlimit, page: 0);
             pagenumber++;
-            activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.White)
+            activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
             activityIndicator.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
-            activityIndicator.center = notificationtable.center;
+            activityIndicator.center = self.view.center;
+            self.view.addSubview(activityIndicator)
             activityIndicator.startAnimating()
-            notificationtable.addSubview(activityIndicator)
+            var timer = NSTimer.scheduledTimerWithTimeInterval(4, target: self, selector: "timeout", userInfo: nil, repeats: false);
         } else {
             RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
         }
@@ -60,14 +62,22 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             notificationlist = Globals.notifications;
             notificationlist.sort({($0.notificationtype! < $1.notificationtype)});
             dispatch_async(dispatch_get_main_queue()){
-                UIView.transitionWithView(self.notificationtable, duration:0.1, options: UIViewAnimationOptions.TransitionCrossDissolve,
+                UIView.transitionWithView(self.notificationtable, duration:0.0, options: UIViewAnimationOptions.TransitionCrossDissolve,
                     animations: {
-                        self.notificationtable.reloadData();
                         if self.activityIndicator.isAnimating() {
-                        self.activityIndicator.stopAnimating();
+                            self.activityIndicator.stopAnimating();
                         }
+                        self.notificationtable.reloadData();
+                        self.isUpdating = false;
                     },
                     completion: nil)
+            }
+        } else {
+            dispatch_async(dispatch_get_main_queue()){
+                if self.activityIndicator.isAnimating() {
+                    self.activityIndicator.stopAnimating();
+                }
+                self.isUpdating = false;
             }
         }
     }
@@ -99,18 +109,24 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         popover.permittedArrowDirections = UIPopoverArrowDirection.allZeros;
         presentViewController(popoverVC, animated: true, completion: nil);
     }
+    //MARK: Refresh & Timeout
+    func timeout() {
+        activityIndicator.stopAnimating();
+    }
     func autorefresh(notification: NSNotification) {
+        pagenumber = 0;
         if (Reachability.isConnectedToNetwork()) {
             Notification.getNotifications(Constants.notificationloadlimit, page: 0);
         }
+        activityIndicator.startAnimating();
     }
     func refresh(refreshControl: UIRefreshControl) {
+        pagenumber = 0;
         if (Reachability.isConnectedToNetwork()) {
             Notification.getNotifications(Constants.notificationloadlimit, page: 0);
         } else {
             RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
         }
-        refreshControl.endRefreshing();
     }
     //MARK: Table View Methods
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -137,6 +153,18 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         cell.delegate = self;
         return cell;
     }
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        let currentOffset = scrollView.contentOffset.y;
+        let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height;
+        if (maximumOffset - currentOffset <= 5.0 && isUpdating == false) || (currentOffset > maximumOffset && isUpdating == false){
+            isUpdating = true;
+            Notification.getNotifications(Constants.notificationloadlimit, page: pagenumber);
+            pagenumber++;
+            activityIndicator.startAnimating();
+            var timer = NSTimer.scheduledTimerWithTimeInterval(4, target: self, selector: "timeout", userInfo: nil, repeats: false);
+        }
+    }
+    
     //MARK: SWTableViewCell Methods
     func swipeableTableViewCell(cell: SWTableViewCell!, didScroll scrollView: UIScrollView!) {
         var currentOffset: CGPoint = scrollView.contentOffset;
@@ -179,19 +207,18 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         var animation: UITableViewRowAnimation;
         animation = UITableViewRowAnimation.Fade;
         let procnotif = notificationlist[index.row];
-            if (procnotif.notificationtype == 1) {
-                if let text = procnotif.notifdata {
-                    let pos = text.rangeOfString(":", options: .BackwardsSearch)?.startIndex
-                    var groupidpost = text.substringFromIndex(pos!)
-                    groupidpost = dropFirst(groupidpost);
-                    var params = Dictionary<String,AnyObject>();
-                    params["accepted"] = accepted;
-                    params["groupid"] = groupidpost;
-                    Reachability.postToServer("group_decision.php", postdata: params, customselector: "Refresh");
-                }
-               
+        if (procnotif.notificationtype == 1) {
+            if let text = procnotif.notifdata {
+                let pos = text.rangeOfString(":", options: .BackwardsSearch)?.startIndex
+                var groupidpost = text.substringFromIndex(pos!)
+                groupidpost = dropFirst(groupidpost);
+                var params = Dictionary<String,AnyObject>();
+                params["accepted"] = accepted;
+                params["groupid"] = groupidpost;
+                Reachability.postToServer("group_decision.php", postdata: params, customselector: "Refresh");
+            }
+            
         }
-        
         notificationlist.removeAtIndex(index.row);
         if (notificationtable.numberOfRowsInSection(index.section) == 1) {
             //Delete section

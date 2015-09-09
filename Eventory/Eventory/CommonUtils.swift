@@ -20,7 +20,7 @@ class Main {
         self.currentgroup = currentgroup;
         self.notifications = notifications;
         self.unreadnotificationcount = unreadnotificationcount;
-
+        
     }
     class func clearAll() {
         Profile.ClearProfiles();
@@ -28,7 +28,7 @@ class Main {
     }
 }
 public struct Constants {
-    static let notificationloadlimit = 10;
+    static let notificationloadlimit = 5;
 }
 public class Schemes
 {
@@ -106,14 +106,11 @@ public class Reachability {
             if let stringArray = value as? [String] {
                 for (var i=0; i<stringArray.count; i++) {
                     var newkey = (key as String) + "[" + (i.description) + "]";
-                    let sendval = stringArray[i].stringByReplacingOccurrencesOfString("&", withString: "%26");
-                    dictsend[newkey] = sendval//stringArray[i].stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())
+                    dictsend[newkey] = Reachability.escapeString(stringArray[i]);
                 }
             }
             else {
-                //var escapedval = value.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())
-                let sendval = value.stringByReplacingOccurrencesOfString("&", withString: "%26");
-                dictsend[key as String] = sendval;
+                dictsend[key as String] = Reachability.escapeString(value as! String);
             }
         }
         dictsend["profid"] = FBSDKAccessToken.currentAccessToken().userID;
@@ -131,7 +128,7 @@ public class Reachability {
                 contentBodyAsString += "&" + contentKey + "=" + dictsend[contentKey]!
             }
         }
-        contentBodyAsString = contentBodyAsString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+        
         let urlstring = URLStub + (stub);
         let url = NSURL(string: urlstring)!;
         let session = NSURLSession.sharedSession();
@@ -141,11 +138,12 @@ public class Reachability {
         request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
             (data, response, error) in
-            //NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
+            NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
             //let subString = (response.description as NSString).containsString("Error") - Checks for error
             if let sendto = customselector {
                 if (sendto == "MainGroupLoad") {
                     Group.saveGrouptoCoreData(data);
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: nil);
                 } else if (sendto == "GroupRefresh") {
                     var params = Dictionary<String,AnyObject>();
                     params["type"] = "0";
@@ -160,6 +158,8 @@ public class Reachability {
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_List_Updated", object: self, userInfo: params);
                 } else if (sendto == "Refresh") {
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Refresh_Trigger", object: self, userInfo: nil);
+                } else if (sendto == "NotificationTrigger") {
+                    Notification.getNotifications(Constants.notificationloadlimit, page: 0);
                 }
             } else {
             }
@@ -167,6 +167,18 @@ public class Reachability {
         task.resume()
     }
     
+    class func escapeString(input: String) -> String {
+        var output = input;
+        output = output.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!;
+        //output = output.stringByReplacingOccurrencesOfString("%", withString: "%25");
+        //output = output.stringByReplacingOccurrencesOfString("'", withString: "''");
+        output = output.stringByReplacingOccurrencesOfString("&", withString: "%26");
+        output = output.stringByReplacingOccurrencesOfString("+", withString: "%2B");
+        output = output.stringByReplacingOccurrencesOfString("/", withString: "%2F");
+        output = output.stringByReplacingOccurrencesOfString("?", withString: "%3F");
+        output = output.stringByReplacingOccurrencesOfString("#", withString: "%23");
+        return output;
+    }
 }
 var demonotif = [];
 var demoprofile = Profile(name: "", url: "", profid: "", imagedata: nil, save: false);
