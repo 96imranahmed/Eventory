@@ -27,7 +27,7 @@ if ($safe) {
     if ($authenticated) {
         $output = [];
         foreach ($idarray as $id) {
-            $row = $connection->GetRow($connectinfo, "Profiles", $id);
+            $row = $connection->GetRow($connectinfo, 2, $id);
             $name = $row["name"];
             $id = $row["id"];
             $url = $row["url"];

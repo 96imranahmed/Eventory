@@ -24,11 +24,15 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     var currentlyconnected:Bool = false;
     var profdl = false;
     var frdl = false;
+    var tokenupdated:Bool = false;
     //Core Data Stuff
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-    
+    override func viewWillDisappear(animated: Bool) {
+     NSNotificationCenter.defaultCenter().removeObserver(self);
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        tokenupdated = false;
         //Check whether network is running or not -> use as basis for offline mode
         if (!Reachability.isConnectedToNetwork()) {
             currentlyconnected = false;
@@ -40,7 +44,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         self.LoginButton.delegate = self;
         LoginButton.readPermissions = ["public_profile", "user_friends"]; //Add user_events if required
         LoginButton.loginBehavior = FBSDKLoginBehavior.Web;
-        NSNotificationCenter.defaultCenter().addObserver(self, selector:"observeProfileChange:", name: FBSDKProfileDidChangeNotification, object: nil);
+        NSNotificationCenter.defaultCenter().removeObserver(self);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "observeTokenChange:", name: FBSDKAccessTokenDidChangeNotification, object: nil);
         if (FBSDKProfile.currentProfile()==nil) {
             if (FBSDKAccessToken.currentAccessToken() == nil) {
@@ -65,6 +69,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         super.viewDidAppear(true);
         if (canproceed) {
             dispatch_async(dispatch_get_main_queue(), {
+                self.tokenupdated = false;
                 self.performSegueWithIdentifier("LogintoLanding", sender: self);
             })
         }
@@ -109,10 +114,9 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         }
         else {
             progressBarDisplayer("Logging In", true)
-            checkPermissions();
         }
     }
-    func observeProfileChange(notification: NSNotification?) {
+    func observeProfileChange() {
         if (FBSDKProfile.currentProfile()==nil) {
         } else {
             StatusLabel.text = "Logged in as " + FBSDKProfile.currentProfile().name;
@@ -123,7 +127,11 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     func observeTokenChange(notification: NSNotification?) {
         if ((FBSDKAccessToken.currentAccessToken())==nil) {
         } else {
-            self.observeProfileChange(nil);
+            if (tokenupdated == false) {
+            tokenupdated = true;
+            self.observeProfileChange();
+            checkPermissions();
+            }
         }
     }
     func checkPermissions() {
@@ -209,10 +217,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     params["name"] = Globals.currentprofile!.name;
                     params["url"] = Globals.currentprofile!.url;
                     params["id"] = friendid;
-                    Reachability.postToServer("profile.php", postdata: params, customselector:"NotificationTrigger");
-                    var paramstwo = Dictionary<String,AnyObject>();
-                    paramstwo["type"] = "0";
-                    Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad")
+                    Reachability.postToServer("profile.php", postdata: params, customselector:"ProfileUpdated");
                 }
                 self.messageFrame.removeFromSuperview()
                 (UIApplication.sharedApplication().delegate as! AppDelegate).saveContext();
@@ -220,6 +225,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 if (self.isViewLoaded()) {
                     if (FBSDKProfile.currentProfile().name != nil) {
                         dispatch_async(dispatch_get_main_queue(), {
+                            self.tokenupdated = false;
                             self.performSegueWithIdentifier("LogintoLanding", sender: self);
                         })
                     } else {
@@ -278,6 +284,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             let profiletosync:Profile = Profile.fetchProfileforID(FBSDKAccessToken.currentAccessToken().userID);
                 Globals.currentprofile = profiletosync;
                 dispatch_async(dispatch_get_main_queue(), {
+                    self.tokenupdated = false;
                     self.performSegueWithIdentifier("LogintoLanding", sender: self);
                 })
         }

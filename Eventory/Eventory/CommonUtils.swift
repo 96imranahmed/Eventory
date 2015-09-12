@@ -138,7 +138,7 @@ public class Reachability {
         request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
             (data, response, error) in
-            NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
+            //NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
             //let subString = (response.description as NSString).containsString("Error") - Checks for error
             if let sendto = customselector {
                 if (sendto == "MainGroupLoad") {
@@ -158,7 +158,10 @@ public class Reachability {
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_List_Updated", object: self, userInfo: params);
                 } else if (sendto == "Refresh") {
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Refresh_Trigger", object: self, userInfo: nil);
-                } else if (sendto == "NotificationTrigger") {
+                } else if (sendto == "ProfileUpdated") {
+                    var paramstwo = Dictionary<String,AnyObject>();
+                    paramstwo["type"] = "0";
+                    Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad");
                     Notification.getNotifications(Constants.notificationloadlimit, page: 0);
                 }
             } else {

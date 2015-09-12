@@ -267,7 +267,7 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                     return 1;
                 } else if (filteredGroupList.count > 0 && filteredFriendList.count == 0) {
                     return 1;
-
+                    
                 }else {
                     return 0;
                 }
@@ -555,6 +555,28 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         }
         return true
     }
+    func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+        if indexPath.section == 0 {
+            if searchController.active {
+                for (var i = 0; i<filteredGroupList.count; i++) {
+                    var index = NSIndexPath(forRow: i, inSection: 0);
+                    if (indexPath.row != index.row) {
+                        var cell: SWTableViewCell = (self.friendview.cellForRowAtIndexPath(index) as? SWTableViewCell)!
+                        cell.hideUtilityButtonsAnimated(true);
+                    }
+                }
+            } else {
+                for (var i = 0; i<GroupList.count; i++) {
+                    var index = NSIndexPath(forRow: i, inSection: 0);
+                    if (indexPath.row != index.row) {
+                        var cell: SWTableViewCell = (self.friendview.cellForRowAtIndexPath(index) as? SWTableViewCell)!
+                        cell.hideUtilityButtonsAnimated(true);
+                    }
+                }
+            }
+        }
+        return indexPath;
+    }
     //MARK: Swipeable Table View Methods
     func findFirstResponder(inView view: UIView) -> UIView? {
         for subView in view.subviews as! [UIView] {
@@ -587,6 +609,7 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             var members:[String] = (GroupList[indexpath.row].memberstring?.componentsSeparatedByString(";"))!;
             var invited:[String] = (GroupList[indexpath.row].invitedstring?.componentsSeparatedByString(";"))!;
             var height:Int;
+            //Set Size of Popup
             if (members.count>0 && invited.count>0) {
                 height = members.count*70 + invited.count*70 + 44;
             } else if (members.count>0){
@@ -594,6 +617,7 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             } else {
                 height = invited.count*70 + 22;
             }
+            height = height + 112;
             if (height > 2*((Int(self.view.center.y)-64))) {
                 height = 2*((Int(self.view.center.y)-64));
             }

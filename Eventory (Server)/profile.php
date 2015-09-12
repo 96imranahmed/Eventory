@@ -42,20 +42,20 @@ $check = $connection->TokenVerify($profid, $token);
 if ($check) {
     if ($safe) {
         try {
-            $profilecheck = $connectinfo->prepare("SELECT id from Profiles where id='$profid'");
-            $profilecheck->execute();
+            $profilecheck = $connectinfo->prepare("SELECT id from Profiles where id= :profid");
+            $profilecheck->execute(array(':profid' => $profid));
             if ($profilecheck->rowCount() >= 1) {
                 //Profile already exists
             } else {
                 //Notify friends that person has joined
                 foreach ($idarray as $id) {
-                    $connection->AddtoList($connectinfo, "Notifications", $id, "friends_new_unseen", $profid);
+                    //$connection->AddtoList($connectinfo, 1, $id, "friends_new_unseen", $profid);
                 }
             }
-            $prepsql = $connectinfo->prepare("INSERT INTO Profiles (id, name, token, url) VALUES ('$profid','$name','$token','$profurl') ON DUPLICATE KEY UPDATE name=VALUES(name), token=VALUES(token), url=VALUES(url)");
-            $prepsql->execute();
+            $prepsql = $connectinfo->prepare("INSERT INTO Profiles (id, name, token, url) VALUES (:profid,:name,:token,:profurl) ON DUPLICATE KEY UPDATE name=VALUES(name), token=VALUES(token), url=VALUES(url)");
+            $prepsql->execute(array(':profid'=>$profid, ':name'=>$name, ':token'=>$token, ':profurl'=>$profurl));
             $notifysql = $connectinfo->prepare("INSERT INTO Notifications (id, friends_new_unseen, numberunseen) VALUES ('$profid', null, 0) ON DUPLICATE KEY UPDATE id=id");
-            $notifysql->execute();
+            $notifysql->execute(array(':profid' => $profid));
         } catch (PDOException $e) {
             echo 'Error - ' . $e->GetMessage();
         }

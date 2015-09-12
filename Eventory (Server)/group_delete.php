@@ -22,8 +22,7 @@ if (array_key_exists('token', $_POST)) {
 if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
-        echo("groupid:".strval($groupid));
-        $row = $connection->GetRow($connectinfo, "Groups", $groupid);
+        $row = $connection->GetRow($connectinfo, 0, $groupid);
         $admin = $row["starter"];
         $invitedlist = $row["people_requested"];
         if ($admin == $profid) {
@@ -31,14 +30,14 @@ if ($safe) {
             if (is_array($invitedarray) || is_object($invitedarray)) {
                 foreach ($invitedarray as $invitee) {
                     //Delete all traces of the group brah!
-                    $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_accepted", $groupid);
-                    $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_declined", $groupid);
-                    $connection->RemovefromList($connectinfo, "Profiles", $invitee, "groups_left", $groupid);
-                    $connection->RemoveItemfromList($connectinfo, "Notifications", $invitee, "groups_pending", "groupid:".strval($groupid), "data");
+                    $connection->RemovefromList($connectinfo, 2, $invitee, "groups_accepted", $groupid);
+                    $connection->RemovefromList($connectinfo, 2, $invitee, "groups_declined", $groupid);
+                    $connection->RemovefromList($connectinfo, 2, $invitee, "groups_left", $groupid);
+                    $connection->RemoveItemfromList($connectinfo, 1, $invitee, "groups_pending", "groupid:".strval($groupid), "data");
                 }
             }
-            $sql = $connectinfo->prepare("DELETE FROM Groups WHERE id ='$groupid'");
-            $sql->execute();
+            $sql = $connectinfo->prepare("DELETE FROM Groups WHERE id = :groupid");
+            $sql->execute(array(':groupid' => $groupid));
         } else {
             echo "Error - non-admin cannot delete group!";
         }

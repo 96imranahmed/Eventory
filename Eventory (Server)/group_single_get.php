@@ -22,7 +22,7 @@ if (array_key_exists('groupid', $_POST)) {
 if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
-                $row = $connection->GetRow($connectinfo, "Groups", $groupid);
+                $row = $connection->GetRow($connectinfo, 0, $groupid);
                 $name = $row["name"];
                 $id = $row["id"];
                 $currentacceptedarray = explode(";", $row["people_accepted"]);

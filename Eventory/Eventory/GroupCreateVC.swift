@@ -19,7 +19,6 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     var filteredGroupList:[Group]! = [];
     var nogroups:Bool = false;
     var added:[String] = [];
-    var groupsadded:[String] = [];
     let searchController = UISearchController(searchResultsController: nil);
     var hasverifiedquit:Bool = false;
     override func viewDidLoad() {
@@ -56,7 +55,7 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         if groupname.isFirstResponder() {
             groupname.resignFirstResponder();
         }
-        if added.count > 1 {
+        if added.count > 1 || count(groupname.text) > 0 {
             if (hasverifiedquit) {
                 return true
             } else {
@@ -164,71 +163,153 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
             if groupname.isFirstResponder() {
                 groupname.resignFirstResponder();
             }
+        }
+        if (!CGRectContainsPoint(searchController.searchBar.frame, point)) {
             if searchController.searchBar.isFirstResponder() {
                 searchController.searchBar.resignFirstResponder();
             }
         }
     }
     func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+        var resigned:Bool = false;
         if groupname.isFirstResponder() {
             groupname.resignFirstResponder();
-            return nil;
+            resigned = true;
         }
         if searchController.searchBar.isFirstResponder() {
             searchController.resignFirstResponder();
-            return nil;
+            resigned = true;
         }
-        return indexPath;
+        if (resigned) {
+            return nil;
+        } else {
+            return indexPath;
+        }
     }
     func tableView(tableView: UITableView, willDeselectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+        var resigned:Bool = false;
         if groupname.isFirstResponder() {
             groupname.resignFirstResponder();
-            return nil;
+            resigned = true;
         }
         if searchController.searchBar.isFirstResponder() {
             searchController.resignFirstResponder();
-            return nil;
+            resigned = true;
         }
-        return indexPath;
+        if (resigned) {
+            return nil;
+        } else {
+            return indexPath;
+        }
+    }
+    func getsection() -> Int! {
+        if (nogroups) {
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 {
+                    return 0;
+                } else {
+                    return nil;
+                }
+            } else {
+                return 0;
+            }
+        } else  {
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 && filteredGroupList.count > 0{
+                    return 1;
+                } else if filteredFriendList.count > 0 || filteredGroupList.count > 0 {
+                    if filteredFriendList.count > 0 {
+                        return 0;
+                    } else {
+                        return nil;
+                    }
+                } else {
+                    return 0;
+                }
+            } else {
+                return 1;
+            }
+        }
+        
     }
     func cellcheck(check: Bool, profid: String) {
         if (profid != Globals.currentprofile?.profid) {
-            let section:Int;
-            if (nogroups) {
-                section = 0
-            } else {
-                section = 1
-            }
-            var currentprof:Profile? = FriendList.filter({return $0.profid == profid})[0]
-            if let cellfriend = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: find(FriendList, currentprof!)!, inSection: section)) {
-                if (check) {
-                    cellfriend.accessoryType = UITableViewCellAccessoryType.Checkmark;
+            if let section = getsection() {
+                var currentprof:Profile? = FriendList.filter({return $0.profid == profid})[0]
+                if searchController.active && count(searchController.searchBar.text) > 0 {
+                    if let cellfriend = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: find(filteredFriendList, currentprof!)!, inSection: section))
+                    {
+                        if cellfriend.tintColor != UIColor.grayColor() {
+                            if (check) {
+                                cellfriend.accessoryType = UITableViewCellAccessoryType.Checkmark;
+                            } else {
+                                cellfriend.accessoryType = UITableViewCellAccessoryType.None;
+                            }
+                            cellfriend.setSelected(check, animated: true)
+                        }
+                    }
                 } else {
-                    cellfriend.accessoryType = UITableViewCellAccessoryType.None;
+                    if let cellfriend = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: find(FriendList, currentprof!)!, inSection: section))
+                    {
+                        if cellfriend.tintColor != UIColor.grayColor() {
+                            if (check) {
+                                cellfriend.accessoryType = UITableViewCellAccessoryType.Checkmark;
+                            } else {
+                                cellfriend.accessoryType = UITableViewCellAccessoryType.None;
+                            }
+                            cellfriend.setSelected(check, animated: true)
+                        }
+                    }
                 }
-                cellfriend.setSelected(check, animated: true)
             }
         }
     }
     func groupcheck() {
         if (!nogroups) {
-            for (var i = 0 ; i < GroupList.count; i++ ) {
-                var combined:[String] = added;
-                var members:[String] = split(memberstring) {$0 == ";"}
-                combined.extend(members);
-                let combinedSet = NSSet(array: combined);
-                let check = NSSet(array: split(GroupList[i].memberstring!) {$0 == ";"}).isSubsetOfSet(combinedSet as Set<NSObject>);
-                if let cellgroup = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) {
-                    if (check) {
-                        var index = NSIndexPath(forRow: i, inSection: 0)
-                        invitetable.selectRowAtIndexPath(index, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                        cellgroup.accessoryType = UITableViewCellAccessoryType.Checkmark;
-                        cellgroup.setSelected(true, animated: true)
-                    } else {
-                        var index = NSIndexPath(forRow: i, inSection: 0)
-                        invitetable.deselectRowAtIndexPath(index, animated: true)
-                        cellgroup.accessoryType = UITableViewCellAccessoryType.None;
-                        cellgroup.setSelected(false, animated: true)
+            if searchController.active && count(searchController.searchBar.text) > 0 {
+                for (var i = 0 ; i < filteredGroupList.count; i++ ) {
+                    var combined:[String] = added;
+                    var members:[String] = split(memberstring) {$0 == ";"}
+                    combined.extend(members);
+                    let combinedSet = NSSet(array: combined);
+                    let check = NSSet(array: split(filteredGroupList[i].memberstring!) {$0 == ";"}).isSubsetOfSet(combinedSet as Set<NSObject>);
+                    if let cellgroup = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) {
+                        if cellgroup.tintColor != UIColor.grayColor() {
+                            if (check) {
+                                var index = NSIndexPath(forRow: i, inSection: 0)
+                                invitetable.selectRowAtIndexPath(index, animated: true, scrollPosition: UITableViewScrollPosition.None)
+                                cellgroup.accessoryType = UITableViewCellAccessoryType.Checkmark;
+                                cellgroup.setSelected(true, animated: true)
+                            } else {
+                                var index = NSIndexPath(forRow: i, inSection: 0)
+                                invitetable.deselectRowAtIndexPath(index, animated: true)
+                                cellgroup.accessoryType = UITableViewCellAccessoryType.None;
+                                cellgroup.setSelected(false, animated: true)
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (var i = 0 ; i < GroupList.count; i++ ) {
+                    var combined:[String] = added;
+                    var members:[String] = split(memberstring) {$0 == ";"}
+                    combined.extend(members);
+                    let combinedSet = NSSet(array: combined);
+                    let check = NSSet(array: split(GroupList[i].memberstring!) {$0 == ";"}).isSubsetOfSet(combinedSet as Set<NSObject>);
+                    if let cellgroup = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)) {
+                        if cellgroup.tintColor != UIColor.grayColor() {
+                            if (check) {
+                                var index = NSIndexPath(forRow: i, inSection: 0)
+                                invitetable.selectRowAtIndexPath(index, animated: true, scrollPosition: UITableViewScrollPosition.None)
+                                cellgroup.accessoryType = UITableViewCellAccessoryType.Checkmark;
+                                cellgroup.setSelected(true, animated: true)
+                            } else {
+                                var index = NSIndexPath(forRow: i, inSection: 0)
+                                invitetable.deselectRowAtIndexPath(index, animated: true)
+                                cellgroup.accessoryType = UITableViewCellAccessoryType.None;
+                                cellgroup.setSelected(false, animated: true)
+                            }
+                        }
                     }
                 }
             }
@@ -238,58 +319,82 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         var cell = invitetable.cellForRowAtIndexPath(indexPath);
         if (cell?.tintColor != UIColor.grayColor()) {
-            if (searchController.active && count(searchController.searchBar.text) > 0) {
-                if (nogroups) {
-                    if !contains(added, filteredFriendList[indexPath.row].profid!) {
-                        added.append(filteredFriendList[indexPath.row].profid!);
-                    }
-                    cellcheck(true, profid: filteredFriendList[indexPath.row].profid!)
-                } else {
-                    if (indexPath.section == 1) {
+            if (nogroups) {
+                if (searchController.active && count(searchController.searchBar.text) > 0) {
+                    if filteredFriendList.count > 0 {
                         if !contains(added, filteredFriendList[indexPath.row].profid!) {
                             added.append(filteredFriendList[indexPath.row].profid!);
                         }
                         cellcheck(true, profid: filteredFriendList[indexPath.row].profid!)
-                        groupcheck();
+                    } else {
                     }
-                    if (indexPath.section == 0) {
-                        let array = split(filteredGroupList[indexPath.row].memberstring!) {$0 == ";"}
-                        for (var i = 0; i < array.count ; i++ ) {
-                            if !contains(added, array[i]) {
-                                added.append(array[i]);
-                            }
-                            let section:Int;
-                            if (nogroups) {
-                                section = 0
-                            } else {
-                                section = 1
-                            }
-                            if (array[i] != Globals.currentprofile?.profid) {
-                                var currentprof:Profile? = filteredFriendList.filter({return $0.profid == array[i]})[0]
-                                if (currentprof != nil) {
-                                    var index = NSIndexPath(forRow: find(filteredFriendList, currentprof!)!, inSection: section)
-                                    invitetable.selectRowAtIndexPath(index, animated: true, scrollPosition: UITableViewScrollPosition.None)
-                                    cellcheck(true, profid: array[i])
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (nogroups) {
+                } else {
                     if !contains(added, FriendList[indexPath.row].profid!) {
                         added.append(FriendList[indexPath.row].profid!);
                     }
                     cellcheck(true, profid: FriendList[indexPath.row].profid!)
-                } else {
-                    if (indexPath.section == 1) {
-                        if !contains(added, FriendList[indexPath.row].profid!) {
-                            added.append(FriendList[indexPath.row].profid!);
+                }
+            } else {
+                if (searchController.active && count(searchController.searchBar.text) > 0) {
+                    if filteredFriendList.count > 0 && filteredGroupList.count > 0{
+                        if indexPath.section == 0 {
+                            let array = split(filteredGroupList[indexPath.row].memberstring!) {$0 == ";"}
+                            for (var i = 0; i < array.count ; i++ ) {
+                                if !contains(added, array[i]) {
+                                    added.append(array[i]);
+                                }
+                                let section:Int;
+                                if (nogroups) {
+                                    section = 0
+                                } else {
+                                    section = 1
+                                }
+                                if (array[i] != Globals.currentprofile?.profid) {
+                                    var currentprof:Profile? = filteredFriendList.filter({return $0.profid == array[i]})[0]
+                                    if (currentprof != nil) {
+                                        var index = NSIndexPath(forRow: find(filteredFriendList, currentprof!)!, inSection: section)
+                                        invitetable.selectRowAtIndexPath(index, animated: true, scrollPosition: UITableViewScrollPosition.None)
+                                        cellcheck(true, profid: array[i])
+                                    }
+                                }
+                            }
+                        } else if indexPath.section == 1 {
+                            if !contains(added, filteredFriendList[indexPath.row].profid!) {
+                                added.append(filteredFriendList[indexPath.row].profid!);
+                            }
+                            cellcheck(true, profid: filteredFriendList[indexPath.row].profid!)
                         }
-                        cellcheck(true, profid: FriendList[indexPath.row].profid!)
-                        groupcheck();
+                    } else if filteredFriendList.count > 0 || filteredGroupList.count > 0 {
+                        if filteredFriendList.count > 0 {
+                            if !contains(added, filteredFriendList[indexPath.row].profid!) {
+                                added.append(filteredFriendList[indexPath.row].profid!);
+                            }
+                            cellcheck(true, profid: filteredFriendList[indexPath.row].profid!)
+                        } else {
+                            let array = split(filteredGroupList[indexPath.row].memberstring!) {$0 == ";"}
+                            for (var i = 0; i < array.count ; i++ ) {
+                                if !contains(added, array[i]) {
+                                    added.append(array[i]);
+                                }
+                                let section:Int;
+                                if (nogroups) {
+                                    section = 0
+                                } else {
+                                    section = 1
+                                }
+                                if (array[i] != Globals.currentprofile?.profid) {
+                                    var currentprof:Profile? = filteredFriendList.filter({return $0.profid == array[i]})[0]
+                                    if (currentprof != nil) {
+                                        var index = NSIndexPath(forRow: find(filteredFriendList, currentprof!)!, inSection: section)
+                                        invitetable.selectRowAtIndexPath(index, animated: true, scrollPosition: UITableViewScrollPosition.None)
+                                        cellcheck(true, profid: array[i])
+                                    }
+                                }
+                            }
+                        }
                     }
-                    if (indexPath.section == 0) {
+                } else {
+                    if indexPath.section == 0 {
                         let array = split(GroupList[indexPath.row].memberstring!) {$0 == ";"}
                         for (var i = 0; i < array.count ; i++ ) {
                             if !contains(added, array[i]) {
@@ -310,62 +415,69 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
                                 }
                             }
                         }
+                    } else if indexPath.section == 1 {
+                        if !contains(added, FriendList[indexPath.row].profid!) {
+                            added.append(FriendList[indexPath.row].profid!);
+                        }
+                        cellcheck(true, profid: FriendList[indexPath.row].profid!)
                     }
                 }
             }
         }
         format();
+        groupcheck();
     }
     func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        format();
         var cell = invitetable.cellForRowAtIndexPath(indexPath);
-        if (cell?.tintColor != UIColor.grayColor()) { //i.e. can be selected and deselected
-            if (searchController.active && count(searchController.searchBar.text) > 0) {
-                if (nogroups) {
-                    added.removeAtIndex(find(added,self.filteredFriendList[indexPath.row].profid!)!)
-                    cellcheck(false, profid: filteredFriendList[indexPath.row].profid!)
-                } else {
-                    if (indexPath.section == 1) {
-                        added.removeAtIndex(find(added,filteredFriendList[indexPath.row].profid!)!)
+        if (cell?.tintColor != UIColor.grayColor()) {
+            if (nogroups) {
+                if (searchController.active && count(searchController.searchBar.text) > 0) {
+                    if filteredFriendList.count > 0 {
+                        added.removeAtIndex(find(added,self.filteredFriendList[indexPath.row].profid!)!)
                         cellcheck(false, profid: filteredFriendList[indexPath.row].profid!)
-                        for (var i = 0 ; i < filteredGroupList.count; i++ ) {
-                            if (filteredGroupList[i].memberstring?.rangeOfString(filteredFriendList[indexPath.row].profid!) != nil) {
-                                let cellgroup = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0));
-                                cellgroup?.accessoryType = UITableViewCellAccessoryType.None;
-                                cellgroup?.setSelected(false, animated: true)
-                            }
-                        }
                     }
-                    if (indexPath.section == 0) {
-                        let array = split(filteredGroupList[indexPath.row].memberstring!) {$0 == ";"}
-                        for (var i = 0; i < array.count ; i++ ) {
-                            if contains(added, array[i]) {
-                                if (array[i] != Globals.currentprofile?.profid){
-                                    added.removeAtIndex(find(added, array[i])!);
-                                    cellcheck(false, profid: array[i]);
-                                } else {
+                } else {
+                    added.removeAtIndex(find(added,self.FriendList[indexPath.row].profid!)!)
+                    cellcheck(false, profid: FriendList[indexPath.row].profid!)
+                }
+            } else {
+                if (searchController.active && count(searchController.searchBar.text) > 0) {
+                    if filteredFriendList.count > 0 && filteredGroupList.count > 0{
+                        if indexPath.section == 0 {
+                            let array = split(filteredGroupList[indexPath.row].memberstring!) {$0 == ";"}
+                            for (var i = 0; i < array.count ; i++ ) {
+                                if contains(added, array[i]) {
+                                    if (array[i] != Globals.currentprofile?.profid){
+                                        added.removeAtIndex(find(added, array[i])!);
+                                        cellcheck(false, profid: array[i]);
+                                    } else {
+                                    }
+                                }
+                            }
+                        } else if indexPath.section == 1 {
+                            added.removeAtIndex(find(added,self.filteredFriendList[indexPath.row].profid!)!)
+                            cellcheck(false, profid: filteredFriendList[indexPath.row].profid!)
+                        }
+                    } else if filteredFriendList.count > 0 || filteredGroupList.count > 0 {
+                        if filteredFriendList.count > 0 {
+                            added.removeAtIndex(find(added,self.filteredFriendList[indexPath.row].profid!)!)
+                            cellcheck(false, profid: filteredFriendList[indexPath.row].profid!)
+                        } else {
+                            let array = split(filteredGroupList[indexPath.row].memberstring!) {$0 == ";"}
+                            for (var i = 0; i < array.count ; i++ ) {
+                                if contains(added, array[i]) {
+                                    if (array[i] != Globals.currentprofile?.profid){
+                                        added.removeAtIndex(find(added, array[i])!);
+                                        cellcheck(false, profid: array[i]);
+                                    } else {
+                                    }
                                 }
                             }
                         }
+                    } else {
                     }
-                }
-            } else {
-                if (nogroups) {
-                    added.removeAtIndex(find(added,self.FriendList[indexPath.row].profid!)!)
-                    cellcheck(false, profid: FriendList[indexPath.row].profid!)
                 } else {
-                    if (indexPath.section == 1) {
-                        added.removeAtIndex(find(added,FriendList[indexPath.row].profid!)!)
-                        cellcheck(false, profid: FriendList[indexPath.row].profid!)
-                        for (var i = 0 ; i < GroupList.count; i++ ) {
-                            if (GroupList[i].memberstring?.rangeOfString(FriendList[indexPath.row].profid!) != nil) {
-                                let cellgroup = invitetable.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0));
-                                cellgroup?.accessoryType = UITableViewCellAccessoryType.None;
-                                cellgroup?.setSelected(false, animated: true)
-                            }
-                        }
-                    }
-                    if (indexPath.section == 0) {
+                    if indexPath.section == 0 {
                         let array = split(GroupList[indexPath.row].memberstring!) {$0 == ";"}
                         for (var i = 0; i < array.count ; i++ ) {
                             if contains(added, array[i]) {
@@ -376,194 +488,251 @@ class GroupCreateVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
                                 }
                             }
                         }
+                    } else if indexPath.section == 1 {
+                        added.removeAtIndex(find(added,self.FriendList[indexPath.row].profid!)!)
+                        cellcheck(false, profid: FriendList[indexPath.row].profid!)
                     }
+                    
                 }
             }
         }
         format();
+        groupcheck();
     }
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         if (nogroups) {
-            return 1;
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else {
+                return 1;
+            }
         } else {
-            return 2;
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 && filteredGroupList.count > 0{
+                    return 2;
+                } else if filteredFriendList.count > 0 || filteredGroupList.count > 0 {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else {
+                return 2;
+            }
         }
     }
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if (nogroups) {
-            return "Invite Friends";
-        } else  {
-            if (section == 0) {
-                return "Invite Groups";
-            } else if (section == 1) {
-                return "Invite Friends";
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 {
+                    if (section == 0) {
+                        return "Invite Friends";
+                    } else { return nil; };
+                } else {
+                    return nil;
+                }
             } else {
-                return nil;
+                return "Invite Friends";
+            }
+        } else  {
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 && filteredGroupList.count > 0{
+                    if (section == 0) {
+                        return "Invite Groups";
+                    } else if (section == 1) {
+                        return "Invite Friends";
+                    } else {
+                        return nil;
+                    }
+                } else if filteredFriendList.count > 0 || filteredGroupList.count > 0 {
+                    if filteredFriendList.count > 0 {
+                        if (section == 0) {
+                            return "Invite Friends";
+                        } else { return nil; };
+                    } else {
+                        if (section == 0) {
+                            return "Invite Groups";
+                        } else { return nil; };
+                    }
+                } else {
+                    return nil;
+                }
+            } else {
+                if (section == 0) {
+                    return "Invite Groups";
+                } else if (section == 1) {
+                    return "Invite Friends";
+                } else {
+                    return nil;
+                }
             }
         }
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (nogroups) {
-            if searchController.active && count(searchController.searchBar.text) > 0 {
-                return filteredFriendList.count;
-            } else {
-                return FriendList.count;
-            }
-        } else {
-            if (section == 0) {
-                if searchController.active && count(searchController.searchBar.text) > 0{
-                    return filteredGroupList.count;
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 {
+                    if (section == 0) {
+                        return filteredFriendList.count;
+                    } else { return 0; };
                 } else {
-                    return GroupList.count;
+                    return 0;
                 }
-            } else if (section == 1) {
-                if searchController.active && count(searchController.searchBar.text) > 0{
-                    return filteredFriendList.count;
-                } else {
+            } else {
+                if (section == 0) {
                     return FriendList.count;
+                } else { return 0; };
+            }
+        } else  {
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 && filteredGroupList.count > 0{
+                    if (section == 0) {
+                        return filteredGroupList.count;
+                    } else if (section == 1) {
+                        return filteredFriendList.count;
+                    } else {
+                        return 0;
+                    }
+                } else if filteredFriendList.count > 0 || filteredGroupList.count > 0 {
+                    if filteredFriendList.count > 0 {
+                        if (section == 0) {
+                            return filteredFriendList.count;
+                        } else { return 0; };
+                    } else {
+                        if (section == 0) {
+                            return filteredGroupList.count;
+                        } else { return 0; };
+                    }
+                } else {
+                    return 0;
                 }
             } else {
-                return 0;
+                if (section == 0) {
+                    return GroupList.count;
+                } else if (section == 1) {
+                    return FriendList.count;
+                } else {
+                    return 0;
+                }
             }
         }
     }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if (nogroups) { //i.e. can be selected and deselected
-            var cell = tableView.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
-            if searchController.active && count(searchController.searchBar.text) > 0{
-                cell.friendlabel.text = filteredFriendList[indexPath.row].name;
-                cell.friendimage.image = UIImage(data: filteredFriendList[indexPath.row].imagedata!);
-                cell.profid = filteredFriendList[indexPath.row].profid;
-                cell.selectionStyle = UITableViewCellSelectionStyle.None;
-                if (contains(added, filteredFriendList[indexPath.row].profid!) == false) {
-                    if (contains(split(memberstring) {$0 == ";"}, filteredFriendList[indexPath.row].profid!) == true) {
-                        //Check if member was part of the input members
-                        cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
-                        cell.setSelected(true , animated: true)
-                        cell.tintColor = UIColor.grayColor();
-                    } else {
-                        cell.accessoryType = UITableViewCellAccessoryType.None;
-                        cell.setSelected(true , animated: true)
-                    }
+        if (nogroups) {
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 {
+                    if (indexPath.section == 0) {
+                        return getFriendCell(filteredFriendList[indexPath.row]);
+                    } else { return UITableViewCell(); };
                 } else {
-                    //Already added
+                    return UITableViewCell();
                 }
             } else {
-                cell.friendlabel.text = FriendList[indexPath.row].name;
-                cell.friendimage.image = UIImage(data: FriendList[indexPath.row].imagedata!);
-                cell.profid = FriendList[indexPath.row].profid;
-                cell.selectionStyle = UITableViewCellSelectionStyle.None;
-                if (contains(added, FriendList[indexPath.row].profid!) == false) {
-                    if (contains(split(memberstring) {$0 == ";"}, FriendList[indexPath.row].profid!) == true) {
-                        //Check if member was part of the input members
-                        cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
-                        cell.setSelected(true , animated: true)
-                        cell.tintColor = UIColor.grayColor();
-                    } else {
-                        cell.accessoryType = UITableViewCellAccessoryType.None;
-                        cell.setSelected(true , animated: true)
-                    }
-                } else {
-                    //Already added
-                }
+                if (indexPath.section == 0) {
+                    return getFriendCell(FriendList[indexPath.row]);
+                } else { return UITableViewCell(); };
             }
-            return cell;
-        } else {
-            if (indexPath.section == 0) {
-                var cell = tableView.dequeueReusableCellWithIdentifier("GroupEmpty") as! GroupCellEmpty;
-                if (searchController.active && count(searchController.searchBar.text) > 0) {
-                    var currentgroup = filteredGroupList[indexPath.row];
-                    cell.grouptextfield.text = currentgroup.name;
-                    cell.groupimage.image = UIImage(named: "unkownprofile.png");
-                    cell.memberlabel.text = Group.getMemberString(currentgroup.memberstring!);
-                    cell.memberlist = currentgroup.memberstring;
-                    cell.groupimage.image = Group.generateGroupImage(currentgroup.memberstring);
-                } else {
-                    var currentgroup = GroupList[indexPath.row];
-                    cell.grouptextfield.text = currentgroup.name;
-                    cell.groupimage.image = UIImage(named: "unkownprofile.png");
-                    cell.memberlabel.text = Group.getMemberString(currentgroup.memberstring!);
-                    cell.memberlist = currentgroup.memberstring;
-                    cell.groupimage.image = Group.generateGroupImage(currentgroup.memberstring);
-                }
-                var combined:[String] = added;
-                var members:[String] = split(memberstring) {$0 == ";"}
-                combined.extend(members);
-                let combinedSet = NSSet(array: combined)
-                let memberSet = NSSet(array: members)
-                let CheckCombined:Bool;
-                let CheckMembers: Bool;
-                if (combined.count>0) {
-                    CheckCombined = NSSet(array: (array: split(cell.memberlist) {$0 == ";"})).isSubsetOfSet(combinedSet as Set<NSObject>); //Check if the input members + added members are in group
-                } else {
-                    CheckCombined = false;
-                }
-                if (members.count > 0) {
-                    CheckMembers =  NSSet(array: (array: split(cell.memberlist) {$0 == ";"})).isSubsetOfSet(memberSet as Set<NSObject>); //Check if only the input members are in group
-                } else {
-                    CheckMembers = false;
-                }
-                cell.selectionStyle = UITableViewCellSelectionStyle.None;
-                if (CheckCombined) {
-                    if (CheckMembers) {
-                        //All group members are input members
-                        cell.tintColor = UIColor.grayColor();
-                        cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
-                        cell.setSelected(true , animated: true);
+        } else  {
+            if (searchController.active && count(searchController.searchBar.text) > 0) {
+                if filteredFriendList.count > 0 && filteredGroupList.count > 0{
+                    if (indexPath.section == 0) {
+                        return getGroupEmptyCell(filteredGroupList[indexPath.row]);
+                    } else if (indexPath.section == 1) {
+                        return getFriendCell(filteredFriendList[indexPath.row]);
                     } else {
-                        //All group members are a combination of input and invited members
-                        cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
-                        cell.setSelected(true , animated: true);
+                        return UITableViewCell();
+                    }
+                } else if filteredFriendList.count > 0 || filteredGroupList.count > 0 {
+                    if filteredFriendList.count > 0 {
+                        if (indexPath.section == 0) {
+                            return getFriendCell(filteredFriendList[indexPath.row]);
+                        } else { return UITableViewCell(); };
+                    } else {
+                        if (indexPath.section == 0) {
+                            return getGroupEmptyCell(filteredGroupList[indexPath.row]);
+                        } else { return UITableViewCell(); };
                     }
                 } else {
-                    //All group members include members not on combined list
-                    cell.accessoryType = UITableViewCellAccessoryType.None
-                    cell.setSelected(false , animated: true);
+                    return UITableViewCell();
                 }
-                return cell;
-            } else if (indexPath.section == 1) {
-                var cell = tableView.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
-                if searchController.active && count(searchController.searchBar.text) > 0 {
-                    cell.friendlabel.text = filteredFriendList[indexPath.row].name;
-                    cell.friendimage.image = UIImage(data: filteredFriendList[indexPath.row].imagedata!);
-                    cell.profid = filteredFriendList[indexPath.row].profid;
-                    cell.selectionStyle = UITableViewCellSelectionStyle.None;
-                    if (contains(added, filteredFriendList[indexPath.row].profid!) == false) {
-                        if (contains(split(memberstring) {$0 == ";"}, filteredFriendList[indexPath.row].profid!) == true) {
-                            //Check if member was part of the input members
-                            cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
-                            cell.setSelected(true , animated: true)
-                            cell.tintColor = UIColor.grayColor();
-                        } else {
-                            cell.accessoryType = UITableViewCellAccessoryType.None;
-                            cell.setSelected(true , animated: true)
-                        }
-                    } else {
-                        //Already added
-                    }
-                } else {
-                    cell.friendlabel.text = FriendList[indexPath.row].name;
-                    cell.friendimage.image = UIImage(data: FriendList[indexPath.row].imagedata!);
-                    cell.profid = FriendList[indexPath.row].profid;
-                    cell.selectionStyle = UITableViewCellSelectionStyle.None;
-                    if (contains(added, FriendList[indexPath.row].profid!) == false) {
-                        if (contains(split(memberstring) {$0 == ";"}, FriendList[indexPath.row].profid!) == true) {
-                            //Check if member was part of the input members
-                            cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
-                            cell.setSelected(true, animated: true)
-                            cell.tintColor = UIColor.grayColor();
-                        } else {
-                            cell.accessoryType = UITableViewCellAccessoryType.None;
-                            cell.setSelected(false, animated: true);
-                        }
-                    } else {
-                        //Already added
-                    }
-                }
-                return cell;
             } else {
-                return UITableViewCell();
+                if (indexPath.section == 0) {
+                    return getGroupEmptyCell(GroupList[indexPath.row]);
+                } else if (indexPath.section == 1) {
+                    return getFriendCell(FriendList[indexPath.row]);
+                } else {
+                    return UITableViewCell();
+                }
             }
         }
+    }
+    func getFriendCell(inputprofile: Profile) -> UITableViewCell {
+        var cell = invitetable.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
+        cell.friendlabel.text = inputprofile.name;
+        cell.friendimage.image = UIImage(data: inputprofile.imagedata!);
+        cell.profid = inputprofile.profid;
+        cell.selectionStyle = UITableViewCellSelectionStyle.None;
+        if (contains(added, inputprofile.profid!) == false) {
+            if (contains(split(memberstring) {$0 == ";"}, inputprofile.profid!) == true) {
+                cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
+                cell.setSelected(true , animated: true)
+                cell.tintColor = UIColor.grayColor();
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryType.None;
+                cell.setSelected(true , animated: true)
+            }
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
+            cell.setSelected(true , animated: true)
+        }
+        return cell;
+        
+    }
+    func getGroupEmptyCell(inputgroup: Group) -> UITableViewCell {
+        var cell = invitetable.dequeueReusableCellWithIdentifier("GroupEmpty") as! GroupCellEmpty;
+        var currentgroup = inputgroup
+        cell.grouptextfield.text = currentgroup.name;
+        cell.groupimage.image = UIImage(named: "unkownprofile.png");
+        cell.memberlabel.text = Group.getMemberString(currentgroup.memberstring!);
+        cell.memberlist = currentgroup.memberstring;
+        cell.groupimage.image = Group.generateGroupImage(currentgroup.memberstring);
+        var combined:[String] = added;
+        var members:[String] = split(memberstring) {$0 == ";"}
+        combined.extend(members);
+        let combinedSet = NSSet(array: combined)
+        let memberSet = NSSet(array: members)
+        let CheckCombined:Bool;
+        let CheckMembers: Bool;
+        if (combined.count>0) {
+            CheckCombined = NSSet(array: (array: split(cell.memberlist) {$0 == ";"})).isSubsetOfSet(combinedSet as Set<NSObject>); //Check if the input members + added members are in group
+        } else {
+            CheckCombined = false;
+        }
+        if (members.count > 0) {
+            CheckMembers =  NSSet(array: (array: split(cell.memberlist) {$0 == ";"})).isSubsetOfSet(memberSet as Set<NSObject>); //Check if only the input members are in group
+        } else {
+            CheckMembers = false;
+        }
+        cell.selectionStyle = UITableViewCellSelectionStyle.None;
+        if (CheckCombined) {
+            if (CheckMembers) {
+                //All group members are input members
+                cell.tintColor = UIColor.grayColor();
+                cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
+                cell.setSelected(true , animated: true);
+            } else {
+                //All group members are a combination of input and invited members
+                cell.accessoryType = UITableViewCellAccessoryType.Checkmark;
+                cell.setSelected(true , animated: true);
+            }
+        } else {
+            //All group members include members not on combined list
+            cell.accessoryType = UITableViewCellAccessoryType.None
+            cell.setSelected(false , animated: true);
+        }
+        return cell;
     }
 }

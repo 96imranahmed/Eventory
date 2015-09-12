@@ -93,9 +93,11 @@ class Notification {
             contentBodyAsString = contentBodyAsString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
             let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
                 (data, response, error) in
+                //NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
                 if data?.length == 0 {
                     Globals.unreadnotificationcount = 0;
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Notifications_Done", object: self, userInfo: nil);
+                    let params = ["Count":0];
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Notifications_Done", object: self, userInfo: params);
                 } else {
                     if let results:NSArray = (NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? NSArray)
                     {
@@ -106,7 +108,6 @@ class Notification {
                             let countstore: NSDictionary = results[0] as! NSDictionary;
                             let count = countstore.valueForKey("numberunseen") as! String;
                             if results.count > 1 {
-                                //let currenter:NSArray = results[1] as! NSArray;
                                 for (var i = 1; i<results.count; i++) {
                                     let current:NSDictionary = results[i] as! NSDictionary;
                                     let sourceid:String = (current.valueForKey("sourceid")!) as! String;
@@ -116,15 +117,16 @@ class Notification {
                                     let read:Bool = (current.valueForKey("isread")!) as! Bool;
                                     let text:String = (current.valueForKey("text")!) as! String;
                                     let data:String = (current.valueForKey("data")!) as! String;
-                                    let results = Globals.notifications.filter({$0.date == date})
-                                    if (results.count > 0) {
+                                    let checkduplicate = Globals.notifications.filter({$0.text == text})
+                                    if (checkduplicate.count > 0) {
                                     } else {
                                         Globals.notifications.append(Notification(type: type, sourceID: sourceid, decided: nil, text: text, read: read, notifdata: data, date: date));
                                     }
                                 }
                             }
                             Globals.unreadnotificationcount = count.toInt()!;
-                            NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Notifications_Done", object: self, userInfo: nil);
+                            let params = ["Count":results.count - 1];
+                            NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Notifications_Done", object: self, userInfo: params);
                         }
                     }
                 }

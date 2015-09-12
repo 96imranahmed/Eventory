@@ -1,14 +1,12 @@
 <?php
-$currentarray = unserialize("a:2:{i:0;a:6:{s:8:\"sourceid\";s:17:\"10200598208075829\";s:4:\"date\";i:1440280906;s:4:\"type\";i:1;s:4:\"text\";s:29:\"Lisa invited you to join Blah\";s:6:\"isread\";i:0;s:4:\"data\";s:10:\"groupid:11\";}i:1;a:6:{s:8:\"sourceid\";s:17:\"10200598208075829\";s:4:\"date\";i:1440280993;s:4:\"type\";i:1;s:4:\"text\";s:28:\"Lisa invited you to join Bro\";s:6:\"isread\";i:0;s:4:\"data\";s:10:\"groupid:12\";}}");
-$groupid = 11;
-$item = "groupid:".strval($groupid);
-$unique = true;
+$currentarray = unserialize('a:1:{i:1;a:6:{s:8:"sourceid";s:17:"10200598208075829";s:4:"date";i:1441667753;s:4:"type";i:1;s:4:"text";s:26:"Lisa invited you to join 2";s:6:"isread";i:0;s:4:"data";s:10:"groupid:15";}}');
+$item = "groupid:".strval(15);
 $duplicateref = "data";
 $removeindex = [];
 for ($i = 0; $i < count($currentarray); $i++) {
-    $check = $currentarray[$i];
+    $check = $currentarray[1];
     if ($item == $check[$duplicateref]) {
-        $removeindex[] = $i;
+        $removeindex[] = 1;
     }
 }
 for ($j = 0; $j < count($removeindex); $j++) {

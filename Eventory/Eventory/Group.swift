@@ -155,12 +155,12 @@ class Group: NSManagedObject {
                     fetchRequest.predicate = predicate;
                     var currentprof:[Profile]? = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
                     if let check = currentprof {
-                        if (check[0].profid == FBSDKAccessToken.currentAccessToken().userID) {
+                        /*if (check[0].profid == FBSDKAccessToken.currentAccessToken().userID) {
                             let myprofile = Profile(name: "You", url: Globals.currentprofile!.url, profid: FBSDKAccessToken.currentAccessToken().userID, imagedata: Globals.currentprofile!.imagedata, save: false)
                             output.insert(myprofile, atIndex: 0)
-                        } else {
+                        } else { */
                             output.append(check[0]);
-                        }
+                        //}
                     } else {
                         nonfriends.append(members[i]);
                     }

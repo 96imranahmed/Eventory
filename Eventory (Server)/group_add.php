@@ -33,13 +33,13 @@ if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
         //Do only if user is part of group & Group exists
-        $check = $connection->ListCheck($connectinfo, "Groups", $groupid, "people_accepted", $profid);
-        $groupexists = $connectinfo->prepare("SELECT id from Groups where id='$groupid'");
-        $groupexists->execute();
+        $check = $connection->ListCheck($connectinfo, 0, $groupid, "people_accepted", $profid);
+        $groupexists = $connectinfo->prepare("SELECT id from Groups where id = :groupid");
+        $groupexists->execute(array(':groupid' => $groupid));
         //Check if users supplied aren't already invited (Method below performs delete)
         $idtodelete = array();
         foreach ($idarray as $id) {
-            $checkinvite = $connection->ListCheck($connectinfo, "Groups", $groupid, "people_requested", $id); //Requested (invited) people check
+            $checkinvite = $connection->ListCheck($connectinfo, 0, $groupid, "people_requested", $id); //Requested (invited) people check
             if ($checkinvite) {
                 $idtodelete[] = $id;
             }
@@ -56,11 +56,11 @@ if ($safe) {
                 $currentarray = [];
                 $currentarray[$profid] = $idarray;
                 $current = serialize($currentarray);
-                $postsql = $connectinfo->prepare("UPDATE Groups SET people_added='$current' WHERE id='$groupid'");
-                $postsql->execute();
+                $postsql = $connectinfo->prepare("UPDATE Groups SET people_added = :current WHERE id = :groupid");
+                $postsql->execute(array(':current' => $current, ':groupid' => $groupid));
                 foreach ($idarray as $id) {
                     CreateNotification(1, $connectinfo, $id, $profid, $groupid); //Send them a notification
-                    $connection->AddtoList($connectinfo, "Groups", $groupid, "people_requested", $id);
+                    $connection->AddtoList($connectinfo, 0, $groupid, "people_requested", $id);
                 }
             } else {
                 if ($check) {

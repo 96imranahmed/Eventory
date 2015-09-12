@@ -35,18 +35,18 @@ if ($safe) {
         try {
             $starter = $idarray[0];
             $starterid= intval($starter);
-            $prepsql = $connectinfo->prepare("INSERT INTO Groups (name, people_requested, people_accepted, starter) VALUES ('$name','$idstring', '$starter','$starterid')");
-            $prepsql->execute();
+            $prepsql = $connectinfo->prepare("INSERT INTO `Groups` (`name`, `people_requested`, `people_accepted`, `starter`) VALUES (:name,:idstring,:starter,:starterid)");
+            $prepsql->execute(array(':name' => $name, ':idstring'=> $idstring, 'starter' => $starter, ':starterid' => $starterid));
             $groupid = $connectinfo->lastInsertId();
             echo $groupid;
             //Add group to thread starter's list of groups
-            $connection->AddtoList($connectinfo, "Profiles", $starter, "groups_accepted", $groupid);
+            $connection->AddtoList($connectinfo, 2, $starter, "groups_accepted", $groupid);
             //Notify users of new group
             array_shift($idarray); //Knock thread starter off!
             $added = array($starter=>$idarray);//Setup added list
             $addedstring = serialize($added);
-            $postsql = $connectinfo->prepare("UPDATE Groups SET people_added = '$addedstring' WHERE id='$groupid'");
-            $postsql->execute();
+            $postsql = $connectinfo->prepare("UPDATE Groups SET people_added = :addedstring WHERE id = :groupid");
+            $postsql->execute(array(':addedstring' => $addedstring, ':groupid' => $groupid));
             foreach ($idarray as $id) {
                 $params = ["groupid" => $groupid, "sourceid" => $profid, "date" => time()];
                 //Add to notifications for that particular id

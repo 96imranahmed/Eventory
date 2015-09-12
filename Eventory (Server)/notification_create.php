@@ -9,15 +9,14 @@ function CreateNotification($type, $pdo, $targetid, $starterid, $valuein) {
         //Notify that a new friend has joined -> Don't actually do anything (Just added to friends_new_unseen in Notifications in profile.php)
     } elseif ($type == 1) {
         //Notify that you have been invited to a new group
-        $groupname = $connection->GetNamebyId($pdo, $valuein, 1);
-        $notification = strtok(($connection->GetNamebyId($pdo, $starterid, 0)), " ") . ' invited you to join ' . $groupname;
+        $notification = strtok(($connection->GetNamebyId($pdo, $starterid, 0)), " ") . ' invited you to join ';
         $params = ["sourceid" => $starterid, "date" => time(), "type" => 1, "text" => $notification, "isread" => 0, "data" => "groupid:".strval($valuein)];
-        $connection->AddItemtoList($pdo, "Notifications", $targetid, "groups_pending", $params, "data"); 
-        echo 
+        $connection->AddItemtoList($pdo, 1, $targetid, "groups_pending", $params, "data");
+        $connection->AddtoList($pdo, 1, $targetid, "notification_raw", 1);
         PasstoParse($targetid, $notification);
     } elseif ($type == 2) {
         //Notify that a person has accepted your group join request
-        $check = $connection->ListCheck($pdo, "Groups", $valuein, "people_accepted", $targetid);
+        $check = $connection->ListCheck($pdo,0, $valuein, "people_accepted", $targetid);
         //Check person is still inside group
         if ($check) {
             $groupname = $connection->GetNamebyId($pdo, $valuein, 1);
@@ -26,7 +25,7 @@ function CreateNotification($type, $pdo, $targetid, $starterid, $valuein) {
         }
     } elseif ($type == 3) {
         //Notify that a person has declined your group join request
-        $check = $connection->ListCheck($pdo, "Groups", $valuein, "people_accepted", $targetid);
+        $check = $connection->ListCheck($pdo, 0, $valuein, "people_accepted", $targetid);
         //Check person is still inside group
         if ($check) {
             $groupname = $connection->GetNamebyId($pdo, $valuein, 1);

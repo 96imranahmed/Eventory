@@ -28,11 +28,11 @@ if (array_key_exists('name', $_POST)) {
 if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
-        $row = $connection->GetRow($connectinfo, "Groups", $groupid);
+        $row = $connection->GetRow($connectinfo, 0, $groupid);
         $admin = $row["starter"];
         if ($admin == $profid) {
-            $prepsql = $connectinfo->prepare("INSERT INTO Groups (id, name) VALUES ('$groupid','$name') ON DUPLICATE KEY UPDATE name=VALUES(name)");
-            $prepsql->execute();
+            $prepsql = $connectinfo->prepare("INSERT INTO Groups (id, name) VALUES (:groupid,:name) ON DUPLICATE KEY UPDATE name=VALUES(name)");
+            $prepsql->execute(array(':groupid'=>$groupid, ':name'=>$name));
         } else {
             echo "Error - non-admin cannot rename group!";
         }

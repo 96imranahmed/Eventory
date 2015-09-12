@@ -20,10 +20,33 @@ class Connect {
         }
     }
 
+    public function buildQuery($type, $querytype, $queryend = "") {
+        switch ($type) {
+            case 0;
+                $table = "Groups";
+                break;
+            case 1;
+                $table = "Notifications";
+                break;
+            case 2;
+                $table = "Profiles";
+                break;
+        }
+        switch ($querytype) {
+            case 0;
+                $sql = "SELECT * FROM `$table` ";
+                break;
+            case 1;
+                $sql = "UPDATE `$table` SET `$queryend`";
+                break;
+        }
+        return($sql);
+    }
+
 //Updates a list array with a new entry
     public function AddtoList($pdo, $tablename, $id, $column, $value) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
         if ($current == null) {
@@ -41,19 +64,19 @@ class Connect {
                 }
             }
         }
-        $postsql = $pdo->prepare("UPDATE $tablename SET $column='$current' WHERE id=$id");
-        $postsql->execute();
+        $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = :current WHERE id = :id');
+        $postsql->execute(array(':current' => $current, ':id' => $id));
     }
 
 //Removes an entry from a list array
     public function RemovefromList($pdo, $tablename, $id, $column, $value) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
         if ($current == null || $current == "") {
-            $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
-            $postsql->execute();
+            $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = null WHERE id = :id');
+            $postsql->execute(array(':id' => $id));
         } else {
             $currentarray = explode(";", $current);
             if (($key = array_search($value, $currentarray)) !== false) {
@@ -63,42 +86,58 @@ class Connect {
             }
             if (count($currentarray) < 1) {
                 $current = null;
-                $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
-                $postsql->execute();
+                $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = null WHERE id = :id');
+                $postsql->execute(array(':id' => $id));
             } else {
                 $current = implode(';', $currentarray);
-                $postsql = $pdo->prepare("UPDATE $tablename SET $column='$current' WHERE id=$id");
-                $postsql->execute();
+                $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = :current WHERE id = :id');
+                $postsql->execute(array(':current' => $current, ':id' => $id));
             }
         }
     }
 
 //Checks if a value is in list
     public function ListCheck($pdo, $tablename, $id, $column, $value) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
-        if ($current == null || $current == "") {
-            if ($value == null || $value == "") {
-                return true;
+        if ($tablename == 1) {
+            $checkarray = unserialize($current);
+            if (is_array($checkarray)) {
+                $check = false;
+                foreach ($checkarray as $entry) {
+                    if (strpos($entry['data'], strval($value)) !== false) {
+                        $check = true;
+                        break;
+                    }
+                }
+                return $check;
             } else {
                 return false;
             }
         } else {
-            $currentarray = explode(";", $current);
-            if (($key = array_search($value, $currentarray)) !== false) {
-                return true;
+            if ($current == null || $current == "") {
+                if ($value == null || $value == "") {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                $currentarray = explode(";", $current);
+                if (($key = array_search($value, $currentarray)) !== false) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
     }
 
 //Checks if supplied token matches values stored in database
     public function Verify($pdo, $id, $token) {
-        $prepsql = $pdo->prepare("SELECT * FROM Profiles WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare("SELECT * FROM Profiles WHERE id = :id LIMIT 1");
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = preg_replace("/[^a-zA-Z0-9]+/", "", $currentrow["token"]);
         $token = preg_replace("/[^a-zA-Z0-9]+/", "", $token);
@@ -132,14 +171,14 @@ class Connect {
     public function GetNamebyId($pdo, $id, $type) {
         if ($type == 0) {
             //Get name of a person
-            $prepsql = $pdo->prepare("SELECT * FROM Profiles WHERE id = '$id' LIMIT 1");
-            $prepsql->execute();
+            $prepsql = $pdo->prepare("SELECT * FROM Profiles WHERE id = :id LIMIT 1");
+            $prepsql->execute(array(':id' => $id));
             $currentrow = $prepsql->fetch();
             return($currentrow["name"]);
         } elseif ($type == 1) {
             //Get name of group
-            $prepsql = $pdo->prepare("SELECT * FROM Groups WHERE id = '$id' LIMIT 1");
-            $prepsql->execute();
+            $prepsql = $pdo->prepare("SELECT * FROM Groups WHERE id = :id LIMIT 1");
+            $prepsql->execute(array(':id' => $id));
             $currentrow = $prepsql->fetch();
             return($currentrow["name"]);
         } else {
@@ -149,8 +188,8 @@ class Connect {
 
 //Get the first ID of an entry
     public function GetFirstEntry($pdo, $tablename, $id, $column) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
         if ($current == null || $current == "") {
@@ -162,8 +201,8 @@ class Connect {
 
 //Get value at a certain point
     public function GetValue($pdo, $tablename, $id, $column) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
         return $current;
@@ -171,100 +210,102 @@ class Connect {
 
 //Get row at a certain point
     public function GetRow($pdo, $tablename, $id) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         return $currentrow;
     }
 
     public function UpdateScore($pdo, $id, $change) {
-        $prepsql = $pdo->prepare("SELECT * FROM Profiles WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare("SELECT * FROM Profiles WHERE id = :id LIMIT 1");
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = intval($currentrow["score"]) + intval($change);
         if ($current < 0) {
             $current = 0;
         }
-        $postsql = $pdo->prepare("UPDATE Profiles SET score='$current' WHERE id=$id");
-        $postsql->execute();
+        $postsql = $pdo->prepare("UPDATE Profiles SET score = :current WHERE id = :id");
+        $postsql->execute(array(':current' => $current, ':id' => $id));
     }
 
     //Increments unseen notification count
     public function IncrementNotification($pdo, $id) {
-        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = :id LIMIT 1");
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = intval($currentrow["numberunseen"]) + 1;
-        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen='$current' WHERE id=$id");
-        $postsql->execute();
+        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen = :current WHERE id = :id");
+        $postsql->execute(array(':current' => $current, ':id' => $id));
     }
 
     //Decrements unseen notification count
     public function DecrementNotification($pdo, $id) {
-        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = :id LIMIT 1");
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = intval($currentrow["numberunseen"]) - 1;
         if ($current < 0) {
             $current = 0;
         }
-        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen='$current' WHERE id=$id");
-        $postsql->execute();
+        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen = :current WHERE id = :id");
+        $postsql->execute(array(':current' => $current, ':id' => $id));
     }
+
     public function DecrementNotificationCount($pdo, $id, $count) {
-        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = :id LIMIT 1");
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = intval($currentrow["numberunseen"]) - $count;
         if ($current < 0) {
             $current = 0;
         }
-        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen='$current' WHERE id=$id");
-        $postsql->execute();
+        $postsql = $pdo->prepare("UPDATE Notifications SET numberunseen = :current WHERE id = :id");
+        $postsql->execute(array(':current' => $current, ':id' => $id));
     }
+
     //Add dictionary to list
     public function AddItemtoList($pdo, $tablename, $id, $column, $value, $duplicateref) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
         if ($current == null || $current == "") {
             $currentarray = [$value];
             $current = serialize($currentarray);
-            if ($tablename == "Notifications") {
+            if ($tablename == 1) {
                 $this->IncrementNotification($pdo, $id);
             }
         } else {
-                $currentarray = unserialize($current);
-                $unique = true;
-                for ($i = 0; $i < count($currentarray); $i++) {
-                    $loop = $currentarray[$i];
-                    if ($loop[$duplicateref] == $value[$duplicateref]) {
-                        $unique = false;
-                    }
+            $currentarray = unserialize($current);
+            $unique = true;
+            for ($i = 0; $i < count($currentarray); $i++) {
+                $loop = $currentarray[$i];
+                if ($loop[$duplicateref] == $value[$duplicateref]) {
+                    $unique = false;
                 }
-                if ($unique) {
-                    $currentarray[] = $value;
-                    if ($tablename == "Notifications") {
-                        $this->IncrementNotification($pdo, $id);
-                    }
+            }
+            if ($unique) {
+                $currentarray[] = $value;
+                if ($tablename == 1) {
+                    $this->IncrementNotification($pdo, $id);
                 }
-                $current = serialize($currentarray);
+            }
+            $current = serialize($currentarray);
         }
-        $postsql = $pdo->prepare("UPDATE $tablename SET $column='$current' WHERE id=$id");
-        $postsql->execute();
+        $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = :current WHERE id = :id');
+        $postsql->execute(array(':current' => $current, ':id' => $id));
     }
 
     //Remove item from list
     public function RemoveItemfromList($pdo, $tablename, $id, $column, $item, $duplicateref) {
-        $prepsql = $pdo->prepare("SELECT * FROM $tablename WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
         $decrementcount = 0;
         if ($current == null || $current == "") {
-            $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
-            $postsql->execute();
+            $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = null WHERE id = :id');
+            $postsql->execute(array(':id' => $id));
         } else {
             $currentarray = unserialize($current);
             $removeindex = [];
@@ -278,32 +319,41 @@ class Connect {
                 }
             }
             for ($j = 0; $j < count($removeindex); $j++) {
-                unset($currentarray[$removeindex[$j]-$j]);
+                unset($currentarray[$removeindex[$j] - $j]);
             }
-            if ($tablename == "Notifications") {
-                    $this->DecrementNotificationCount($pdo, $id, $decrementcount);
+            if (is_array($currentarray)) {
+                $currentarray = array_merge($currentarray);
             }
-            if (count($currentarray) < 1) {
+            if ($tablename == 1) {
+                $this->DecrementNotificationCount($pdo, $id, $decrementcount);
+            }
+            if (!is_array($currentarray)) {
                 $current = null;
-                $postsql = $pdo->prepare("UPDATE $tablename SET $column = null WHERE id=$id");
-                $postsql->execute();
+                $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = null WHERE id = :id');
+                $postsql->execute(array(':id' => $id));
             } else {
-                $current = serialize($currentarray);
-                $postsql = $pdo->prepare("UPDATE $tablename SET $column='$current' WHERE id=$id");
-                $postsql->execute();
+                if (count($currentarray) < 1) {
+                    $current = null;
+                    $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = null WHERE id = :id');
+                    $postsql->execute(array(':id' => $id));
+                } else {
+                    $current = serialize($currentarray);
+                    $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = :current WHERE id = :id');
+                    $postsql->execute(array(':current' => $current, ':id' => $id));
+                }
             }
         }
     }
 
     //Set read receipt
     public function SetRead($pdo, $id, $column) {
-        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = '$id' LIMIT 1");
-        $prepsql->execute();
+        $prepsql = $pdo->prepare("SELECT * FROM Notifications WHERE id = :id LIMIT 1");
+        $prepsql->execute(array(':id' => $id));
         $currentrow = $prepsql->fetch();
         $current = $currentrow[$column];
         if ($current == null || $current == "") {
-            $postsql = $pdo->prepare("UPDATE Notifications SET $column = null WHERE id=$id");
-            $postsql->execute();
+            $postsql = $pdo->prepare($this->buildQuery(1, 1, $column) . ' = null WHERE id = :id');
+            $postsql->execute(array(':id' => $id));
         } else {
             $currentarray = unserialize($current);
             if (is_array($currentarray)) {
@@ -324,8 +374,8 @@ class Connect {
                 }
             }
             $current = serialize($currentarray);
-            $postsql = $pdo->prepare("UPDATE Notifications SET $column='$current' WHERE id=$id");
-            $postsql->execute();
+            $postsql = $pdo->prepare($this->buildQuery(1, 1, $column) . ' = :current WHERE id = :id');
+            $postsql->execute(array(':current' => $current, ':id' => $id));
         }
     }
 

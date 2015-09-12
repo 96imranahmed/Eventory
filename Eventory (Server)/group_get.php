@@ -24,13 +24,13 @@ if ($safe) {
     if ($authenticated) {
         if (type == 0) {
             //Get accepted groups
-            $groupstring = $connection->GetValue($connectinfo, "Profiles", $profid, "groups_accepted");
-        } elseif (type == 1) {
+           $groupstring = $connection->GetValue($connectinfo, 2, $profid, "groups_accepted");
+            } elseif (type == 1) {
             //Get declined groups
-            $groupstring = $connection->GetValue($connectinfo, "Profiles", $profid, "groups_declined");
+            $groupstring = $connection->GetValue($connectinfo, 2, $profid, "groups_declined");
         } elseif (type == 2) {
             //Get left groups
-            $groupstring = $connection->GetValue($connectinfo, "Profiles", $profid, "groups_left");
+            $groupstring = $connection->GetValue($connectinfo, 2, $profid, "groups_left");
         }
         if ($groupstring == 0 || $groupstring == null) {
             echo null;
@@ -38,7 +38,7 @@ if ($safe) {
             $grouparray = explode(";", $groupstring);
             $returnarray = array();
             foreach ($grouparray as $currentid) {
-                $row = $connection->GetRow($connectinfo, "Groups", $currentid);
+                $row = $connection->GetRow($connectinfo,0, $currentid);
                 $name = $row["name"];
                 $id = $row["id"];
                 $currentacceptedarray = explode(";", $row["people_accepted"]);

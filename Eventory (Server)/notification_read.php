@@ -19,7 +19,7 @@ if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
         $notificationarray = [];
-        $row = $connection->GetRow($connectinfo, "Notifications", $profid);
+        $row = $connection->GetRow($connectinfo, 1, $profid);
         for ($i = 2; $i < $count; $i++) {
             $name = array_keys($row)[$i * 2];
             print_r($name);
@@ -50,8 +50,8 @@ if ($safe) {
             }
         }
         print_r($readstring);
-        //$postsql = $connectinfo->prepare("UPDATE Notifications SET $name='$current' WHERE id=$profid");
-        //$postsql->execute();
+        //$postsql = $connectinfo->prepare("UPDATE Notifications SET :name = :current WHERE id = :profid");
+        //$postsql->execute(array(':name'=>$name, ':current'=>$current, ':profid'=>$profid"));
     } else {
         echo "Error - authorization mismatch";
     }
