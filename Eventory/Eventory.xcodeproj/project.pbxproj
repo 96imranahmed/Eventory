@@ -13,6 +13,9 @@
 		D81B455D1B5AD12200DF7899 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B455C1B5AD12200DF7899 /* Profile.swift */; };
 		D81B455F1B5AD15800DF7899 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B455E1B5AD15800DF7899 /* Group.swift */; };
 		D81B45621B5AE13200DF7899 /* GroupCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81B45611B5AE13200DF7899 /* GroupCell.swift */; };
+		D8284E1B1BAA0C8600720DBF /* LeftDeclinedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8284E1A1BAA0C8600720DBF /* LeftDeclinedVC.swift */; };
+		D82B95E81BAABE6B00E382E7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D855B7101B489D8400E85674 /* LaunchScreen.xib */; };
+		D82B95EE1BAAC59700E382E7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D82B95EC1BAAC59700E382E7 /* Main.storyboard */; };
 		D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FCE1B4B1355007A747F /* Locksmith.swift */; };
 		D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */; };
 		D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */; };
@@ -20,9 +23,7 @@
 		D84F14A81B582CF30081B5E8 /* unknownprofile.png in Resources */ = {isa = PBXBuildFile; fileRef = D84F14A71B582CF30081B5E8 /* unknownprofile.png */; };
 		D855B7081B489D8400E85674 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7071B489D8400E85674 /* AppDelegate.swift */; };
 		D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B7091B489D8400E85674 /* LoginVC.swift */; };
-		D855B70D1B489D8400E85674 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D855B70B1B489D8400E85674 /* Main.storyboard */; };
 		D855B70F1B489D8400E85674 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D855B70E1B489D8400E85674 /* Images.xcassets */; };
-		D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D855B7101B489D8400E85674 /* LaunchScreen.xib */; };
 		D855B71E1B489D8400E85674 /* EventoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B71D1B489D8400E85674 /* EventoryTests.swift */; };
 		D855B72A1B489DE500E85674 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */; };
 		D855B72B1B489DE500E85674 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */; };
@@ -72,6 +73,8 @@
 		D81B455C1B5AD12200DF7899 /* Profile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		D81B455E1B5AD15800DF7899 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		D81B45611B5AE13200DF7899 /* GroupCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCell.swift; sourceTree = "<group>"; };
+		D8284E1A1BAA0C8600720DBF /* LeftDeclinedVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LeftDeclinedVC.swift; path = ../LeftDeclinedVC.swift; sourceTree = "<group>"; };
+		D82B95ED1BAAC59700E382E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Eventory/Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D82E8FCE1B4B1355007A747F /* Locksmith.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locksmith.swift; sourceTree = "<group>"; };
 		D82E8FCF1B4B1355007A747F /* LocksmithRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocksmithRequest.swift; sourceTree = "<group>"; };
 		D82E8FDA1B4E5350007A747F /* Eventory.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Eventory.xcdatamodel; sourceTree = "<group>"; };
@@ -81,7 +84,6 @@
 		D855B7061B489D8400E85674 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D855B7071B489D8400E85674 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D855B7091B489D8400E85674 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
-		D855B70C1B489D8400E85674 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D855B70E1B489D8400E85674 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		D855B7111B489D8400E85674 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		D855B7171B489D8400E85674 /* EventoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EventoryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,9 +200,9 @@
 			children = (
 				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
 				D80221B91B6A0EFC000D26D9 /* NotificationsVC.swift */,
-				D855B70B1B489D8400E85674 /* Main.storyboard */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
+				D82B95EC1BAAC59700E382E7 /* Main.storyboard */,
 				D855B7271B489DA100E85674 /* Bridging-Header.h */,
 				D8F2F8A11B69974300D3DA8E /* Login/Logout & CoreData Controllers */,
 				D8F2F8A01B69972400D3DA8E /* Group & Friends View Controllers */,
@@ -296,6 +298,7 @@
 				D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */,
 				D8F2F8971B661BE800D3DA8E /* InviteVC.swift */,
 				D8F2F89E1B68D62C00D3DA8E /* GroupCreateVC.swift */,
+				D8284E1A1BAA0C8600720DBF /* LeftDeclinedVC.swift */,
 			);
 			name = "Group & Friends View Controllers";
 			sourceTree = "<group>";
@@ -391,14 +394,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D82B95E81BAABE6B00E382E7 /* LaunchScreen.xib in Resources */,
 				D8A36F5D1B5DAF3F0026C3A0 /* add.png in Resources */,
-				D855B70D1B489D8400E85674 /* Main.storyboard in Resources */,
 				D8A36F611B5DB19E0026C3A0 /* exit.png in Resources */,
 				D84F14A81B582CF30081B5E8 /* unknownprofile.png in Resources */,
 				D88EF3521B76C27500F7197D /* star.png in Resources */,
 				D8A36F5E1B5DAF3F0026C3A0 /* sub.png in Resources */,
 				D8A2E40B1B8FDF10006A9A22 /* earth.png in Resources */,
-				D855B7121B489D8400E85674 /* LaunchScreen.xib in Resources */,
+				D82B95EE1BAAC59700E382E7 /* Main.storyboard in Resources */,
 				D8F2F8A31B6998C500D3DA8E /* bell.png in Resources */,
 				D855B70F1B489D8400E85674 /* Images.xcassets in Resources */,
 				D8A36F5F1B5DAF3F0026C3A0 /* delete.png in Resources */,
@@ -434,6 +437,7 @@
 				D8A36F511B5DA1F00026C3A0 /* SWTableViewCell.m in Sources */,
 				D8A2E4091B8FDB21006A9A22 /* RKNotificationHub.m in Sources */,
 				D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */,
+				D8284E1B1BAA0C8600720DBF /* LeftDeclinedVC.swift in Sources */,
 				D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */,
 				D8F2F89A1B66E76A00D3DA8E /* GroupCellEmpty.swift in Sources */,
 				D81B455F1B5AD15800DF7899 /* Group.swift in Sources */,
@@ -473,12 +477,13 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		D855B70B1B489D8400E85674 /* Main.storyboard */ = {
+		D82B95EC1BAAC59700E382E7 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				D855B70C1B489D8400E85674 /* Base */,
+				D82B95ED1BAAC59700E382E7 /* Base */,
 			);
 			name = Main.storyboard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		D855B7101B489D8400E85674 /* LaunchScreen.xib */ = {

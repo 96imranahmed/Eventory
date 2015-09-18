@@ -28,7 +28,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     //Core Data Stuff
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     override func viewWillDisappear(animated: Bool) {
-     NSNotificationCenter.defaultCenter().removeObserver(self);
+        NSNotificationCenter.defaultCenter().removeObserver(self);
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,7 +57,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 }
             }
         } else {
-            progressBarDisplayer("Logging In", true)
+            progressBarDisplayer("Logging In", indicator: true)
             StatusLabel.text = "Logged in as " + FBSDKProfile.currentProfile().name;
             checkPermissions();
         }
@@ -113,7 +113,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             StatusLabel.text = "Login cancelled - try again?";
         }
         else {
-            progressBarDisplayer("Logging In", true)
+            progressBarDisplayer("Logging In", indicator: true)
         }
     }
     func observeProfileChange() {
@@ -128,9 +128,9 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         if ((FBSDKAccessToken.currentAccessToken())==nil) {
         } else {
             if (tokenupdated == false) {
-            tokenupdated = true;
-            self.observeProfileChange();
-            checkPermissions();
+                tokenupdated = true;
+                self.observeProfileChange();
+                checkPermissions();
             }
         }
     }
@@ -282,14 +282,14 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         if (profdl == false && frdl == false) {
             NSLog("Manual Login");
             let profiletosync:Profile = Profile.fetchProfileforID(FBSDKAccessToken.currentAccessToken().userID);
-                Globals.currentprofile = profiletosync;
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.tokenupdated = false;
-                    self.performSegueWithIdentifier("LogintoLanding", sender: self);
-                })
+            Globals.currentprofile = profiletosync;
+            dispatch_async(dispatch_get_main_queue(), {
+                self.tokenupdated = false;
+                self.performSegueWithIdentifier("LogintoLanding", sender: self);
+            })
         }
     }
-    func progressBarDisplayer(msg:String, _ indicator:Bool ) {
+    func progressBarDisplayer(msg:String, indicator:Bool ) {
         strLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 50))
         strLabel.text = msg
         strLabel.textColor = UIColor.whiteColor()
@@ -305,6 +305,5 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         messageFrame.addSubview(strLabel)
         view.addSubview(messageFrame)
     }
-    
 }
 

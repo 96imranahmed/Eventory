@@ -193,7 +193,7 @@ class Profile : NSManagedObject {
             }
         })
     }
-    class func downloadPictureAsync(URL:String?, id:String?) { //Downloads Profile Picture (doesn't return anything)
+    class func downloadPictureAsync(URL:String?, id:String?) { //Downloads Profile Picture
         let imageRequest: NSURLRequest = NSURLRequest(URL: NSURL(string: URL!)!);
         let queue: NSOperationQueue = NSOperationQueue.mainQueue()
         NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in

@@ -121,6 +121,33 @@ class Group: NSManagedObject {
             }
         }
     }
+    class func getGroupsfrom(data: NSData, withtype: Int) {
+            var error: NSError?
+            var grouplist:[Group!]!=[];
+            if data.length == 0 {
+                Group.ClearGroups();
+                let params = ["Groups":grouplist, "Type":withtype];
+                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params as! [String : AnyObject]);
+            } else {
+                if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error) as? Dictionary<String,AnyObject>
+                {
+                    Group.ClearGroups();
+                    var currententry: Group;
+                    for (grouplistindex, currentgroup) in results {
+                        let name:String = ((currentgroup as? NSDictionary)?.valueForKey("Name")!)! as! String;
+                        let admin:Bool = ((currentgroup as? NSDictionary)?.valueForKey("Admin")!)! as! Bool;
+                        let id:String = ((currentgroup as? NSDictionary)?.valueForKey("GroupID")!)! as! String;
+                        let members:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Members")!)! as! NSArray;
+                        let invited:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Invited")!)! as! NSArray;
+                        let memberstring = members.componentsJoinedByString(";");
+                        let invitedstring = invited.componentsJoinedByString(";");
+                        grouplist.append(Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false));
+                }
+                    let params = ["Groups":grouplist, "Type":withtype];
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params as! [String : AnyObject]);
+                }
+            }
+    }
     //MARK: Group Sort Methods
     class func SortGroups(input:[Group]!) -> [Group]! {
         var groups = input;

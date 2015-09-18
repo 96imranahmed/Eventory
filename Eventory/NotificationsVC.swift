@@ -12,7 +12,9 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     @IBOutlet weak var notificationtable: UITableView!
     //Cell swipe
     let refreshControl = UIRefreshControl()
+    var messageFrame = UIView();
     var activityIndicator = UIActivityIndicatorView();
+    var strLabel = UILabel();
     var preoffset = 0;
     var lastOffset: CGPoint = CGPointMake(0, 0);
     var lastOffsetCapture: NSTimeInterval = 0.0;
@@ -37,11 +39,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         if (Reachability.isConnectedToNetwork()) {
             Notification.getNotifications(Constants.notificationloadlimit, page: 0);
             pagenumber++;
-            activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
-            activityIndicator.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
-            activityIndicator.center = self.view.center;
-            self.view.addSubview(activityIndicator)
-            activityIndicator.startAnimating()
+            progressBarDisplayer("Loading...", indicator:true);
             var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "timeout", userInfo: nil, repeats: false);
         } else {
             RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
@@ -61,6 +59,22 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    func progressBarDisplayer(msg:String, indicator:Bool ) {
+        strLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 50))
+        strLabel.text = msg
+        strLabel.textColor = UIColor.whiteColor()
+        messageFrame = UIView(frame: CGRect(x: view.frame.midX - 90, y: view.frame.midY - 25 , width: 180, height: 50))
+        messageFrame.layer.cornerRadius = 15
+        messageFrame.backgroundColor = UIColor(white: 0, alpha: 0.7)
+        if indicator {
+            activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.White)
+            activityIndicator.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+            activityIndicator.startAnimating()
+            messageFrame.addSubview(activityIndicator)
+        }
+        messageFrame.addSubview(strLabel)
+        view.addSubview(messageFrame)
+    }
     //MARK: Update/Refresh functions
     func refreshnotifications(notification: NSNotification) {
         if let info = notification.userInfo {
@@ -77,7 +91,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 UIView.transitionWithView(self.notificationtable, duration:0.0, options: UIViewAnimationOptions.TransitionCrossDissolve,
                     animations: {
                         if self.activityIndicator.isAnimating() {
-                            self.activityIndicator.stopAnimating();
+                            self.messageFrame.removeFromSuperview();
                         }
                         self.refreshControl.endRefreshing();
                         self.notificationtable.reloadData();
@@ -88,7 +102,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         } else {
             dispatch_async(dispatch_get_main_queue()){
                 if self.activityIndicator.isAnimating() {
-                    self.activityIndicator.stopAnimating();
+                    self.messageFrame.removeFromSuperview();
                 }
                 self.refreshControl.endRefreshing();
                 self.isUpdating = false;
@@ -130,7 +144,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     //MARK: Refresh & Timeout
     func timeout() {
-        activityIndicator.stopAnimating();
+        self.messageFrame.removeFromSuperview();
         refreshControl.endRefreshing();
     }
     func autorefresh(notification: NSNotification) {
@@ -138,7 +152,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         if (Reachability.isConnectedToNetwork()) {
             Notification.getNotifications(Constants.notificationloadlimit, page: 0);
         }
-        activityIndicator.startAnimating();
+        progressBarDisplayer("Loading...", indicator:true);
     }
     func refresh(refreshControl: UIRefreshControl) {
         pagenumber = 0;
@@ -192,7 +206,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             isScrolling = true;
             Notification.getNotifications(Constants.notificationloadlimit, page: pagenumber);
             pagenumber++;
-            activityIndicator.startAnimating();
+            progressBarDisplayer("Loading...", indicator:true);
             var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "timeout", userInfo: nil, repeats: false);
         }
     }
