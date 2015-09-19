@@ -15,10 +15,12 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     var messageFrame = UIView();
     var activityIndicator = UIActivityIndicatorView();
     var strLabel = UILabel();
+    //For SWTableviewCell
     var preoffset = 0;
     var lastOffset: CGPoint = CGPointMake(0, 0);
     var lastOffsetCapture: NSTimeInterval = 0.0;
     var isScrollingFast: Bool = false;
+    //Other
     var notificationlist:[Notification] = [];
     var cellcheck = ["Disabled" : false, "Index" : NSIndexPath(forRow: 0, inSection: 0)]
     var pagenumber = 0;
@@ -112,34 +114,34 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     func groupdownload(notification: NSNotification) {
         dispatch_async(dispatch_get_main_queue()){
-        let currentgroup = notification.userInfo!["Group"] as! Group!;
-        let popoverVC = self.storyboard?.instantiateViewControllerWithIdentifier("PopoverGroupList") as! GroupListPopoverVC!
-        popoverVC.currentgroup = currentgroup;
-        var members:[String] = (currentgroup.memberstring?.componentsSeparatedByString(";"))!;
-        var invited:[String] = (currentgroup.invitedstring?.componentsSeparatedByString(";"))!;
-        var height:Int;
-        //Set Size of Popup
-        if (members.count>0 && invited.count>0) {
-            height = members.count*70 + invited.count*70 + 44;
-        } else if (members.count>0){
-            height = members.count*70 + 22;
-        } else {
-            height = invited.count*70 + 22;
-        }
-        height = height + 112;
-        if (height > 2*((Int(self.view.center.y)-64))) {
-            height = 2*((Int(self.view.center.y)-64));
-        }
-        var width = (Int(self.view.frame.size.width)-75);
-        popoverVC.width = CGFloat(width);
-        popoverVC.preferredContentSize = CGSizeMake(CGFloat(width), CGFloat(height))
-        popoverVC.modalPresentationStyle = .Popover
-        let popover = popoverVC.popoverPresentationController!
-        popover.delegate = self
-        popover.sourceView  = self.view
-        popover.sourceRect = self.view.frame;
-        popover.permittedArrowDirections = UIPopoverArrowDirection.allZeros;
-        self.presentViewController(popoverVC, animated: true, completion: nil);
+            let currentgroup = notification.userInfo!["Group"] as! Group!;
+            let popoverVC = self.storyboard?.instantiateViewControllerWithIdentifier("PopoverGroupList") as! GroupListPopoverVC!
+            popoverVC.currentgroup = currentgroup;
+            var members:[String] = (currentgroup.memberstring?.componentsSeparatedByString(";"))!;
+            var invited:[String] = (currentgroup.invitedstring?.componentsSeparatedByString(";"))!;
+            var height:Int;
+            //Set Size of Popup
+            if (members.count>0 && invited.count>0) {
+                height = members.count*70 + invited.count*70 + 44;
+            } else if (members.count>0){
+                height = members.count*70 + 22;
+            } else {
+                height = invited.count*70 + 22;
+            }
+            height = height + 112;
+            if (height > 2*((Int(self.view.center.y)-64))) {
+                height = 2*((Int(self.view.center.y)-64));
+            }
+            var width = (Int(self.view.frame.size.width)-75);
+            popoverVC.width = CGFloat(width);
+            popoverVC.preferredContentSize = CGSizeMake(CGFloat(width), CGFloat(height))
+            popoverVC.modalPresentationStyle = .Popover
+            let popover = popoverVC.popoverPresentationController!
+            popover.delegate = self
+            popover.sourceView  = self.view
+            popover.sourceRect = self.view.frame;
+            popover.permittedArrowDirections = UIPopoverArrowDirection.allZeros;
+            self.presentViewController(popoverVC, animated: true, completion: nil);
         }
     }
     //MARK: Refresh & Timeout
@@ -254,26 +256,30 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         let cell = notificationtable.cellForRowAtIndexPath(index) as! NotificationDecisionCell;
         var animation: UITableViewRowAnimation;
         animation = UITableViewRowAnimation.Fade;
-        let procnotif = notificationlist[index.row];
-        if (procnotif.notificationtype == 1) {
-            if let text = procnotif.notifdata {
-                let pos = text.rangeOfString(":", options: .BackwardsSearch)?.startIndex
-                var groupidpost = text.substringFromIndex(pos!)
-                groupidpost = dropFirst(groupidpost);
-                var params = Dictionary<String,AnyObject>();
-                params["accepted"] = accepted.description;
-                params["groupid"] = groupidpost;
-                Reachability.postToServer("group_decision.php", postdata: params, customselector: "Refresh");
+        if Reachability.isConnectedToNetwork() {
+            let procnotif = notificationlist[index.row];
+            if (procnotif.notificationtype == 1) {
+                if let text = procnotif.notifdata {
+                    let pos = text.rangeOfString(":", options: .BackwardsSearch)?.startIndex
+                    var groupidpost = text.substringFromIndex(pos!)
+                    groupidpost = dropFirst(groupidpost);
+                    var params = Dictionary<String,AnyObject>();
+                    params["accepted"] = accepted.description;
+                    params["groupid"] = groupidpost;
+                    Reachability.postToServer("group_decision.php", postdata: params, customselector: "Refresh");
+                }
             }
-        }
-        notificationlist.removeAtIndex(index.row);
-        Globals.unreadnotificationcount--;
-        if (notificationtable.numberOfRowsInSection(index.section) == 1) {
-            //Delete section
-            notificationtable.deleteSections(NSIndexSet(index: index.section), withRowAnimation: animation);
+            notificationlist.removeAtIndex(index.row);
+            Globals.unreadnotificationcount--;
+            if (notificationtable.numberOfRowsInSection(index.section) == 1) {
+                //Delete section
+                notificationtable.deleteSections(NSIndexSet(index: index.section), withRowAnimation: animation);
+            } else {
+                //Delete row
+                notificationtable.deleteRowsAtIndexPaths([index], withRowAnimation: animation)
+            }
         } else {
-            //Delete row
-            notificationtable.deleteRowsAtIndexPaths([index], withRowAnimation: animation)
+            RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
         }
     }
     func swipeableTableViewCell(cell: SWTableViewCell!, scrollingToState state: SWCellState) {

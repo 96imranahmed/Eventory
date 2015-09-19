@@ -27,6 +27,7 @@
 		D855B71E1B489D8400E85674 /* EventoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B71D1B489D8400E85674 /* EventoryTests.swift */; };
 		D855B72A1B489DE500E85674 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */; };
 		D855B72B1B489DE500E85674 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */; };
+		D880E0BF1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880E0BE1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift */; };
 		D88747591B583A9000373791 /* RKDropdownAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = D88747581B583A9000373791 /* RKDropdownAlert.m */; };
 		D88EF3521B76C27500F7197D /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = D88EF3511B76C27500F7197D /* star.png */; };
 		D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89DBE121B52BCE100F3151A /* LandingVC.swift */; };
@@ -92,6 +93,7 @@
 		D855B7271B489DA100E85674 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../FBSDKLoginKit.framework; sourceTree = "<group>"; };
+		D880E0BE1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeftDeclinedDecisionCell.swift; sourceTree = "<group>"; };
 		D88747571B583A9000373791 /* RKDropdownAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDropdownAlert.h; sourceTree = "<group>"; };
 		D88747581B583A9000373791 /* RKDropdownAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDropdownAlert.m; sourceTree = "<group>"; };
 		D88EF3511B76C27500F7197D /* star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = star.png; path = ../star.png; sourceTree = "<group>"; };
@@ -267,6 +269,7 @@
 				D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */,
 				D84F14A31B563D190081B5E8 /* FriendCell.swift */,
 				D80221BB1B6BF715000D26D9 /* NotificationDecisionCell.swift */,
+				D880E0BE1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift */,
 			);
 			name = "Custom Cells";
 			sourceTree = "<group>";
@@ -434,6 +437,7 @@
 				D81B455D1B5AD12200DF7899 /* Profile.swift in Sources */,
 				D8A36F501B5DA1F00026C3A0 /* SWLongPressGestureRecognizer.m in Sources */,
 				D82E8FD11B4B1355007A747F /* LocksmithRequest.swift in Sources */,
+				D880E0BF1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift in Sources */,
 				D8A36F511B5DA1F00026C3A0 /* SWTableViewCell.m in Sources */,
 				D8A2E4091B8FDB21006A9A22 /* RKNotificationHub.m in Sources */,
 				D82E8FDB1B4E5350007A747F /* Eventory.xcdatamodeld in Sources */,
