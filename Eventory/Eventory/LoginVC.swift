@@ -80,12 +80,12 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
-        let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
+        _ = Locksmith.deleteDataForUserAccount(self.appName);
         StatusLabel.text = "Successfully Logged Out!";
     }
     
     func rerequestPermissions() {
-        var login = FBSDKLoginManager.new();
+        let login = FBSDKLoginManager();
         login.logOut();
         login.logInWithReadPermissions(["public_profile", "user_friends"], handler: { (result:FBSDKLoginManagerLoginResult!, error:NSError!) -> Void in
             if error != nil {
@@ -100,9 +100,9 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         })  //Add user_events if required
     }
     func forceLogout() {
-        var login = FBSDKLoginManager.new();
+        let login = FBSDKLoginManager();
         login.logOut();
-        let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
+        _ = Locksmith.deleteDataForUserAccount(self.appName);
     }
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
         if ((error) != nil)
@@ -159,7 +159,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 title = "Friend Access Denied :(";
                 message = appName + " requires a list of your friends using " + appName + " to provide you with the best social experience possible. Would you like to enable this permission or log-out?";
             }
-            var alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(UIAlertAction(title: "Enable?", style: .Default, handler: { action in
                 self.rerequestPermissions();
             }))
@@ -181,14 +181,14 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         connection.addRequest(request, completionHandler: { (connection:FBSDKGraphRequestConnection!, result:AnyObject!, error:NSError!) -> Void in
             if (error==nil) {
                 self.profdl = true;
-                var id: NSString? = (result as! NSDictionary).valueForKey("id") as? NSString;
-                var namepost: NSString? = (result as! NSDictionary).valueForKey("name") as? NSString;
+                let id: NSString? = (result as! NSDictionary).valueForKey("id") as? NSString;
+                let namepost: NSString? = (result as! NSDictionary).valueForKey("name") as? NSString;
                 var profilepicture:AnyObject? = (result as! NSDictionary).valueForKey("picture");
                 profilepicture = (profilepicture as! NSDictionary).valueForKey("data");
                 profilepicture = (profilepicture as! NSDictionary).valueForKey("url") as? NSString;
                 //Save credentials to keychain
-                let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
-                let error = Locksmith.saveData([id as! String: FBSDKAccessToken.currentAccessToken().tokenString], forUserAccount: self.appName);
+                _ = Locksmith.deleteDataForUserAccount(self.appName);
+                _ = Locksmith.saveData([id as! String: FBSDKAccessToken.currentAccessToken().tokenString], forUserAccount: self.appName);
                 //Creates a new save profile of personal profile
                 if let moc = self.managedObjectContext {
                     if (Profile.CheckProfileifContains("profid", identifier: (id as? String)!)) {
@@ -196,7 +196,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                         fetchRequest.fetchLimit = 1;
                         let predicate = NSPredicate(format: "profid == %@",id!);
                         fetchRequest.predicate = predicate
-                        let fetchResults = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile];
+                        let fetchResults = (try? self.managedObjectContext!.executeFetchRequest(fetchRequest)) as? [Profile];
                         Globals.currentprofile = fetchResults?[0];
                     } else {
                         Globals.currentprofile = Profile.createInManagedObjectContext(moc, name: namepost as? String, url: profilepicture as? String, profid: id as? String, isuser: true);
@@ -212,7 +212,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 if (result != nil) {
                     self.frdl = true;
                     Main.clearAll();
-                    var friendid = Profile.saveFriendstoCoreData(result);
+                    let friendid = Profile.saveFriendstoCoreData(result);
                     var params = Dictionary<String, AnyObject>();
                     params["name"] = Globals.currentprofile!.name;
                     params["url"] = Globals.currentprofile!.url;
@@ -234,7 +234,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 }
             })
             connection.start();
-            let timer = NSTimer.scheduledTimerWithTimeInterval(4.0, target: self, selector: Selector("timeout"), userInfo: nil, repeats: false);
+            _ = NSTimer.scheduledTimerWithTimeInterval(4.0, target: self, selector: Selector("timeout"), userInfo: nil, repeats: false);
         } else {
             self.messageFrame.removeFromSuperview()
             //Process offline login
@@ -243,7 +243,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 self.view.hidden = false;
                 //NSLog("No internet connection!");
                 dispatch_async(dispatch_get_main_queue(), {
-                    var alert = UIAlertController(title: "No internet connection!", message: "You have not logged in and have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
+                    let alert = UIAlertController(title: "No internet connection!", message: "You have not logged in and have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
                     self.presentViewController(alert, animated: true, completion: nil)
                 })
@@ -254,7 +254,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     //NSLog("Profile expired!");
                     self.view.hidden = false;
                     dispatch_async(dispatch_get_main_queue(), {
-                        var alert = UIAlertController(title: "No internet connection!", message: "Your access token has expired and you have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
+                        let alert = UIAlertController(title: "No internet connection!", message: "Your access token has expired and you have no network connection. Please connect to continue", preferredStyle: UIAlertControllerStyle.Alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
                         self.presentViewController(alert, animated: true, completion: nil)
                     })
@@ -263,7 +263,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                     let fetchRequest = NSFetchRequest(entityName: "Profile")
                     let predicate = NSPredicate(format: "profid == %@", FBSDKAccessToken.currentAccessToken().userID)
                     fetchRequest.predicate = predicate
-                    if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
+                    if let fetchResults = (try? managedObjectContext!.executeFetchRequest(fetchRequest)) as? [Profile] {
                         if (fetchResults.count>0) {
                             Globals.currentprofile = fetchResults[0];
                         }
@@ -285,7 +285,9 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             Globals.currentprofile = profiletosync;
             dispatch_async(dispatch_get_main_queue(), {
                 self.tokenupdated = false;
+                if (self.navigationController?.visibleViewController == self) {
                 self.performSegueWithIdentifier("LogintoLanding", sender: self);
+                }
             })
         }
     }

@@ -36,14 +36,14 @@ if ($safe) {
             $targetvalues = $connection->GetValue($connectinfo, 0, $groupid, "people_added");
             $targetvaluesarray = unserialize($targetvalues);
             $targetid = ReturnTargetID($targetvaluesarray, $profid);
+            $connection->RemoveItemfromList($connectinfo, 1, $profid, "groups_pending", "groupid:".strval($groupid), "data");                
             if ($accepted) {
                 //Add on to people accepted
                 $connection->AddtoList($connectinfo, 0, $groupid, "people_accepted", $profid); //Add to group list of accepted friends
                 $connection->AddtoList($connectinfo,2, $profid, "groups_accepted", $groupid); //Add to profile list of accepted groups
-                $connection->RemoveItemfromList($connectinfo, 1, $profid, "groups_pending", "groupid:".strval($groupid), "data");
                 //(Notify group inviter that a new user has accepted group request?
                 if ($checkdeclined == false && $checkleft == false) {
-                    CreateNotification(2, $connectinfo, $targetid, $profid, $groupid);
+                    CreateNotification(2, $connectinfo, $targetid, $profid, $groupid, TRUE);
                 } else {
                     //Remove from list of left groups
                     if ($checkleft) {
@@ -59,7 +59,7 @@ if ($safe) {
                     $connection->AddtoList($connectinfo, 2, $profid, "groups_declined", $groupid); //Add to profile list of declined group
                     $connection->RemoveItemfromList($connectinfo, 1, $profid, "groups_pending", "groupid:"+$groupid, "data");//Clear "pending" notification
                     //(Notify group inviter that a new user has declined group request?)
-                    CreateNotification(3, $connectinfo, $targetid, $profid, $groupid);
+                    CreateNotification(3, $connectinfo, $targetid, $profid, $groupid, FALSE);
                 }
             }
         } else {

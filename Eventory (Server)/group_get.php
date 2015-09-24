@@ -22,17 +22,17 @@ if (array_key_exists('type', $_POST)) {
 if ($safe) {
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
-        if (type == 0) {
+        if ($type == 0) {
             //Get accepted groups
            $groupstring = $connection->GetValue($connectinfo, 2, $profid, "groups_accepted");
-            } elseif (type == 1) {
+        } elseif ($type == 1) {
             //Get declined groups
             $groupstring = $connection->GetValue($connectinfo, 2, $profid, "groups_declined");
-        } elseif (type == 2) {
+        } elseif ($type == 2) {
             //Get left groups
             $groupstring = $connection->GetValue($connectinfo, 2, $profid, "groups_left");
         }
-        if ($groupstring == 0 || $groupstring == null) {
+        if (count($groupstring) == 0 || $groupstring == null) {
             echo null;
         } else {
             $grouparray = explode(";", $groupstring);

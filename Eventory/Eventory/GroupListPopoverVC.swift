@@ -45,7 +45,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         groupnameholderview.addSubview(groupimage)
         groupnameholderview.addSubview(grouplabel)
         groupnameholderview.frame.size = CGSize(width: grouplabel.frame.width + 66, height: 60)
-        var tap = UITapGestureRecognizer(target: self, action: "tableViewTapped:");
+        let tap = UITapGestureRecognizer(target: self, action: "tableViewTapped:");
         self.container.addGestureRecognizer(tap);
         container.addSubview(groupnameholderview)
         container.bringSubviewToFront(groupnameholderview);
@@ -57,7 +57,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         searchController.searchBar.placeholder = "Search Members"
         self.grouplist.tableHeaderView = searchController.searchBar
         self.grouplist.bringSubviewToFront(searchController.searchBar);
-        var checktap = UITapGestureRecognizer(target: self, action: "tableViewTapped:");
+        let checktap = UITapGestureRecognizer(target: self, action: "tableViewTapped:");
         checktap.cancelsTouchesInView = false;
         self.grouplist.addGestureRecognizer(checktap);
         self.definesPresentationContext = true;
@@ -73,7 +73,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         for (var i = 0; i<currentinsert.count; i++){
             Profile.downloadUnknownPictureAsync(currentinsert[i], membersfind: true);
         }
-        memberlist.extend(currentinsert);
+        memberlist.appendContentsOf(currentinsert);
         dispatch_async(dispatch_get_main_queue()){
             UIView.transitionWithView(self.grouplist, duration:0.1, options: UIViewAnimationOptions.TransitionCrossDissolve,
                 animations: {
@@ -104,7 +104,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
     func updateInvitedList(notification:NSNotification) {
         NSLog("Invites updated");
         let currentinsert = notification.userInfo!["Friends"] as! [Profile]!;
-        invitedlist.extend(currentinsert);
+        invitedlist.appendContentsOf(currentinsert);
         for (var i = 0; i<currentinsert.count; i++){
             Profile.downloadUnknownPictureAsync(currentinsert[i], membersfind:false);
         }
@@ -139,7 +139,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
     func updateSearchResultsForSearchController(searchinputController: UISearchController) {
         filteredmemberlist.removeAll(keepCapacity: false);
         filteredinvitelist.removeAll(keepCapacity: false);
-        var predicate:NSPredicate = NSPredicate(format: "SELF.name CONTAINS[c] %@", searchinputController.searchBar.text);
+        let predicate:NSPredicate = NSPredicate(format: "SELF.name CONTAINS[c] %@", searchinputController.searchBar.text!);
         filteredmemberlist = memberlist.filter({predicate.evaluateWithObject($0)});
         filteredinvitelist = invitedlist.filter({predicate.evaluateWithObject($0)});
         self.grouplist.reloadData();
@@ -154,7 +154,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         var i = 0;
-        if searchController.active && count(searchController.searchBar.text) > 0 {
+        if searchController.active && searchController.searchBar.text!.characters.count > 0 {
             if (filteredmemberlist.count>0) {
                 i = i + 1;
             }
@@ -172,7 +172,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         return i;
     }
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if searchController.active && count(searchController.searchBar.text) > 0 {
+        if searchController.active && searchController.searchBar.text!.characters.count > 0 {
             if filteredinvitelist.count > 0 && filteredmemberlist.count > 0 {
                 if section == 0 {
                     return "Group Members";
@@ -208,7 +208,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchController.active && count(searchController.searchBar.text) > 0 {
+        if searchController.active && searchController.searchBar.text!.characters.count > 0 {
             if filteredinvitelist.count > 0 && filteredmemberlist.count > 0 {
                 if section == 0 {
                     return filteredmemberlist.count;
@@ -245,7 +245,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     func getFriendCell(inputprofile: Profile) -> UITableViewCell {
-        var cell = grouplist.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
+        let cell = grouplist.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
         if Globals.currentprofile?.profid == inputprofile.profid {
             cell.friendlabel.text = "You";
         } else {
@@ -256,7 +256,7 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         return cell;
     }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if searchController.active && count(searchController.searchBar.text) > 0 {
+        if searchController.active && searchController.searchBar.text!.characters.count > 0 {
             if filteredinvitelist.count > 0 && filteredmemberlist.count > 0 {
                 if indexPath.section == 0 {
                     return getFriendCell(filteredmemberlist[indexPath.row]);

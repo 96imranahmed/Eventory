@@ -263,7 +263,7 @@ class Connect {
         $postsql->execute(array(':current' => $current, ':id' => $id));
     }
 
-    //Add dictionary to list
+    //Add unique id to list
     public function AddItemtoList($pdo, $tablename, $id, $column, $value, $duplicateref) {
         $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
         $prepsql->execute(array(':id' => $id));
@@ -291,6 +291,27 @@ class Connect {
                 }
             }
             $current = serialize($currentarray);
+        }
+        $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = :current WHERE id = :id');
+        $postsql->execute(array(':current' => $current, ':id' => $id));
+    }
+
+    //Add item to a list - ignoring possibility of a duplicate
+    public function AddNewtoList($pdo, $tablename, $id, $column, $value) {
+        $prepsql = $pdo->prepare($this->buildQuery($tablename, 0) . 'WHERE id = :id LIMIT 1');
+        $prepsql->execute(array(':id' => $id));
+        $currentrow = $prepsql->fetch();
+        $current = $currentrow[$column];
+        if ($current == null) {
+            $current = $value;
+        } else {
+            if ($current == "") {
+                $current = $value;
+            } else {
+                $currentarray = explode(";", $current);
+                $currentarray[] = $value;
+                $current = implode(";", $currentarray);
+            }
         }
         $postsql = $pdo->prepare($this->buildQuery($tablename, 1, $column) . ' = :current WHERE id = :id');
         $postsql->execute(array(':current' => $current, ':id' => $id));
@@ -326,6 +347,30 @@ class Connect {
             }
             if ($tablename == 1) {
                 $this->DecrementNotificationCount($pdo, $id, $decrementcount);
+                $notifraw = $this->GetValue($pdo, 1, $id, "notification_raw");
+                $notiflist = explode(";", $notifraw);
+                $columnid = array_search($column, array_keys($currentrow));
+                $notifremove = [];
+                $occurencecount = 0;
+                //NEED TO REMOVE FROM RAW AS WELL!
+                for ($b = 0; $b < count($notiflist); $b++) {
+                    if ($notiflist[$b] == $columnid) {
+                      if (in_array($occurencecount, $removeindex)) {
+                          $notifremove[] = $b;
+                      }
+                      $occurencecount++;
+                    }
+                }
+                for ($a = 0; $a < count($notifremove); $a++) {
+                    unset($notiflist[$notifremove[$a] - $a]);
+                }
+                if (count($notiflist) == 0) {
+                    $notifstring = NULL;
+                } else {
+                    $notifstring = implode(";", $notiflist);                   
+                }
+                $notifsql = $pdo->prepare('UPDATE Notifications SET notification_raw = :notifstring WHERE id = :id');
+                $notifsql->execute(array(':notifstring' => $notifstring, ':id' => $id));
             }
             if (!is_array($currentarray)) {
                 $current = null;
@@ -357,7 +402,12 @@ class Connect {
         } else {
             $currentarray = unserialize($current);
             if (is_array($currentarray)) {
-                if ($currentarray["isread"] == null) {
+                if (isset($currentarray['isread'])) {
+                    if ($currentarray["isread"] == 0) {
+                        $currentarray["isread"] = 1;
+                        $this->DecrementNotification($pdo, $id);
+                    }
+                } else {
                     for ($i = 0; $i < count($currentarray); $i++) {
                         $loop = $currentarray[i];
                         if ($loop["isread"] == 0) {
@@ -365,11 +415,6 @@ class Connect {
                             $this->DecrementNotification($pdo, $id);
                         }
                         $currentarray[i] = $loop;
-                    }
-                } else {
-                    if ($currentarray["isread"] == 0) {
-                        $currentarray["isread"] = 1;
-                        $this->DecrementNotification($pdo, $id);
                     }
                 }
             }

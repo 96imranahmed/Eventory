@@ -27,6 +27,7 @@
 		D855B71E1B489D8400E85674 /* EventoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D855B71D1B489D8400E85674 /* EventoryTests.swift */; };
 		D855B72A1B489DE500E85674 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */; };
 		D855B72B1B489DE500E85674 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */; };
+		D85717711BB488F5004166C5 /* NotificationStandardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85717701BB488F5004166C5 /* NotificationStandardCell.swift */; settings = {ASSET_TAGS = (); }; };
 		D880E0BF1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880E0BE1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift */; };
 		D88747591B583A9000373791 /* RKDropdownAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = D88747581B583A9000373791 /* RKDropdownAlert.m */; };
 		D88EF3521B76C27500F7197D /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = D88EF3511B76C27500F7197D /* star.png */; };
@@ -93,6 +94,7 @@
 		D855B7271B489DA100E85674 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		D855B7281B489DE500E85674 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		D855B7291B489DE500E85674 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../FBSDKLoginKit.framework; sourceTree = "<group>"; };
+		D85717701BB488F5004166C5 /* NotificationStandardCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationStandardCell.swift; sourceTree = "<group>"; };
 		D880E0BE1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeftDeclinedDecisionCell.swift; sourceTree = "<group>"; };
 		D88747571B583A9000373791 /* RKDropdownAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDropdownAlert.h; sourceTree = "<group>"; };
 		D88747581B583A9000373791 /* RKDropdownAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDropdownAlert.m; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 				D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */,
 				D84F14A31B563D190081B5E8 /* FriendCell.swift */,
 				D80221BB1B6BF715000D26D9 /* NotificationDecisionCell.swift */,
+				D85717701BB488F5004166C5 /* NotificationStandardCell.swift */,
 				D880E0BE1BACBFED00DB18F7 /* LeftDeclinedDecisionCell.swift */,
 			);
 			name = "Custom Cells";
@@ -361,7 +364,9 @@
 		D855B6FA1B489D8400E85674 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0640;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Imran Ahmed";
 				TargetAttributes = {
 					D855B7011B489D8400E85674 = {
@@ -444,6 +449,7 @@
 				D8284E1B1BAA0C8600720DBF /* LeftDeclinedVC.swift in Sources */,
 				D89DBE131B52BCE100F3151A /* LandingVC.swift in Sources */,
 				D8F2F89A1B66E76A00D3DA8E /* GroupCellEmpty.swift in Sources */,
+				D85717711BB488F5004166C5 /* NotificationStandardCell.swift in Sources */,
 				D81B455F1B5AD15800DF7899 /* Group.swift in Sources */,
 				D8D868191B62A17500CF63B7 /* GroupListPopoverVC.swift in Sources */,
 				D82E8FD01B4B1355007A747F /* Locksmith.swift in Sources */,
@@ -522,6 +528,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -537,7 +544,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -575,7 +582,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -593,6 +600,7 @@
 				INFOPLIST_FILE = Eventory/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Eventory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Eventory/Bridging-Header.h";
 			};
@@ -609,6 +617,7 @@
 				INFOPLIST_FILE = Eventory/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Eventory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Eventory/Bridging-Header.h";
 			};
@@ -618,16 +627,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = EventoryTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Eventory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Eventory.app/Eventory";
 			};
@@ -637,12 +644,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = EventoryTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Eventory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Eventory.app/Eventory";
 			};

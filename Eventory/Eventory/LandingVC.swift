@@ -28,19 +28,28 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
             self.hub.moveCircleByX(0, y: -5);
             self.hub.scaleCircleSizeBy(0.6);
         })
-        var notificationbutton:UIBarButtonItem = UIBarButtonItem(customView: nview);
+        let notificationbutton:UIBarButtonItem = UIBarButtonItem(customView: nview);
         self.navigationItem.rightBarButtonItem = notificationbutton;
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "PPUpdated", name: "PPUpdated", object: nil);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshnotifications:", name: "Eventory_Notifications_Done", object: nil)
         //Load user profile
+        Globals.currentprofile = Profile.fetchProfileforID(FBSDKAccessToken.currentAccessToken().userID);
         let image = Globals.currentprofile?.imagedata
-        if (Globals.currentprofile == nil) {
-            picbutton.image = UIImage(named: "unkownprofile.png")
+        if (Globals.currentprofile?.name == "") {
+            picbutton.image = UIImage(named: "unkownprofile.png");
+            navprofilelabel.text = "Unknown";
+            NSLog("Forced logout - Profile error?");
+            dispatch_async(dispatch_get_main_queue(), {
+                self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
+            })
         } else {
             if ((image) != nil) {
             picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
             } else {
             picbutton.image = UIImage(named: "unkownprofile.png")
+            }
+            if let name = Globals.currentprofile?.name {
+            navprofilelabel.text = getTitle() +  ", " + getFirstName(name) +  "!";
             }
         }
         picbutton.layer.masksToBounds = true;
@@ -48,14 +57,6 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         let tap = UITapGestureRecognizer(target: self, action: Selector("ProfileViewLoad:"))
         tap.delegate = self
         navtitle.addGestureRecognizer(tap)
-        if let name = Globals.currentprofile?.name {
-            navprofilelabel.text = getTitle() +  ", " + getFirstName(name) +  "!";
-        } else {
-            NSLog("Forced logout - Profile error?");
-            dispatch_async(dispatch_get_main_queue(), {
-                self.performSegueWithIdentifier("LandingtoLogout", sender: nil);
-            })
-        }
         let reqsize = navprofilelabel.sizeThatFits(CGSizeMake(self.navtitle.frame.size.width, 30))
         navprofilelabel.frame.size = reqsize;
         picbutton.frame = CGRectMake((reqsize.width + 8), 1, 30, 30);
@@ -66,13 +67,23 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         navtitle.autoresizesSubviews = false;
         self.navigationItem.titleView = navtitle;
         //self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: imageResize(UIImage(named: "bell.png")!, sizeChange: CGSizeMake(25, 25)), style: UIBarButtonItemStyle.Plain, target: self, action: "NotificationsDidTap:");
-        let frame = navtitle.frame;
-        let center = navtitle.center;
-        var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "animateNotifications", userInfo: nil, repeats: true);
+        _ = navtitle.frame;
+        _ = navtitle.center;
+        _ = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "animateNotifications", userInfo: nil, repeats: true);
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(true);
+        if Globals.unreadnotificationcount != 0 {
+            self.hub.decrementBy(self.hub.count)
+            self.hub.incrementBy(UInt(Globals.unreadnotificationcount));
+            self.hub.pop();
+        } else {
+            self.hub.decrementBy(self.hub.count)
+            self.hub.pop();
+        }
+    }
+    override func viewWillAppear(animated: Bool) {
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -123,15 +134,15 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
     
     //MARK: String functions
     func getFirstName(name: String) -> String {
-        var fullNameArr = split(name) {$0 == " "}
+        var fullNameArr = name.characters.split {$0 == " "}.map { String($0) }
         return fullNameArr[0]
     }
     
     func getTitle() -> String {
-        var now:NSDate = NSDate();
+        let now:NSDate = NSDate();
         var possiblelists:[String] = ["Hi", "Howdy", "Hey", "Hello", "Heya", "Greetings"];
         let cal = NSCalendar.currentCalendar();
-        let comps = cal.components(NSCalendarUnit.CalendarUnitHour, fromDate: now);
+        let comps = cal.components(NSCalendarUnit.Hour, fromDate: now);
         let hour = comps.hour;
         switch hour {
         case 0 ... 12:
@@ -146,7 +157,7 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         default:
             NSLog("Time error!");
         }
-        var random = Int(arc4random_uniform(UInt32(possiblelists.count)))
+        let random = Int(arc4random_uniform(UInt32(possiblelists.count)))
         return possiblelists[random];
     }
     

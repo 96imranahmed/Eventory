@@ -31,12 +31,13 @@ class NotificationDecisionCell: SWTableViewCell {
     }
     func setDecisionLayout(notificationtype: Int?) {
         if unseen {
-            newimage.hidden = false
+            newimage.hidden = false;
+        } else {
+            newimage.hidden = true;
         }
         if let check = notificationtype {
-            var right:NSMutableArray = NSMutableArray();
-            var left:NSMutableArray = NSMutableArray();
-            var imagesize:CGSize = CGSizeMake(20,20);
+            let right:NSMutableArray = NSMutableArray();
+            let left:NSMutableArray = NSMutableArray();
             if check == 1 {
                 left.sw_addUtilityButtonWithColor(Schemes.returnColor("Nephritis", alpha: 1.0), title: "Accept >");
                 right.sw_addUtilityButtonWithColor(Schemes.returnColor("Alizarin", alpha: 1.0), title: "< Decline");

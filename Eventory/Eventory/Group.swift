@@ -9,6 +9,19 @@
 import Foundation
 import CoreData
 
+extension MutableCollectionType where Index == Int {
+    /// Shuffle the elements of `self` in-place.
+    mutating func shuffleInPlace() {
+        // empty and single-element collections don't shuffle
+        if count < 2 { return }
+        
+        for i in 0..<count - 1 {
+            let j = Int(arc4random_uniform(UInt32(count - i))) + i
+            guard i != j else { continue }
+            swap(&self[i], &self[j])
+        }
+    }
+}
 class Group: NSManagedObject {
     @NSManaged var name:String?;
     @NSManaged var groupid:String?;
@@ -18,7 +31,7 @@ class Group: NSManagedObject {
     convenience init (name:String?, groupid:String?, memberstring: String?, invitedstring: String?, isadmin:Bool, save:Bool) {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext;
-        var entity = NSEntityDescription.entityForName("Group", inManagedObjectContext: ctx!)
+        let entity = NSEntityDescription.entityForName("Group", inManagedObjectContext: ctx!)
         if (save) {
             self.init(entity: entity!, insertIntoManagedObjectContext: ctx);
         } else {
@@ -44,11 +57,14 @@ class Group: NSManagedObject {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName: "Group")
-        let fetchResults = (ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Group])!
+        let fetchResults = ((try? ctx!.executeFetchRequest(fetchRequest)) as? [Group])!
         for (var i = 0; i < fetchResults.count ; i++) {
             ctx?.deleteObject(fetchResults[i]);
         }
-        ctx?.save(nil)
+        do {
+            try ctx?.save()
+        } catch _ {
+        }
     }
     class func ClearGroupNils () {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -56,21 +72,24 @@ class Group: NSManagedObject {
         let fetchRequest = NSFetchRequest(entityName: "Group")
         let predicate = NSPredicate(format: "groupid == nil OR groupid == ''");
         fetchRequest.predicate = predicate;
-        let fetchResults = (ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Group])!
+        let fetchResults = ((try? ctx!.executeFetchRequest(fetchRequest)) as? [Group])!
         for (var i = 0; i < fetchResults.count ; i++) {
             ctx?.deleteObject(fetchResults[i]);
         }
-        ctx?.save(nil)
+        do {
+            try ctx?.save()
+        } catch _ {
+        }
     }
     class func CheckGroupifContains(column: String, identifier: String) -> Bool {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName: "Group")
         fetchRequest.fetchLimit = 1;
-        var formatted = column + " == '" + identifier + "'";
+        let formatted = column + " == '" + identifier + "'";
         let predicate = NSPredicate(format: formatted);
         fetchRequest.predicate = predicate
-        let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Group];
+        let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Group];
         if (fetchResults!.count>0){
             return true;
         } else {
@@ -80,18 +99,17 @@ class Group: NSManagedObject {
     class func saveGrouptoCoreData(outputdata: NSData?){
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext
-        var error: NSError?
         var grouplist:[Group!]!=[];
         if outputdata?.length == 0 {
             Group.ClearGroups();
-            var params:Dictionary = ["Groups":grouplist];
-            NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params);
+            let params:NSDictionary = ["Groups":grouplist, "Type":0];
+            NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params as [NSObject : AnyObject]);
         } else {
-            if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(outputdata!, options: nil, error: &error) as? Dictionary<String,AnyObject>
-            {
+            do {
+                let results = try NSJSONSerialization.JSONObjectWithData(outputdata!, options: []) as? Dictionary<String,AnyObject>
                 Group.ClearGroups();
                 var currententry: Group;
-                for (grouplistindex, currentgroup) in results {
+                for (_, currentgroup) in results! {
                     let name:String = ((currentgroup as? NSDictionary)?.valueForKey("Name")!)! as! String;
                     let admin:Bool = ((currentgroup as? NSDictionary)?.valueForKey("Admin")!)! as! Bool;
                     let id:String = ((currentgroup as? NSDictionary)?.valueForKey("GroupID")!)! as! String;
@@ -104,7 +122,7 @@ class Group: NSManagedObject {
                         fetchRequest.fetchLimit = 1;
                         let predicate = NSPredicate(format: "groupid == %@", id)
                         fetchRequest.predicate = predicate
-                        if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Group]{
+                        if let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Group]{
                             currententry = fetchResults[0];
                             ctx?.deleteObject(currententry)
                             currententry = Group.createInManagedObjectContext(ctx!, name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin);
@@ -115,48 +133,52 @@ class Group: NSManagedObject {
                         grouplist.append(currententry);
                     }
                 }
-                ctx?.save(nil);
-                var params:Dictionary = ["Groups":grouplist];
-                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params);
+                do {
+                    try ctx?.save()
+                } catch _ {
+                };
+                let params:NSDictionary = ["Groups":grouplist, "Type":0];
+                NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params as [NSObject : AnyObject]);
+            } catch {
+                
             }
         }
     }
     class func getGroupsfrom(data: NSData, withtype: Int) {
-            var error: NSError?
-            var grouplist:[Group!]!=[];
-            if data.length == 0 {
-                Group.ClearGroups();
+        var grouplist:[Group!]!=[];
+        if data.length == 0 {
+            let params = ["Groups":grouplist, "Type":withtype];
+            NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params as! [String : AnyObject]);
+        } else {
+            do {
+                let results = try NSJSONSerialization.JSONObjectWithData(data, options: []) as? Dictionary<String,AnyObject>
+                var _: Group;
+                for (_, currentgroup) in results! {
+                    let name:String = ((currentgroup as? NSDictionary)?.valueForKey("Name")!)! as! String;
+                    let admin:Bool = ((currentgroup as? NSDictionary)?.valueForKey("Admin")!)! as! Bool;
+                    let id:String = ((currentgroup as? NSDictionary)?.valueForKey("GroupID")!)! as! String;
+                    let members:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Members")!)! as! NSArray;
+                    let invited:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Invited")!)! as! NSArray;
+                    let memberstring = members.componentsJoinedByString(";");
+                    let invitedstring = invited.componentsJoinedByString(";");
+                    grouplist.append(Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false));
+                }
                 let params = ["Groups":grouplist, "Type":withtype];
                 NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params as! [String : AnyObject]);
-            } else {
-                if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error) as? Dictionary<String,AnyObject>
-                {
-                    Group.ClearGroups();
-                    var currententry: Group;
-                    for (grouplistindex, currentgroup) in results {
-                        let name:String = ((currentgroup as? NSDictionary)?.valueForKey("Name")!)! as! String;
-                        let admin:Bool = ((currentgroup as? NSDictionary)?.valueForKey("Admin")!)! as! Bool;
-                        let id:String = ((currentgroup as? NSDictionary)?.valueForKey("GroupID")!)! as! String;
-                        let members:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Members")!)! as! NSArray;
-                        let invited:NSArray = ((currentgroup as? NSDictionary)?.valueForKey("Invited")!)! as! NSArray;
-                        let memberstring = members.componentsJoinedByString(";");
-                        let invitedstring = invited.componentsJoinedByString(";");
-                        grouplist.append(Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false));
-                }
-                    let params = ["Groups":grouplist, "Type":withtype];
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: params as! [String : AnyObject]);
-                }
+            }catch {
+                
             }
+        }
     }
     //MARK: Group Sort Methods
     class func SortGroups(input:[Group]!) -> [Group]! {
         var groups = input;
-        groups.sort({($0.name!)>($1.name!)});
-        groups = groups.reverse();
+        groups.sortInPlace({($0.name!)>($1.name!)});
+        groups = Array(groups.reverse());
         return groups;
     }
     class func shuffle<C: MutableCollectionType where C.Index == Int>(var list: C) -> C {
-        let c = count(list)
+        let c = list.count
         if c < 2 { return list }
         for i in 0..<(c - 1) {
             let j = Int(arc4random_uniform(UInt32(c - i))) + i
@@ -180,13 +202,13 @@ class Group: NSManagedObject {
                 for (var i = 0; i<members.count; i++){
                     let predicate = NSPredicate(format: "profid == %@", members[i]);
                     fetchRequest.predicate = predicate;
-                    var currentprof:[Profile]? = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
+                    let currentprof:[Profile]? = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile]
                     if let check = currentprof {
                         /*if (check[0].profid == FBSDKAccessToken.currentAccessToken().userID) {
-                            let myprofile = Profile(name: "You", url: Globals.currentprofile!.url, profid: FBSDKAccessToken.currentAccessToken().userID, imagedata: Globals.currentprofile!.imagedata, save: false)
-                            output.insert(myprofile, atIndex: 0)
+                        let myprofile = Profile(name: "You", url: Globals.currentprofile!.url, profid: FBSDKAccessToken.currentAccessToken().userID, imagedata: Globals.currentprofile!.imagedata, save: false)
+                        output.insert(myprofile, atIndex: 0)
                         } else { */
-                            output.append(check[0]);
+                        output.append(check[0]);
                         //}
                     } else {
                         nonfriends.append(members[i]);
@@ -202,12 +224,12 @@ class Group: NSManagedObject {
                     }
                 } else {
                     if (nonfriends.count>1) {
-                        var name:String = "And " + nonfriends.count.description + " other non-friends";
-                        var others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")), save: false);
+                        let name:String = "And " + nonfriends.count.description + " other non-friends";
+                        let others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")!), save: false);
                         output.append(others);
                     } else if (nonfriends.count == 1) {
-                        var name:String = "And one other non-friend";
-                        var others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")), save: false);
+                        let name:String = "And one other non-friend";
+                        let others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")!), save: false);
                         output.append(others);
                     }
                 }
@@ -218,20 +240,19 @@ class Group: NSManagedObject {
         }
     }
     class func parseProfileGet(input: NSData) -> [Profile]! {
-        var error: NSError?
-        if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(input, options: nil, error: &error) as? Dictionary<String,AnyObject>
-        {
+        do {
+            let results = try NSJSONSerialization.JSONObjectWithData(input, options: []) as? Dictionary<String,AnyObject>
             var output:[Profile]!=[];
-            for (var i = 0; i < results.count; i++) {
-                var currentprofile: AnyObject? = (results as NSDictionary).valueForKey((i).description);
+            for (_, value) in results! {
+                let currentprofile: AnyObject? = value;
                 let name:String = ((currentprofile as? NSDictionary)?.valueForKey("Name")!)! as! String;
                 let id:String = ((currentprofile as? NSDictionary)?.valueForKey("Profid")!)! as! String;
                 let url:String = ((currentprofile as? NSDictionary)?.valueForKey("Url")!)! as! String;
-                var insert:Profile = Profile(name: name, url: url, profid: id, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")), save: false);
+                let insert:Profile = Profile(name: name, url: url, profid: id, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")!), save: false);
                 output.append(insert)
             }
             return output;
-        } else {
+        } catch {
             return nil;
         }
     }
@@ -257,27 +278,32 @@ class Group: NSManagedObject {
             }
             let urlstring = URLStub + "group_single_get.php";
             let url = NSURL(string: urlstring)!;
-            let session = NSURLSession.sharedSession();
+            _ = NSURLSession.sharedSession();
             let request = NSMutableURLRequest(URL: url);
-            var error: NSError? = nil;
             request.HTTPMethod = "POST";
             request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type");
             request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
-            contentBodyAsString = contentBodyAsString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+            contentBodyAsString = contentBodyAsString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
             let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
                 (data, response, error) in
-                if let results: Dictionary = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? Dictionary<String,AnyObject>
-                {
-                    let name:String = results["Name"] as! String;
-                    let admin:Bool = results["Admin"] as! Bool;
-                    let id:String = results["GroupID"] as! String;
-                    let members:NSArray = results["Members"] as! NSArray;
-                    let invited:NSArray = results["Invited"] as! NSArray;
-                    let memberstring = members.componentsJoinedByString(";");
-                    let invitedstring = invited.componentsJoinedByString(";");
+                if data?.length == 0 || data == nil {
                     var params = Dictionary<String,AnyObject>();
-                    params["Group"] = Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false);
+                    params["Group"] = Group(name: nil, groupid: nil, memberstring: nil, invitedstring: nil, isadmin: false, save: false);
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Single_Done", object: self, userInfo: params);
+                } else {
+                    if let results: Dictionary = (try? NSJSONSerialization.JSONObjectWithData(data!, options: [])) as? Dictionary<String,AnyObject>
+                    {
+                        let name:String = results["Name"] as! String;
+                        let admin:Bool = results["Admin"] as! Bool;
+                        let id:String = results["GroupID"] as! String;
+                        let members:NSArray = results["Members"] as! NSArray;
+                        let invited:NSArray = results["Invited"] as! NSArray;
+                        let memberstring = members.componentsJoinedByString(";");
+                        let invitedstring = invited.componentsJoinedByString(";");
+                        var params = Dictionary<String,AnyObject>();
+                        params["Group"] = Group(name: name, groupid: id, memberstring: memberstring, invitedstring: invitedstring, isadmin: admin, save: false);
+                        NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Single_Done", object: self, userInfo: params);
+                    }
                 }
             }
             task.resume()
@@ -291,13 +317,13 @@ class Group: NSManagedObject {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let ctx = appDelegate.managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "Profile")
-            var FriendList = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
+            let FriendList = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile]
             var actualimage:[NSData!]=[];
             var members:[String] = (memberlist?.componentsSeparatedByString(";"))!;
             if (members[0] != "") {
-                members = self.shuffle(members);
+                members.shuffleInPlace();
                 for (var i = 0; i<members.count; i++){
-                    var currentprof:Profile? = FriendList!.filter({return $0.profid == members[i]})[0]
+                    let currentprof:Profile? = FriendList!.filter({return $0.profid == members[i]})[0]
                     if let check = currentprof {
                         actualimage.append(check.imagedata!);
                     }
@@ -317,20 +343,19 @@ class Group: NSManagedObject {
                             imagearray.append(UIImage(named: "unknownprofile.png")!);
                         } else {
                             if (actualimage[i].length > 0) {
-                                var image:UIImage? = UIImage(data: actualimage[i]);
                                 imagearray.append(UIImage(data: actualimage[i])!);
                             } else {
                                 imagearray.append(UIImage(named: "unknownprofile.png")!);
                             }
                         }
                     }
-                    var leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    var rightimage:UIImage! = self.cropimage(imagearray[1], toRect: CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    var size:CGSize = imagearray[0].size;
+                    let leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+                    let rightimage:UIImage! = self.cropimage(imagearray[1], toRect: CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+                    let size:CGSize = imagearray[0].size;
                     UIGraphicsBeginImageContext(size);
                     leftimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
                     rightimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    var finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
+                    let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
                     UIGraphicsEndImageContext();
                     return finalimage;
                 } else if (members.count == 3) {
@@ -339,19 +364,18 @@ class Group: NSManagedObject {
                         if (i>actualimage.count-1) {
                             imagearray.append(UIImage(named: "unknownprofile.png")!);
                         } else {
-                            var image:UIImage? = UIImage(data: actualimage[i]);
                             imagearray.append(UIImage(data: actualimage[i])!);
                         }
                     }
-                    var leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    var righttopimage:UIImage! = imagearray[1];
-                    var rightbottomimage:UIImage! = imagearray[2];
-                    var size:CGSize = imagearray[0].size;
+                    let leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+                    let righttopimage:UIImage! = imagearray[1];
+                    let rightbottomimage:UIImage! = imagearray[2];
+                    let size:CGSize = imagearray[0].size;
                     UIGraphicsBeginImageContext(size);
                     leftimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
                     righttopimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
                     rightbottomimage.drawInRect(CGRectMake(imagearray[0].size.width/2, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    var finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
+                    let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
                     UIGraphicsEndImageContext();
                     return finalimage;
                 } else
@@ -361,21 +385,20 @@ class Group: NSManagedObject {
                         if (i>actualimage.count-1) {
                             imagearray.append(UIImage(named: "unknownprofile.png")!);
                         } else {
-                            var image:UIImage? = UIImage(data: actualimage[i]);
                             imagearray.append(UIImage(data: actualimage[i])!);
                         }
                     }
-                    var lefttopimage:UIImage! = imagearray[0];
-                    var leftbottomimage:UIImage! = imagearray[1];
-                    var righttopimage:UIImage! = imagearray[2];
-                    var rightbottomimage:UIImage! = imagearray[3];
-                    var size:CGSize = imagearray[0].size;
+                    let lefttopimage:UIImage! = imagearray[0];
+                    let leftbottomimage:UIImage! = imagearray[1];
+                    let righttopimage:UIImage! = imagearray[2];
+                    let rightbottomimage:UIImage! = imagearray[3];
+                    let size:CGSize = imagearray[0].size;
                     UIGraphicsBeginImageContext(size);
                     lefttopimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
                     leftbottomimage.drawInRect(CGRectMake(0, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
                     righttopimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
                     rightbottomimage.drawInRect(CGRectMake(imagearray[0].size.width/2, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    var finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
+                    let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
                     UIGraphicsEndImageContext();
                     return finalimage;
                 }
@@ -385,8 +408,8 @@ class Group: NSManagedObject {
         }
     }
     class func cropimage(imageToCrop:UIImage, toRect rect:CGRect) -> UIImage{
-        var imageRef:CGImageRef = CGImageCreateWithImageInRect(imageToCrop.CGImage, rect)
-        var cropped:UIImage = UIImage(CGImage:imageRef)!
+        let imageRef:CGImageRef = CGImageCreateWithImageInRect(imageToCrop.CGImage, rect)!
+        let cropped:UIImage = UIImage(CGImage:imageRef)
         return cropped
     }
     class func getMemberString(memberlist: String) -> String {
@@ -396,17 +419,17 @@ class Group: NSManagedObject {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let ctx = appDelegate.managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "Profile")
-            var FriendList = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]
+            let FriendList = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile]
             var isingroup:Bool = false;
             var output:String = "";
             let limit = 3;
             var members:[String]! = (memberlist.componentsSeparatedByString(";"));
-            members = self.shuffle(members);
+            members.shuffleInPlace();
             //Check me
             if (members[0] != "") {
                 if memberlist.rangeOfString((Globals.currentprofile?.profid!)!) != nil {
-                    var currentprof:String? = members.filter({return $0 == Globals.currentprofile?.profid})[0]
-                    if let check = currentprof {
+                    let currentprof:String? = members.filter({return $0 == Globals.currentprofile?.profid})[0]
+                    if let _ = currentprof {
                         isingroup=true;
                         members = members.filter({return $0 != Globals.currentprofile?.profid})
                     }
@@ -414,12 +437,11 @@ class Group: NSManagedObject {
                 //Check friends
                 var actual:[String!]=[];
                 for (var i = 0; i<members.count; i++){
-                    var currentprof:Profile? = FriendList!.filter({return $0.profid == members[i]})[0]
-                    if let check = currentprof {
+                    let currentprof:Profile? = FriendList!.filter({return $0.profid == members[i]})[0]
+                    if let _ = currentprof {
                         actual.append(Profile.getFirstName(currentprof!.name!));
                     }
                 }
-                var number = actual.count;
                 if (actual.count<limit) {
                     if (actual.count==0) {
                         if (isingroup) {
@@ -430,7 +452,7 @@ class Group: NSManagedObject {
                             if (isingroup) {
                                 output = "You and " + actual[0];
                             } else {
-                                output = actual[0];
+                                output = "Just " + actual[0];
                             }
                         } else {
                             if (actual.count == 2 && !isingroup) {

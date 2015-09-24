@@ -27,9 +27,9 @@ class LogoutVC: UIViewController, UITableViewDelegate, UITableViewDataSource, FB
         // Dispose of any resources that can be recreated.
     }
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
-        let errordelete = Locksmith.deleteDataForUserAccount(self.appName);
+        _ = Locksmith.deleteDataForUserAccount(self.appName);
         Main.clearAll();
-        var login = FBSDKLoginManager.new();
+        let login = FBSDKLoginManager();
         login.logOut();
         Globals.currentprofile=nil;
         Globals.currentgroup = nil;
@@ -62,7 +62,7 @@ class LogoutVC: UIViewController, UITableViewDelegate, UITableViewDataSource, FB
     }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if (indexPath == NSIndexPath(forRow: 0, inSection: 0)) {
-            var cell = tableView.dequeueReusableCellWithIdentifier("Profile") as! ProfileCell;
+            let cell = tableView.dequeueReusableCellWithIdentifier("Profile") as! ProfileCell;
             //Correct ProfilePicture view
             cell.OfflineProfilePicture.frame = CGRectMake(self.view.center.x - 40, cell.OfflineProfilePicture.frame.origin.y, 80, 80);
             cell.LoginButton.frame = CGRectMake(self.view.center.x - 100,cell.LoginButton.frame.origin.y , 200 , 50)

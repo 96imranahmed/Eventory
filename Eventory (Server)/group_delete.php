@@ -34,6 +34,7 @@ if ($safe) {
                     $connection->RemovefromList($connectinfo, 2, $invitee, "groups_declined", $groupid);
                     $connection->RemovefromList($connectinfo, 2, $invitee, "groups_left", $groupid);
                     $connection->RemoveItemfromList($connectinfo, 1, $invitee, "groups_pending", "groupid:".strval($groupid), "data");
+                    $connection->RemoveItemfromList($connectinfo, 1, $invitee, "groups_decision", "groupid:".strval($groupid), "data");             
                 }
             }
             $sql = $connectinfo->prepare("DELETE FROM Groups WHERE id = :groupid");

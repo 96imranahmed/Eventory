@@ -1,18 +1,31 @@
 <?php
-$currentarray = unserialize('a:1:{i:1;a:6:{s:8:"sourceid";s:17:"10200598208075829";s:4:"date";i:1441667753;s:4:"type";i:1;s:4:"text";s:26:"Lisa invited you to join 2";s:6:"isread";i:0;s:4:"data";s:10:"groupid:15";}}');
-$item = "groupid:".strval(15);
-$duplicateref = "data";
-$removeindex = [];
-for ($i = 0; $i < count($currentarray); $i++) {
-    $check = $currentarray[1];
-    if ($item == $check[$duplicateref]) {
-        $removeindex[] = 1;
+
+include 'connect.php';
+$connection = new Connect();
+$connectinfo = $connection->GetConnection();
+$column = "groups_pending";
+$currentrow = $connection->GetRow($connectinfo, 1, "863307073758034");
+$notifraw = $connection->GetValue($connectinfo, 1, "863307073758034", "notification_raw");
+$notiflist = explode(";", $notifraw);
+$columnid = array_search($column, array_keys($currentrow));
+print_r($columnid);
+print_r($notiflist);
+$notifremove = [];
+$removeindex = [1];
+$occurencecount = 0;
+//NEED TO REMOVE FROM RAW AS WELL!
+for ($b = 0; $b < count($notiflist); $b++) {
+    if ($notiflist[$b] == $columnid) {
+        if (in_array($occurencecount, $removeindex)) {
+            $notifremove[] = $b;
+        }
+        $occurencecount++;
     }
 }
-for ($j = 0; $j < count($removeindex); $j++) {
-    unset($currentarray[$removeindex[$j]-$j]);
+print_r($notifremove);
+for ($a = 0; $a < count($notifremove); $a++) {
+    unset($notiflist[$notifremove[$a] - $a]);
 }
-echo serialize($currentarray);
 /* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates

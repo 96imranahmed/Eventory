@@ -1,11 +1,11 @@
 <?php
 
 function sortbydate($a, $b) {
-    return $a["date"] - $b["date"];
+    return $b["date"] - $a["date"];
 }
 
 function checktext($connection, $pdo, $inputnotif) {
-    if ($inputnotif['type'] == 1) {
+    if ($inputnotif['type'] == 1 || $inputnotif['type'] == 2) {
         $idcheck = substr($inputnotif['data'], 8, strlen($inputnotif['data']) - 8);
         $groupname = $connection->GetNamebyId($pdo, $idcheck, 1);
         $inputnotif['text'] = $inputnotif['text'] . $groupname;
@@ -80,22 +80,25 @@ if ($safe) {
                 $verify = $i;
                 $name = array_keys($row)[$i * 2];
                 $value = $row[$i];
-                if ($value == null || $value == "") {                    
+                if ($value == null || $value == "") {
+                    
                 } else {
                     if (count($notificationarray) == 0) {
                         $add = unserialize($value);
                         if (is_array($add)) {
-                            if ($add["isread"] == nil) {
-                                //Must be collection of items
-                                for ($i = count($add) - $compareskeleton[$verify] - 1; $i == (count($add) - $compareskeleton[$verify] - $notificationskeleton[$verify]); $i--) {
-                                    $notificationarray[] = checktext($connection, $connectinfo, $add[$i]);
-                                }
-                            } else {
-                                if ($compareskeleton[$verify] > 0) {
+                            if (isset($add['isread'])) {
+                                if ($compareskeleton[$verify] > 0) {                                   
                                 } else {
                                     if ($notificationskeleton[$verify] > 0) {
                                         $notificationarray[] = checktext($connection, $connectinfo, $add[0]);
                                     }
+                                }
+                            } else {
+                                //Must be collection of items
+                                $max = count($add) - $compareskeleton[$verify] - 1;
+                                $min = count($add) - - $compareskeleton[$verify] - $notificationskeleton[$verify];
+                                for ($i = $min; $i <= $max; $i++) {
+                                    $notificationarray[] = checktext($connection, $connectinfo, $add[$i]);
                                 }
                             }
                         }
@@ -108,19 +111,20 @@ if ($safe) {
             for ($i = 2; $i < $count; $i++) {
                 $name = array_keys($row)[$i * 2];
                 $value = $row[$i];
-                if ($value == null || $value == "") {     
+                if ($value == null || $value == "") {
+                    
                 } else {
                     if (count($notificationarray) == 0) {
                         $add = unserialize($value);
                         if (is_array($add)) {
-                            if ($add["isread"] == nil) {
+                            if (isset($add['isread'])) {
+                                $notificationarray[] = checktext($connection, $connectinfo, $add[0]);
+                            } else {
                                 //Must be collection of items
                                 for ($i = 0; $i < count($add); $i++) {
                                     $notificationarray[] = checktext($connection, $connectinfo, $add[$i]);
                                 }
-                            } else {
-                                $notificationarray[] = checktext($connection, $connectinfo, $add[0]);
-                            }
+                            } 
                         }
                     }
                 }

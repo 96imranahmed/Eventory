@@ -11,26 +11,38 @@ import UIKit
 class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSource, SWTableViewCellDelegate, UIPopoverPresentationControllerDelegate {
     var leftGroups:[Group] = [];
     var declinedGroups:[Group] = [];
+    //Progress bar
+    var messageFrame = UIView();
+    var activityIndicator = UIActivityIndicatorView();
+    var strLabel = UILabel();
     //For SWTableviewCell
     var preoffset = 0;
     var lastOffset: CGPoint = CGPointMake(0, 0);
     var lastOffsetCapture: NSTimeInterval = 0.0;
     var isScrollingFast: Bool = false;
     var cellcheck = ["Disabled" : false, "Index" : NSIndexPath(forRow: 0, inSection: 0)]
-    //Load Cell
-    var messageFrame = UIView();
-    var activityIndicator = UIActivityIndicatorView();
-    var strLabel = UILabel();
+    var declinedload:Bool = false;
+    var leftload:Bool = false;
+    var displayed:Bool = false;
+    let refreshControl = UIRefreshControl()
     @IBOutlet weak var grouptable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
         grouptable.delegate = self;
         grouptable.dataSource = self;
-        var params = Dictionary<String,AnyObject>();
-        params["type"] = "1";
-        Reachability.postToServer("group_get.php", postdata: params, customselector: "DeclinedGroupLoad");
-        params["type"] = "2";
-        Reachability.postToServer("group_get.php", postdata: params, customselector: "LeftGroupLoad");
+        refreshControl.addTarget(self, action: "refresh", forControlEvents: .ValueChanged)
+        refreshControl.attributedTitle = NSAttributedString(string: "Refreshing...");
+        grouptable.addSubview(refreshControl)
+        if (Reachability.isConnectedToNetwork()) {
+            var params = Dictionary<String,AnyObject>();
+            params["type"] = "1";
+            Reachability.postToServer("group_get.php", postdata: params, customselector: "DeclinedGroupLoad");
+            params["type"] = "2";
+            Reachability.postToServer("group_get.php", postdata: params, customselector: "LeftGroupLoad");
+            progressBarDisplayer("Loading...", indicator: true);
+        } else {
+            RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
+        }
         NSNotificationCenter.defaultCenter().removeObserver(self);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "groupupdated:", name: "Eventory_Group_Saved", object: nil);
         // Do any additional setup after loading the view.
@@ -40,7 +52,89 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    func trigrefresh(timer:NSTimer) {
+        refresh();
+    }
+    func refresh() {
+        dispatch_async(dispatch_get_main_queue()){
+            self.grouptable.reloadData();
+        }
+        var params = Dictionary<String,AnyObject>();
+        leftload = false;
+        declinedload = false;
+        self.displayed = false;
+        if (Reachability.isConnectedToNetwork()) {
+            params["type"] = "1";
+            Reachability.postToServer("group_get.php", postdata: params, customselector: "DeclinedGroupLoad");
+            params["type"] = "2";
+            Reachability.postToServer("group_get.php", postdata: params, customselector: "LeftGroupLoad");
+            self.progressBarDisplayer("Loading...", indicator: true);
+        } else {
+            dispatch_async(dispatch_get_main_queue()){
+                RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
+                self.refreshControl.endRefreshing();
+            }
+        }
+    }
+    func groupupdated(notification:NSNotification) {
+        let type = notification.userInfo!["Type"] as! Int!;
+        let data = notification.userInfo!["Groups"] as! [Group]!;
+        if (type != 0) {
+            if (type == 1) {
+                declinedGroups = Group.SortGroups(data);
+                declinedload = true;
+            } else if (type == 2) {
+                leftGroups = Group.SortGroups(data);
+                leftload = true;
+            }
+            dispatch_async(dispatch_get_main_queue()){
+                if (self.declinedGroups.count == 0 && self.leftGroups.count == 0 && self.declinedload && self.leftload && !self.displayed) {
+                    RKDropdownAlert.title("No Left or Declined Groups!", backgroundColor: Schemes.returnColor("Amethyst", alpha: 1.0), textColor: UIColor.whiteColor())
+                    self.displayed = true;
+                }
+                if (self.declinedload && self.leftload) {
+                    self.refreshControl.endRefreshing();
+                    self.messageFrame.removeFromSuperview();
+                    self.grouptable.reloadData();
+                }
+            }
+            
+        }
+    }
     
+    func groupoverlayload(inputgroup: Group) {
+        let currentgroup = inputgroup;
+        let popoverVC = self.storyboard?.instantiateViewControllerWithIdentifier("PopoverGroupList") as! GroupListPopoverVC!
+        popoverVC.currentgroup = currentgroup;
+        let members:[String] = (currentgroup.memberstring?.componentsSeparatedByString(";"))!;
+        let invited:[String] = (currentgroup.invitedstring?.componentsSeparatedByString(";"))!;
+        var height:Int;
+        //Set Size of Popup
+        if (members.count>0 && invited.count>0) {
+            height = members.count*70 + invited.count*70 + 44;
+        } else if (members.count>0){
+            height = members.count*70 + 22;
+        } else {
+            height = invited.count*70 + 22;
+        }
+        height = height + 112;
+        if (height > 2*((Int(self.view.center.y)-64))) {
+            height = 2*((Int(self.view.center.y)-64));
+        }
+        let width = (Int(self.view.frame.size.width)-75);
+        popoverVC.width = CGFloat(width);
+        popoverVC.preferredContentSize = CGSizeMake(CGFloat(width), CGFloat(height))
+        popoverVC.modalPresentationStyle = .Popover
+        let popover = popoverVC.popoverPresentationController!
+        popover.delegate = self
+        popover.sourceView  = self.view
+        popover.sourceRect = self.view.frame;
+        popover.permittedArrowDirections = UIPopoverArrowDirection();
+        self.presentViewController(popoverVC, animated: true, completion: nil);
+    }
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        return UIModalPresentationStyle.None
+    }
     func progressBarDisplayer(msg:String, indicator:Bool ) {
         strLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 50))
         strLabel.text = msg
@@ -57,80 +151,12 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         messageFrame.addSubview(strLabel)
         view.addSubview(messageFrame)
     }
-    func refresh() {
-        var params = Dictionary<String,AnyObject>();
-        params["type"] = "1";
-        Reachability.postToServer("group_get.php", postdata: params, customselector: "DeclinedGroupLoad");
-        params["type"] = "2";
-        Reachability.postToServer("group_get.php", postdata: params, customselector: "LeftGroupLoad");
-        dispatch_async(dispatch_get_main_queue()){
-            UIView.transitionWithView(self.grouptable, duration:0.0, options: UIViewAnimationOptions.TransitionCrossDissolve,
-                animations: {
-                    self.grouptable.reloadData();
-                },
-                completion: nil)
-        }
-    }
-    func groupupdated(notification:NSNotification) {
-        let type = notification.userInfo!["Type"] as! Int;
-        let data = notification.userInfo!["Groups"] as! [Group];
-        if (type == 1) {
-            declinedGroups = Group.SortGroups(data);
-        } else if (type == 2) {
-            leftGroups = Group.SortGroups(data);
-        }
-        if (declinedGroups.count == 0 && leftGroups.count == 0) {
-            dispatch_async(dispatch_get_main_queue()){
-                self.progressBarDisplayer("No declined/left groups!", indicator: false);
-                var timer = NSTimer.scheduledTimerWithTimeInterval(2, target: self, selector: "timeout", userInfo: nil, repeats: false);
-            }
-        }
-    }
-    func timeout() {
-        dispatch_async(dispatch_get_main_queue()){
-            self.messageFrame.removeFromSuperview();
-        }
-    }
-    func groupoverlayload(inputgroup: Group) {
-        let currentgroup = inputgroup;
-        let popoverVC = self.storyboard?.instantiateViewControllerWithIdentifier("PopoverGroupList") as! GroupListPopoverVC!
-        popoverVC.currentgroup = currentgroup;
-        var members:[String] = (currentgroup.memberstring?.componentsSeparatedByString(";"))!;
-        var invited:[String] = (currentgroup.invitedstring?.componentsSeparatedByString(";"))!;
-        var height:Int;
-        //Set Size of Popup
-        if (members.count>0 && invited.count>0) {
-            height = members.count*70 + invited.count*70 + 44;
-        } else if (members.count>0){
-            height = members.count*70 + 22;
-        } else {
-            height = invited.count*70 + 22;
-        }
-        height = height + 112;
-        if (height > 2*((Int(self.view.center.y)-64))) {
-            height = 2*((Int(self.view.center.y)-64));
-        }
-        var width = (Int(self.view.frame.size.width)-75);
-        popoverVC.width = CGFloat(width);
-        popoverVC.preferredContentSize = CGSizeMake(CGFloat(width), CGFloat(height))
-        popoverVC.modalPresentationStyle = .Popover
-        let popover = popoverVC.popoverPresentationController!
-        popover.delegate = self
-        popover.sourceView  = self.view
-        popover.sourceRect = self.view.frame;
-        popover.permittedArrowDirections = UIPopoverArrowDirection.allZeros;
-        self.presentViewController(popoverVC, animated: true, completion: nil);
-    }
-    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
-        return UIModalPresentationStyle.None
-    }
-    
     //MARK: - Table view delegate
     func getGroup(atindex: NSIndexPath) -> Group {
         if (leftGroups.count>0 && declinedGroups.count>0) {
             if (atindex.section == 0) {
                 return leftGroups[atindex.row];
-            } else if (atindex.section == 0) {
+            } else if (atindex.section == 1) {
                 return declinedGroups[atindex.row];
             } else {
                 return Group(name: nil, groupid: nil, memberstring: nil, invitedstring: nil, isadmin: false, save: false);
@@ -157,7 +183,7 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (leftGroups.count>0 && declinedGroups.count>0) {
             if (section == 0) {
                 return leftGroups.count;
-            } else if (section == 0) {
+            } else if (section == 1) {
                 return declinedGroups.count;
             } else {
                 return 0;
@@ -193,7 +219,7 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (leftGroups.count>0 && declinedGroups.count>0) {
             if (section == 0) {
                 return "Left Groups";
-            } else if (section == 0) {
+            } else if (section == 1) {
                 return "Declined Groups";
             } else {
                 return "";
@@ -220,22 +246,26 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     {
         if (leftGroups.count>0 && declinedGroups.count>0) {
             if (indexPath.section == 0) {
-                var cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
+                let cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
                 let inputgroup = leftGroups[indexPath.row];
                 cell.group = inputgroup;
                 cell.type = 1;
                 cell.detail.text = Group.getMemberString(inputgroup.memberstring!);
                 cell.title.text = inputgroup.name;
                 cell.picture.image = Group.generateGroupImage(inputgroup.memberstring!);
+                cell.delegate = self;
+                cell.setDecisionLayout();
                 return cell;
             } else if (indexPath.section == 1) {
-                var cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
+                let cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
                 let inputgroup = declinedGroups[indexPath.row];
                 cell.group = inputgroup;
                 cell.type = 2;
                 cell.detail.text = Group.getMemberString(inputgroup.memberstring!);
                 cell.title.text = inputgroup.name;
                 cell.picture.image = Group.generateGroupImage(inputgroup.memberstring!);
+                cell.delegate = self;
+                cell.setDecisionLayout();
                 return cell;
             } else {
                 return UITableViewCell();
@@ -244,26 +274,30 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         } else if (leftGroups.count>0 || declinedGroups.count>0){
             if (leftGroups.count>0) {
                 if (indexPath.section == 0) {
-                    var cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
+                    let cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
                     let inputgroup = leftGroups[indexPath.row];
                     cell.group = inputgroup;
                     cell.type = 1;
                     cell.detail.text = Group.getMemberString(inputgroup.memberstring!);
                     cell.title.text = inputgroup.name;
                     cell.picture.image = Group.generateGroupImage(inputgroup.memberstring!);
+                    cell.delegate = self;
+                    cell.setDecisionLayout();
                     return cell;
                 } else {
                     return UITableViewCell();
                 }
             } else {
                 if (indexPath.section == 0) {
-                    var cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
+                    let cell = tableView.dequeueReusableCellWithIdentifier("LeftDeclinedDecisionCell") as! LeftDeclinedDecisionCell;
                     let inputgroup = declinedGroups[indexPath.row];
                     cell.group = inputgroup;
                     cell.type = 2;
                     cell.detail.text = Group.getMemberString(inputgroup.memberstring!);
                     cell.title.text = inputgroup.name;
                     cell.picture.image = Group.generateGroupImage(inputgroup.memberstring!);
+                    cell.delegate = self;
+                    cell.setDecisionLayout();
                     return cell;
                 } else {
                     return UITableViewCell();
@@ -275,14 +309,15 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         groupoverlayload(getGroup(indexPath));
+        grouptable.deselectRowAtIndexPath(indexPath, animated: true);
     }
     //MARK: - SWTableViewCell delegate
     func swipeableTableViewCell(cell: SWTableViewCell!, didScroll scrollView: UIScrollView!) {
-        var currentOffset: CGPoint = scrollView.contentOffset;
-        var currentTime: NSTimeInterval = NSDate.timeIntervalSinceReferenceDate();
-        var timeDiff: NSTimeInterval = currentTime - lastOffsetCapture;
+        let currentOffset: CGPoint = scrollView.contentOffset;
+        let currentTime: NSTimeInterval = NSDate.timeIntervalSinceReferenceDate();
+        let timeDiff: NSTimeInterval = currentTime - lastOffsetCapture;
         if(timeDiff > 0.1) {
-            var distance: CGFloat = currentOffset.x - lastOffset.x;
+            let distance: CGFloat = currentOffset.x - lastOffset.x;
             let scrollSpeedNotAbs:CGFloat = (distance * 10) / 1000;
             let scrollSpeed = fabsf(Float(scrollSpeedNotAbs));
             //NSLog(scrollSpeed.description);
@@ -294,8 +329,8 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             lastOffset = currentOffset;
             lastOffsetCapture = currentTime;
         }
-        var cellwidth = cell.frame.size.width;
-        var offset = cell.cellState.rawValue
+        _ = cell.frame.size.width;
+        let offset = cell.cellState.rawValue
         if let index = grouptable.indexPathForCell(cell) {
             var canproceed: Bool = true;
             if (cellcheck["Index"] == index && cellcheck["Disabled"] == true) {
@@ -306,34 +341,44 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
                 cellcheck["Index"] = index;
                 if (offset == 1 && preoffset == 0 && isScrollingFast) {
                     reaccept(index);
-                } else if (offset == 2 && preoffset == 0 && isScrollingFast) {
-                    reaccept(index);
                 }
             }
         }
         preoffset = offset
     }
     func reaccept(index: NSIndexPath) {
-        let cell = grouptable.cellForRowAtIndexPath(index) as! NotificationDecisionCell;
-        var animation: UITableViewRowAnimation;
-        animation = UITableViewRowAnimation.Fade;
         let group = getGroup(index);
         let result = leftGroups.filter { $0.groupid == group.groupid};
-        var params = Dictionary<String,AnyObject>();
-        params["accepted"] = true.description;
-        params["groupid"] = group.groupid;
-        if (Reachability.isConnectedToNetwork()) {
-            Reachability.postToServer("group_decision.php", postdata: params, customselector: "");
-            refresh();
-            if (grouptable.numberOfRowsInSection(index.section) == 1) {
-                //Delete section
-                grouptable.deleteSections(NSIndexSet(index: index.section), withRowAnimation: animation);
-            } else {
-                //Delete row
-                grouptable.deleteRowsAtIndexPaths([index], withRowAnimation: animation)
-            }
+        var message = "";
+        var title = "";
+        if (!result.isEmpty) {
+            message = "Are you sure you want to re-join " + group.name! + "?";
+            title = "Re-join Group";
         } else {
-            RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
+            message = "Are you sure you want to accept your invite to " + group.name! + "?";
+            title = "Accept Group Invite";
+        }
+        dispatch_async(dispatch_get_main_queue()) {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "Nope!", style: .Cancel, handler: { action in
+            }))
+            alert.addAction(UIAlertAction(title: "Yep!", style: .Default, handler: { action in
+                var params = Dictionary<String,AnyObject>();
+                params["accepted"] = 1.description;
+                params["groupid"] = group.groupid;
+                if (Reachability.isConnectedToNetwork()) {
+                    Reachability.postToServer("group_decision.php", postdata: params, customselector: "");
+                    if (!result.isEmpty) {
+                        self.leftGroups = self.leftGroups.filter({$0.groupid != group.groupid});
+                    } else {
+                        self.declinedGroups = self.declinedGroups.filter({$0.groupid != group.groupid});
+                    }
+                    _ = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: "trigrefresh:", userInfo: nil, repeats: false);
+                } else {
+                    RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
+                }
+            }))
+            self.presentViewController(alert, animated: true, completion: nil)
         }
     }
     func swipeableTableViewCell(cell: SWTableViewCell!, scrollingToState state: SWCellState) {
@@ -358,5 +403,8 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         {
             reaccept(nonnilindex);
         }
+    }
+    func swipeableTableViewCell(cell: SWTableViewCell!, canSwipeToState state: SWCellState) -> Bool {
+        return true;
     }
 }

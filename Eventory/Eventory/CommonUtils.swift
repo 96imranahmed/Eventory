@@ -14,7 +14,7 @@ class Main {
     var currentprofile:Profile?;
     var currentgroup:Group?;
     var notifications:[Notification];
-    var unreadnotificationcount:Int;
+    var unreadnotificationcount:Int!;
     init (currentprofile:Profile, currentgroup:Group, notifications:[Notification], unreadnotificationcount:Int) {
         self.currentprofile = currentprofile;
         self.currentgroup = currentgroup;
@@ -28,7 +28,7 @@ class Main {
     }
 }
 public struct Constants {
-    static let notificationloadlimit = 5;
+    static let notificationloadlimit = 10;
 }
 public class Schemes
 {
@@ -83,19 +83,19 @@ public class Schemes
 public class Reachability {
     class func isConnectedToNetwork()->Bool
     {
-        var zeroAddress = sockaddr_in(sin_len: 0, sin_family: 0, sin_port: 0, sin_addr: in_addr(s_addr: 0), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
+        var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
         zeroAddress.sin_family = sa_family_t(AF_INET)
         let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
-            SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0)).takeRetainedValue()
+            SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0))
         }
-        var flags: SCNetworkReachabilityFlags = 0
-        if SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) == 0 {
+        var flags = SCNetworkReachabilityFlags.ConnectionAutomatic
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability!, &flags) {
             return false
         }
-        let isReachable = (flags & UInt32(kSCNetworkFlagsReachable)) != 0
-        let needsConnection = (flags & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
-        return (isReachable && !needsConnection) ? true : false;
+        let isReachable = (flags.rawValue & UInt32(kSCNetworkFlagsReachable)) != 0
+        let needsConnection = (flags.rawValue & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
+        return (isReachable && !needsConnection)
     }
     
     class func postToServer(stub: String, postdata: Dictionary<String, AnyObject>, customselector: String?) -> Void {
@@ -105,7 +105,7 @@ public class Reachability {
         for (key, value) in postdata {
             if let stringArray = value as? [String] {
                 for (var i=0; i<stringArray.count; i++) {
-                    var newkey = (key as String) + "[" + (i.description) + "]";
+                    let newkey = (key as String) + "[" + (i.description) + "]";
                     dictsend[newkey] = Reachability.escapeString(stringArray[i]);
                 }
             }
@@ -131,7 +131,7 @@ public class Reachability {
         
         let urlstring = URLStub + (stub);
         let url = NSURL(string: urlstring)!;
-        let session = NSURLSession.sharedSession();
+        _ = NSURLSession.sharedSession();
         let request = NSMutableURLRequest(URL: url);
         request.HTTPMethod = "POST";
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type");
@@ -143,18 +143,17 @@ public class Reachability {
             if let sendto = customselector {
                 if (sendto == "MainGroupLoad") {
                     Group.saveGrouptoCoreData(data);
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Saved", object: self, userInfo: nil);
                 } else if (sendto == "GroupRefresh") {
                     var params = Dictionary<String,AnyObject>();
                     params["type"] = "0";
                     Reachability.postToServer("group_get.php", postdata: params, customselector: "MainGroupLoad")
                 } else if (sendto == "UpdateGroupMemberList") {
-                    var friends:[Profile] = Group.parseProfileGet(data);
-                    var params:Dictionary = ["Friends":friends];
+                    let friends:[Profile] = Group.parseProfileGet(data!);
+                    let params:Dictionary = ["Friends":friends];
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_List_Updated", object: self, userInfo: params);
                 } else if (sendto == "UpdateGroupInvitedList") {
-                    var friends:[Profile] = Group.parseProfileGet(data);
-                    var params:Dictionary = ["Friends":friends];
+                    let friends:[Profile] = Group.parseProfileGet(data!);
+                    let params:Dictionary = ["Friends":friends];
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_List_Updated", object: self, userInfo: params);
                 } else if (sendto == "Refresh") {
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Refresh_Trigger", object: self, userInfo: nil);
@@ -163,6 +162,10 @@ public class Reachability {
                     paramstwo["type"] = "0";
                     Reachability.postToServer("group_get.php", postdata: paramstwo, customselector: "MainGroupLoad");
                     Notification.getNotifications(Constants.notificationloadlimit, page: 0);
+                } else if (sendto == "DeclinedGroupLoad") {
+                    Group.getGroupsfrom(data!, withtype: 1);
+                } else if (sendto == "LeftGroupLoad") {
+                    Group.getGroupsfrom(data!, withtype: 2);
                 }
             } else {
             }
@@ -172,7 +175,7 @@ public class Reachability {
     
     class func escapeString(input: String) -> String {
         var output = input;
-        output = output.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!;
+        output = output.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!;
         //output = output.stringByReplacingOccurrencesOfString("%", withString: "%25");
         //output = output.stringByReplacingOccurrencesOfString("'", withString: "''");
         output = output.stringByReplacingOccurrencesOfString("&", withString: "%26");

@@ -16,7 +16,7 @@ class Profile : NSManagedObject {
     convenience init (name:String?, url:String?, profid:String?, imagedata:NSData?, save:Bool) {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext;
-        var entity = NSEntityDescription.entityForName("Profile", inManagedObjectContext: ctx!)
+        let entity = NSEntityDescription.entityForName("Profile", inManagedObjectContext: ctx!)
         if (save) {
             self.init(entity: entity!, insertIntoManagedObjectContext: ctx);
         } else {
@@ -47,8 +47,8 @@ class Profile : NSManagedObject {
         fetchRequest.predicate = predicate
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext;
-        if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
-            var currentprof:Profile = fetchResults[0];
+        if let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile] {
+            let currentprof:Profile = fetchResults[0];
             return currentprof
         } else {
             return nil
@@ -61,7 +61,7 @@ class Profile : NSManagedObject {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName: "Profile")
-        let fetchResults = (ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile])!
+        let fetchResults = ((try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile])!
         for (var i = 0; i < fetchResults.count ; i++) {
             if (FBSDKAccessToken.currentAccessToken() != nil) {
                 if (fetchResults[i].profid != FBSDKAccessToken.currentAccessToken().userID) {
@@ -71,7 +71,10 @@ class Profile : NSManagedObject {
                 ctx?.deleteObject(fetchResults[i]);
             }
         }
-        ctx?.save(nil)
+        do {
+            try ctx?.save()
+        } catch _ {
+        }
     }
     class func ClearProfileNils () {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -79,21 +82,24 @@ class Profile : NSManagedObject {
         let fetchRequest = NSFetchRequest(entityName: "Profile")
         let predicate = NSPredicate(format: "profid == nil OR profid == ''");
         fetchRequest.predicate = predicate;
-        let fetchResults = (ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile])!
+        let fetchResults = ((try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile])!
         for (var i = 0; i < fetchResults.count ; i++) {
             ctx?.deleteObject(fetchResults[i]);
         }
-        ctx?.save(nil)
+        do {
+            try ctx?.save()
+        } catch _ {
+        }
     }
     class func CheckProfileifContains(column: String, identifier: String) -> Bool {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName: "Profile")
         fetchRequest.fetchLimit = 1;
-        var formatted = column + " == '" + identifier + "'";
+        let formatted = column + " == '" + identifier + "'";
         let predicate = NSPredicate(format: formatted);
         fetchRequest.predicate = predicate
-        let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile];
+        let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile];
         if (fetchResults!.count>0){
             return true;
         } else {
@@ -103,28 +109,28 @@ class Profile : NSManagedObject {
     //MARK: Friend Parse Methods
     class func getIDArray(inputarray:[Profile?]) -> [String] {
         var outputarray = [String]();
-        for (index, element) in enumerate(inputarray) {
+        for (_, element) in inputarray.enumerate() {
             outputarray.append(element!.profid!);
         }
         return outputarray;
     }
     
     class func getLastName(name: String) -> String {
-        var fullNameArr = split(name) {$0 == " "}
+        var fullNameArr = name.characters.split {$0 == " "}.map { String($0) }
         return fullNameArr[fullNameArr.count - 1]
     }
     class func getFirstName(name: String) -> String {
-        var fullNameArr = split(name) {$0 == " "}
+        var fullNameArr = name.characters.split {$0 == " "}.map { String($0) }
         return fullNameArr[0]
     }
     class func SortFriends(input:[Profile]!) -> [Profile]! {
         var friends = input;
         if (friends.count>0) {
-            if contains(friends, Globals.currentprofile!) {
-                friends.removeAtIndex(find(friends,Globals.currentprofile!)!)
+            if friends.contains(Globals.currentprofile!) {
+                friends.removeAtIndex(friends.indexOf(Globals.currentprofile!)!)
             }
-            friends.sort({self.getLastName($0.name!)>self.getLastName($1.name!)});
-            friends = friends.reverse();
+            friends.sortInPlace({self.getLastName($0.name!)>self.getLastName($1.name!)});
+            friends = Array(friends.reverse());
         }
         return friends;
     }
@@ -132,10 +138,10 @@ class Profile : NSManagedObject {
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let ctx = appDelegate.managedObjectContext
         var friendid = [String]();
-        var friends: AnyObject? = (result as! NSDictionary).valueForKey("friends");
-        var count: NSArray = (friends as! NSDictionary)["data"] as! NSArray;
+        let friends: AnyObject? = (result as! NSDictionary).valueForKey("friends");
+        let count: NSArray = (friends as! NSDictionary)["data"] as! NSArray;
         for (var i = 0; i < count.count; i++) {
-            var currentfriend: NSDictionary = count[i] as! NSDictionary;
+            let currentfriend: NSDictionary = count[i] as! NSDictionary;
             let profid = currentfriend.valueForKey("id") as? String;
             let namepost = currentfriend.valueForKey("name") as? String;
             var profilepicture: AnyObject? = (currentfriend as NSDictionary).valueForKey("picture");
@@ -146,7 +152,7 @@ class Profile : NSManagedObject {
                 fetchRequest.fetchLimit = 1;
                 let predicate = NSPredicate(format: "profid == %@", profid!)
                 fetchRequest.predicate = predicate
-                if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]{
+                if let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile]{
                     var currententry = fetchResults[0];
                     if (currententry.url == profilepictureurl) {
                     } else {
@@ -156,31 +162,34 @@ class Profile : NSManagedObject {
                 }
             } else {
                 //If not already in list - create entry
-                var currententry = Profile.createInManagedObjectContext(ctx!, name: namepost!, url: profilepictureurl!, profid: profid!, isuser: false);
+                _ = Profile.createInManagedObjectContext(ctx!, name: namepost!, url: profilepictureurl!, profid: profid!, isuser: false);
             }
             friendid.append(profid!)
         }
         //Remove any deleted friends
         let fetchRequest = NSFetchRequest(entityName: "Profile")
-        if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile]{
+        if let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile]{
             var checkfriends = friendid;
             checkfriends.append(FBSDKAccessToken.currentAccessToken().userID);
             for (var i = 0; i<fetchResults.count; i++){
-                if contains(checkfriends, fetchResults[i].profid!) {
+                if checkfriends.contains((fetchResults[i].profid!)) {
                 } else {
                     ctx?.deleteObject(fetchResults[i]);
                 }
             }
         }
         NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Friends_Saved", object: self, userInfo: nil);
-        ctx?.save(nil);
+        do {
+            try ctx?.save()
+        } catch _ {
+        };
         return friendid;
     }
     //MARK: Image Download Methods
     class func downloadUnknownPictureAsync(input:Profile, membersfind:Bool) { //Downloads an unknown profile image based on supplied Profile
         let imageRequest: NSURLRequest = NSURLRequest(URL: NSURL(string: input.url!)!);
         let queue: NSOperationQueue = NSOperationQueue.mainQueue()
-        NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+        NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse?, data: NSData?, error: NSError?) -> Void in
             if data != nil {
                 var params = Dictionary<String,AnyObject>();
                 params["ID"] = input.profid;
@@ -196,7 +205,7 @@ class Profile : NSManagedObject {
     class func downloadPictureAsync(URL:String?, id:String?) { //Downloads Profile Picture
         let imageRequest: NSURLRequest = NSURLRequest(URL: NSURL(string: URL!)!);
         let queue: NSOperationQueue = NSOperationQueue.mainQueue()
-        NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+        NSURLConnection.sendAsynchronousRequest(imageRequest, queue: queue, completionHandler:{ (response: NSURLResponse?, data: NSData?, error: NSError?) -> Void in
             if data != nil {
                 let fetchRequest = NSFetchRequest(entityName: "Profile")
                 fetchRequest.fetchLimit = 1;
@@ -204,15 +213,37 @@ class Profile : NSManagedObject {
                 fetchRequest.predicate = predicate
                 let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
                 let ctx = appDelegate.managedObjectContext;
-                if let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile] {
-                    var currentprof:Profile = fetchResults[0];
+                if let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile] {
+                    let currentprof:Profile = fetchResults[0];
                     currentprof.imagedata = data;
                     if (currentprof.profid==Globals.currentprofile?.profid) {
                         Globals.currentprofile?.imagedata = data;
                         NSNotificationCenter.defaultCenter().postNotificationName("PPUpdated", object: self);
                     }
-                    ctx?.save(nil);
+                    do {
+                        try ctx?.save()
+                    } catch _ {
+                    };
                 }
+            } else {
+                //Needs to refresh image because response is corrupt
+                let fetchRequest = NSFetchRequest(entityName: "Profile")
+                fetchRequest.fetchLimit = 1;
+                let predicate = NSPredicate(format: "profid == '" + id! + "'");
+                fetchRequest.predicate = predicate
+                let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                let ctx = appDelegate.managedObjectContext;
+                if let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile] {
+                    let currentprof:Profile = fetchResults[0];
+                    currentprof.url = "";
+                    currentprof.imagedata = NSData();
+                    do {
+                        try ctx?.save()
+                    } catch _ {
+                    };
+
+                }
+                
             }
         })
     }
@@ -222,10 +253,10 @@ class Profile : NSManagedObject {
             let ctx = appDelegate.managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "Profile");
             fetchRequest.fetchLimit = 1;
-            var formatted = "profid == '" + inid + "'";
+            let formatted = "profid == '" + inid + "'";
             let predicate = NSPredicate(format: formatted);
             fetchRequest.predicate = predicate
-            let fetchResults = ctx!.executeFetchRequest(fetchRequest, error: nil) as? [Profile];
+            let fetchResults = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile];
             if (fetchResults!.count>0){
                 let imageprof:Profile = fetchResults![0];
                 if let image = UIImage(data: imageprof.imagedata!) {

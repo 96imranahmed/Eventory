@@ -43,7 +43,7 @@ class Notification {
     }
     func performJump() {
         if (self.notificationtype == 1) {
-            if let decision = self.decided {
+            if let _ = self.decided {
                 //Group Decision Notification
             }
         }
@@ -85,21 +85,21 @@ class Notification {
             }
             let urlstring = URLStub + "notification_get.php";
             let url = NSURL(string: urlstring)!;
-            let session = NSURLSession.sharedSession();
+            _ = NSURLSession.sharedSession();
             let request = NSMutableURLRequest(URL: url);
             request.HTTPMethod = "POST";
             request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type");
             request.HTTPBody = contentBodyAsString.dataUsingEncoding(NSUTF8StringEncoding);
-            contentBodyAsString = contentBodyAsString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
+            contentBodyAsString = contentBodyAsString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
             let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
                 (data, response, error) in
                 //NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
-                if data?.length == 0 {
+                if data?.length == 0 || data == nil {
                     Globals.unreadnotificationcount = 0;
                     let params = ["Count":0];
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Notifications_Done", object: self, userInfo: params);
                 } else {
-                    if let results:NSArray = (NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? NSArray)
+                    if let results:NSArray = ((try? NSJSONSerialization.JSONObjectWithData(data!, options: [])) as? NSArray)
                     {
                         if (results.count > 0) {
                             if page == 0 {
@@ -124,7 +124,7 @@ class Notification {
                                     }
                                 }
                             }
-                            Globals.unreadnotificationcount = count.toInt()!;
+                            Globals.unreadnotificationcount = Int(count)!;
                             let params = ["Count":results.count - 1];
                             NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Notifications_Done", object: self, userInfo: params);
                         }

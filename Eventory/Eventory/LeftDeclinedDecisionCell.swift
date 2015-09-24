@@ -27,9 +27,8 @@ class LeftDeclinedDecisionCell: SWTableViewCell {
         super.setSelected(selected, animated: animated)
         // Configure the view for the selected state
     }
-    func setDecisionLayout(notificationtype: Int?) {
-        var left:NSMutableArray = NSMutableArray();
-        var imagesize:CGSize = CGSizeMake(20,20);
+    func setDecisionLayout() {
+        let left:NSMutableArray = NSMutableArray();
         if type == 1 {
             left.sw_addUtilityButtonWithColor(Schemes.returnColor("Nephritis", alpha: 1.0), title: "Re-Join >");
             yeslabel.text = "Re-Join >";

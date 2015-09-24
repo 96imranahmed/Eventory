@@ -49,13 +49,11 @@ if ($check) {
             } else {
                 //Notify friends that person has joined
                 foreach ($idarray as $id) {
-                    //$connection->AddtoList($connectinfo, 1, $id, "friends_new_unseen", $profid);
+                    //
                 }
             }
             $prepsql = $connectinfo->prepare("INSERT INTO Profiles (id, name, token, url) VALUES (:profid,:name,:token,:profurl) ON DUPLICATE KEY UPDATE name=VALUES(name), token=VALUES(token), url=VALUES(url)");
             $prepsql->execute(array(':profid'=>$profid, ':name'=>$name, ':token'=>$token, ':profurl'=>$profurl));
-            $notifysql = $connectinfo->prepare("INSERT INTO Notifications (id, friends_new_unseen, numberunseen) VALUES ('$profid', null, 0) ON DUPLICATE KEY UPDATE id=id");
-            $notifysql->execute(array(':profid' => $profid));
         } catch (PDOException $e) {
             echo 'Error - ' . $e->GetMessage();
         }

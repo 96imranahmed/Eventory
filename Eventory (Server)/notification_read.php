@@ -14,44 +14,52 @@ if (array_key_exists('token', $_POST)) {
 } else {
     $safe = false;
 }
+if (array_key_exists('type', $_POST)) {
+    $type = filter_input(INPUT_POST, 'type');
+} else {
+    $safe = false;
+}
+if (array_key_exists('data', $_POST)) {
+    $data = filter_input(INPUT_POST, 'data');
+} else {
+    $safe = false;
+}
 if ($safe) {
-    //Possibly check if the name is correct - invited you to join x but x might be changed to y in that time!
     $authenticated = $connection->Verify($connectinfo, $profid, $token);
     if ($authenticated) {
         $notificationarray = [];
         $row = $connection->GetRow($connectinfo, 1, $profid);
-        for ($i = 2; $i < $count; $i++) {
-            $name = array_keys($row)[$i * 2];
-            print_r($name);
-            $value = $row[$i];
-            print_r($value);
-            $current = $row[$name];
-            if ($current == null || $current == "") {
-                
-            } else {
-                $currentarray = unserialize($current);
-                if (is_array($currentarray)) {
-                    if ($currentarray["isread"] == null) {
-                        for ($i = 0; $i < count($currentarray); $i++) {
-                            $loop = $currentarray[$i];
+        $type = $type + 2;
+        $current = $row[$type];
+        $column = array_keys($row)[$type * 2];
+        if ($current == null || $current == "") {
+            
+        } else {
+            $currentarray = unserialize($current);
+            $decrementcount = 0;
+            if (is_array($currentarray)) {
+                if (isset($currentarray['isread'])) {
+                    if ($currentarray['data'] == $data) {
+                        $currentarray["isread"] = 1;
+                        $decrementcount++;
+                    }
+                } else {
+                    for ($i = 0; $i < count($currentarray); $i++) {
+                        $loop = $currentarray[$i];
+                        if ($loop['data'] == $data) {
                             $loop["isread"] = 1;
                             $currentarray[$i] = $loop;
+                            $decrementcount++;
                         }
-                    } else {
-                        $currentarray["isread"] = 1;
                     }
                 }
-                $current = serialize($currentarray);
-                if (count($readstring) == 0) {
-                    $readstring = ["$name = '$current'"];
-                } else {
-                    $readstring[] = "$name = '$current'";
-                }
             }
+            $current = serialize($currentarray);
         }
-        print_r($readstring);
-        //$postsql = $connectinfo->prepare("UPDATE Notifications SET :name = :current WHERE id = :profid");
-        //$postsql->execute(array(':name'=>$name, ':current'=>$current, ':profid'=>$profid"));
+        $build = strval($connection->buildQuery(1, 1, $column)) . ' = :current WHERE id = :profid';
+        $postsql = $connectinfo->prepare($build);
+        $postsql->execute(array(':current' => $current, ":profid"=>$profid));
+        $connection->DecrementNotificationCount($connectinfo, $profid, $decrementcount);
     } else {
         echo "Error - authorization mismatch";
     }
