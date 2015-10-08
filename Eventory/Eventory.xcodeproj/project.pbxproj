@@ -50,6 +50,7 @@
 		D8A36F611B5DB19E0026C3A0 /* exit.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F601B5DB19E0026C3A0 /* exit.png */; };
 		D8A36F641B5EDCE70026C3A0 /* group_add.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F621B5EDCE70026C3A0 /* group_add.png */; };
 		D8A36F651B5EDCE70026C3A0 /* group_list.png in Resources */ = {isa = PBXBuildFile; fileRef = D8A36F631B5EDCE70026C3A0 /* group_list.png */; };
+		D8CEFFED1BC6AEC900930D7D /* LocalStorageClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CEFFEC1BC6AEC900930D7D /* LocalStorageClasses.swift */; settings = {ASSET_TAGS = (); }; };
 		D8D868191B62A17500CF63B7 /* GroupListPopoverVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */; };
 		D8F2F8981B661BE800D3DA8E /* InviteVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F8971B661BE800D3DA8E /* InviteVC.swift */; };
 		D8F2F89A1B66E76A00D3DA8E /* GroupCellEmpty.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */; };
@@ -125,6 +126,7 @@
 		D8A36F601B5DB19E0026C3A0 /* exit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = exit.png; sourceTree = "<group>"; };
 		D8A36F621B5EDCE70026C3A0 /* group_add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = group_add.png; path = ../group_add.png; sourceTree = "<group>"; };
 		D8A36F631B5EDCE70026C3A0 /* group_list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = group_list.png; path = ../group_list.png; sourceTree = "<group>"; };
+		D8CEFFEC1BC6AEC900930D7D /* LocalStorageClasses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalStorageClasses.swift; sourceTree = "<group>"; };
 		D8D868181B62A17500CF63B7 /* GroupListPopoverVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupListPopoverVC.swift; sourceTree = "<group>"; };
 		D8F2F8971B661BE800D3DA8E /* InviteVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteVC.swift; sourceTree = "<group>"; };
 		D8F2F8991B66E76A00D3DA8E /* GroupCellEmpty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCellEmpty.swift; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 			isa = PBXGroup;
 			children = (
 				D89DBE141B52BD2E00F3151A /* CommonUtils.swift */,
+				D8CEFFEC1BC6AEC900930D7D /* LocalStorageClasses.swift */,
 				D81B455C1B5AD12200DF7899 /* Profile.swift */,
 				D80221BD1B71F962000D26D9 /* Notification.swift */,
 				D81B455E1B5AD15800DF7899 /* Group.swift */,
@@ -202,11 +205,10 @@
 		D855B7041B489D8400E85674 /* Eventory */ = {
 			isa = PBXGroup;
 			children = (
-				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
-				D80221B91B6A0EFC000D26D9 /* NotificationsVC.swift */,
 				D855B70E1B489D8400E85674 /* Images.xcassets */,
 				D855B7101B489D8400E85674 /* LaunchScreen.xib */,
 				D82B95EC1BAAC59700E382E7 /* Main.storyboard */,
+				D80221B91B6A0EFC000D26D9 /* NotificationsVC.swift */,
 				D855B7271B489DA100E85674 /* Bridging-Header.h */,
 				D8F2F8A11B69974300D3DA8E /* Login/Logout & CoreData Controllers */,
 				D8F2F8A01B69972400D3DA8E /* Group & Friends View Controllers */,
@@ -312,6 +314,7 @@
 		D8F2F8A11B69974300D3DA8E /* Login/Logout & CoreData Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				D89DBE121B52BCE100F3151A /* LandingVC.swift */,
 				D82E8FD91B4E5350007A747F /* Eventory.xcdatamodeld */,
 				D855B7091B489D8400E85674 /* LoginVC.swift */,
 				D89DBE181B54385900F3151A /* LogoutVC.swift */,
@@ -371,6 +374,7 @@
 				TargetAttributes = {
 					D855B7011B489D8400E85674 = {
 						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = 9DY4837X32;
 					};
 					D855B7161B489D8400E85674 = {
 						CreatedOnToolsVersion = 6.4;
@@ -458,6 +462,7 @@
 				D8F2F89F1B68D62C00D3DA8E /* GroupCreateVC.swift in Sources */,
 				D89DBE191B54385900F3151A /* LogoutVC.swift in Sources */,
 				D80221BE1B71F962000D26D9 /* Notification.swift in Sources */,
+				D8CEFFED1BC6AEC900930D7D /* LocalStorageClasses.swift in Sources */,
 				D855B70A1B489D8400E85674 /* LoginVC.swift in Sources */,
 				D8A36F531B5DA1F00026C3A0 /* SWUtilityButtonView.m in Sources */,
 				D89DBE1B1B54515900F3151A /* ProfileCell.swift in Sources */,
@@ -593,6 +598,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -602,6 +609,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Eventory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Eventory/Bridging-Header.h";
 			};
 			name = Debug;
@@ -610,6 +618,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -619,6 +629,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Eventory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Eventory/Bridging-Header.h";
 			};
 			name = Release;

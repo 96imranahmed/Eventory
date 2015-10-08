@@ -8,10 +8,10 @@
 
 import UIKit
 
-class NotificationStandardCell: UITableViewCell {
+class NotificationStandardCell: SWTableViewCell {
     var notification: Notification = Notification(type: 0, sourceID: nil, decided: nil, text: "", read: false, notifdata: nil, date: NSDate(timeIntervalSinceNow: 0));
     var unseen: Bool = false;
-    @IBOutlet weak var title: MarqueeLabel!
+    @IBOutlet weak var title: UITextView!
     @IBOutlet weak var picture: UIImageView!
     @IBOutlet weak var newimage: UIImageView!
     override func awakeFromNib() {
@@ -19,7 +19,6 @@ class NotificationStandardCell: UITableViewCell {
         picture.image = UIImage(named: "unknownprofile.png");
         picture.layer.masksToBounds = true;
         picture.layer.cornerRadius = 25;
-        title.scrollDuration = 2;
         // Initialization code
     }
     
@@ -33,5 +32,8 @@ class NotificationStandardCell: UITableViewCell {
         } else {
             newimage.hidden = true;
         }
+        let right:NSMutableArray = NSMutableArray();
+        right.sw_addUtilityButtonWithColor(Schemes.returnColor("Alizarin", alpha: 1.0), title: "< Dismiss");
+        self.setRightUtilityButtons(right as [AnyObject], withButtonWidth: 100);
     }
 }

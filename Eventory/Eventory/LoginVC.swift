@@ -43,7 +43,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
         ProfilePicture.layer.cornerRadius = ProfilePicture.frame.height/2;
         self.LoginButton.delegate = self;
         LoginButton.readPermissions = ["public_profile", "user_friends"]; //Add user_events if required
-        LoginButton.loginBehavior = FBSDKLoginBehavior.Web;
+        LoginButton.loginBehavior = FBSDKLoginBehavior.Browser;
         NSNotificationCenter.defaultCenter().removeObserver(self);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "observeTokenChange:", name: FBSDKAccessTokenDidChangeNotification, object: nil);
         if (FBSDKProfile.currentProfile()==nil) {
@@ -87,7 +87,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
     func rerequestPermissions() {
         let login = FBSDKLoginManager();
         login.logOut();
-        login.logInWithReadPermissions(["public_profile", "user_friends"], handler: { (result:FBSDKLoginManagerLoginResult!, error:NSError!) -> Void in
+        login.logInWithReadPermissions(["public_profile", "user_friends"], fromViewController:self, handler: { (result:FBSDKLoginManagerLoginResult!, error:NSError!) -> Void in
             if error != nil {
                 return;
             }
@@ -96,7 +96,6 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                 self.StatusLabel.text = "Login cancelled - try again?";
                 return;
             }
-            self.checkPermissions();
         })  //Add user_events if required
     }
     func forceLogout() {
@@ -113,6 +112,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
             StatusLabel.text = "Login cancelled - try again?";
         }
         else {
+            self.checkPermissions();
             progressBarDisplayer("Logging In", indicator: true)
         }
     }
@@ -268,6 +268,7 @@ class LoginVC: UIViewController, FBSDKLoginButtonDelegate {
                             Globals.currentprofile = fetchResults[0];
                         }
                     }
+                    Globals.profloaded = true;
                     self.canproceed = true;
                 }
             }

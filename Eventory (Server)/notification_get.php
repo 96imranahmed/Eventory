@@ -1,7 +1,7 @@
 <?php
 
 function sortbydate($a, $b) {
-    return $b["date"] - $a["date"];
+    return $a["date"] - $b["date"];
 }
 
 function checktext($connection, $pdo, $inputnotif) {
@@ -50,12 +50,14 @@ if ($safe) {
         $notifcomp = explode(";", $row["notification_raw"]);
         if ($haslimit && $safelimit) {
             $limit = $limitnumber * ($limitpage + 1);
+            $notifcomp = array_reverse($notifcomp);
+            $startcount = count($notifcomp);
             $skeletonraw = array_splice($notifcomp, -$limit);
-            if ((count($notifcomp) - $limit + $limitnumber) < 0) {
+            if (($startcount - $limit + $limitnumber) <= 0) {
                 $skeletonraw = [];
             }
             for ($j = 0; $j < count($skeletonraw); $j++) {
-                if ($j < $limitnumber) {
+                if ($j < $limitnumber && $j < (count($skeletonraw) - $limitnumber * $limitpage)) {
                     if (in_array($skeletonraw[$j] + 2, array_keys($notificationskeleton))) {
                         $replace = $notificationskeleton[$skeletonraw[$j] + 2];
                         $replace++;
@@ -74,32 +76,44 @@ if ($safe) {
                 }
             }
             //^^ Ensures only the right number of notifications are copied
-            $count = intval(count($row)) / 2;
+            $count = intval(count($row))/2;
             $readstring = [];
             for ($i = 3; $i < $count; $i++) {
                 $verify = $i;
-                $name = array_keys($row)[$i * 2];
+                //$name = array_keys($row)[$i * 2];
                 $value = $row[$i];
                 if ($value == null || $value == "") {
                     
                 } else {
-                    if (count($notificationarray) == 0) {
-                        $add = unserialize($value);
-                        if (is_array($add)) {
-                            if (isset($add['isread'])) {
-                                if ($compareskeleton[$verify] > 0) {                                   
+                    $add = unserialize($value);
+                    if (is_array($add)) {
+                        if (isset($add['isread'])) {
+                            if ($compareskeleton[$verify] > 0) {
+                                
+                            } else {
+                                if ($notificationskeleton[$verify] > 0) {
+                                    $notificationarray[] = checktext($connection, $connectinfo, $add[0]);
+                                }
+                            }
+                        } else {
+                            //Must be collection of items
+                            if (isset($compareskeleton[$verify])){
+                                $min = $compareskeleton[$verify];
+                                if (isset($notificationskeleton[$verify])){
+                                $max = $notificationskeleton[$verify] + $compareskeleton[$verify];
                                 } else {
-                                    if ($notificationskeleton[$verify] > 0) {
-                                        $notificationarray[] = checktext($connection, $connectinfo, $add[0]);
-                                    }
+                                $max = $min;
                                 }
                             } else {
-                                //Must be collection of items
-                                $max = count($add) - $compareskeleton[$verify] - 1;
-                                $min = count($add) - - $compareskeleton[$verify] - $notificationskeleton[$verify];
-                                for ($i = $min; $i <= $max; $i++) {
-                                    $notificationarray[] = checktext($connection, $connectinfo, $add[$i]);
+                                $min = 0;
+                                if (isset($notificationskeleton[$verify])){
+                                $max = $notificationskeleton[$verify];
+                                } else {
+                                $max = 0;
                                 }
+                            }
+                            for ($t = $min; $t < $max; $t++) {
+                                $notificationarray[] = checktext($connection, $connectinfo, $add[$t]);
                             }
                         }
                     }
@@ -108,23 +122,21 @@ if ($safe) {
         } else {
             $count = intval(count($row)) / 2;
             $readstring = [];
-            for ($i = 2; $i < $count; $i++) {
-                $name = array_keys($row)[$i * 2];
+            for ($i = 3; $i < $count; $i++) {
+                //$name = array_keys($row)[$i * 2];
                 $value = $row[$i];
                 if ($value == null || $value == "") {
                     
                 } else {
-                    if (count($notificationarray) == 0) {
-                        $add = unserialize($value);
-                        if (is_array($add)) {
-                            if (isset($add['isread'])) {
-                                $notificationarray[] = checktext($connection, $connectinfo, $add[0]);
-                            } else {
-                                //Must be collection of items
-                                for ($i = 0; $i < count($add); $i++) {
-                                    $notificationarray[] = checktext($connection, $connectinfo, $add[$i]);
-                                }
-                            } 
+                    $add = unserialize($value);
+                    if (is_array($add)) {
+                        if (isset($add['isread'])) {
+                            $notificationarray[] = checktext($connection, $connectinfo, $add[0]);
+                        } else {
+                            //Must be collection of items
+                            for ($t = 0; $t < count($add); $t++) {
+                                $notificationarray[] = checktext($connection, $connectinfo, $add[$t]);
+                            }
                         }
                     }
                 }

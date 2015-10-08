@@ -44,12 +44,12 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
             })
         } else {
             if ((image) != nil) {
-            picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
+                picbutton.image = UIImage(data: Globals.currentprofile!.imagedata!)
             } else {
-            picbutton.image = UIImage(named: "unkownprofile.png")
+                picbutton.image = UIImage(named: "unkownprofile.png")
             }
             if let name = Globals.currentprofile?.name {
-            navprofilelabel.text = getTitle() +  ", " + getFirstName(name) +  "!";
+                navprofilelabel.text = getTitle() +  ", " + getFirstName(name) +  "!";
             }
         }
         picbutton.layer.masksToBounds = true;
@@ -71,16 +71,18 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         _ = navtitle.center;
         _ = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "animateNotifications", userInfo: nil, repeats: true);
     }
-    
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(true);
-        if Globals.unreadnotificationcount != 0 {
+if Globals.unreadnotificationcount > 0 {
             self.hub.decrementBy(self.hub.count)
             self.hub.incrementBy(UInt(Globals.unreadnotificationcount));
             self.hub.pop();
         } else {
             self.hub.decrementBy(self.hub.count)
             self.hub.pop();
+        }
+        if Globals.profloaded {
+        Notification.getNotifications(Constants.notificationloadlimit, page: 0);
         }
     }
     override func viewWillAppear(animated: Bool) {
@@ -103,7 +105,7 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
     func animateNotifications() {
         //NSLog("Refreshed with count: " + hub.count.description)
         dispatch_async(dispatch_get_main_queue(), {
-        self.hub.bump();
+            self.hub.bump();
         })
     }
     func PPUpdated () {
@@ -139,6 +141,11 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func getTitle() -> String {
+        let name = getFirstName((Globals.currentprofile?.name)!);
+        var short = true;
+        if name.characters.count > 8 {
+            short = false
+        }
         let now:NSDate = NSDate();
         var possiblelists:[String] = ["Hi", "Howdy", "Hey", "Hello", "Heya", "Greetings"];
         let cal = NSCalendar.currentCalendar();
@@ -147,13 +154,19 @@ class LandingVC: UIViewController, UIGestureRecognizerDelegate {
         switch hour {
         case 0 ... 12:
             possiblelists.append("Morning");
-            possiblelists.append("Good morning");
+            if (short) {
+                possiblelists.append("Good morning");
+            }
         case 13 ... 17:
             possiblelists.append("Afternoon");
-            possiblelists.append("Good afternoon");
+            if (short) {
+                possiblelists.append("Good afternoon");
+            }
         case 17 ... 24:
             possiblelists.append("Evening");
-            possiblelists.append("Good evening");
+            if (short) {
+                possiblelists.append("Good evening");
+            }
         default:
             NSLog("Time error!");
         }

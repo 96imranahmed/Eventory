@@ -143,6 +143,7 @@ class Group: NSManagedObject {
                 
             }
         }
+        Globals.groupschanged = false;
     }
     class func getGroupsfrom(data: NSData, withtype: Int) {
         var grouplist:[Group!]!=[];
@@ -224,11 +225,11 @@ class Group: NSManagedObject {
                     }
                 } else {
                     if (nonfriends.count>1) {
-                        let name:String = "And " + nonfriends.count.description + " other non-friends";
+                        let name:String = nonfriends.count.description + " other non-friends";
                         let others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")!), save: false);
                         output.append(others);
                     } else if (nonfriends.count == 1) {
-                        let name:String = "And one other non-friend";
+                        let name:String = "One non-friend";
                         let others:Profile = Profile(name: name, url: nil, profid: nil, imagedata: UIImagePNGRepresentation(UIImage(named: "unknownprofile.png")!), save: false);
                         output.append(others);
                     }
@@ -310,97 +311,120 @@ class Group: NSManagedObject {
         }
     }
     //MARK: Group Cell Methods
+    class func processImageCreate(count: Int, _ imagearray:[UIImage] = []) -> UIImage {
+        switch count {
+        case 1:
+            return imagearray[0];
+        case 2:
+            let leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+            let rightimage:UIImage! = self.cropimage(imagearray[1], toRect: CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+            let size:CGSize = imagearray[0].size;
+            UIGraphicsBeginImageContext(size);
+            leftimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+            rightimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+            let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            return finalimage;
+        case 3:
+            let leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+            let righttopimage:UIImage! = imagearray[1];
+            let rightbottomimage:UIImage! = imagearray[2];
+            let size:CGSize = imagearray[0].size;
+            UIGraphicsBeginImageContext(size);
+            leftimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
+            righttopimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
+            rightbottomimage.drawInRect(CGRectMake(imagearray[0].size.width/2, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
+            let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            return finalimage;
+        case 4:
+            let lefttopimage:UIImage! = imagearray[0];
+            let leftbottomimage:UIImage! = imagearray[1];
+            let righttopimage:UIImage! = imagearray[2];
+            let rightbottomimage:UIImage! = imagearray[3];
+            let size:CGSize = imagearray[0].size;
+            UIGraphicsBeginImageContext(size);
+            lefttopimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
+            leftbottomimage.drawInRect(CGRectMake(0, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
+            righttopimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
+            rightbottomimage.drawInRect(CGRectMake(imagearray[0].size.width/2, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
+            let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            return finalimage;
+            
+        default:
+            return UIImage(named: "unknownprofile.png")!;
+        }
+        
+    }
     class func generateGroupImage(memberlist: String?) -> UIImage {
         if (memberlist=="" || memberlist == nil) {
-            return UIImage(named: "unknownprofile.png")!;
+            return processImageCreate(0);
         } else {
             let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let ctx = appDelegate.managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "Profile")
             let FriendList = (try? ctx!.executeFetchRequest(fetchRequest)) as? [Profile]
             var actualimage:[NSData!]=[];
+            var imagerequired:[String] = [];
             var members:[String] = (memberlist?.componentsSeparatedByString(";"))!;
             if (members[0] != "") {
                 members.shuffleInPlace();
                 for (var i = 0; i<members.count; i++){
                     let currentprof:Profile? = FriendList!.filter({return $0.profid == members[i]})[0]
                     if let check = currentprof {
+                        if actualimage.count>4 {
+                            break;
+                        } else {
                         actualimage.append(check.imagedata!);
+                        }
+                    } else {
+                        imagerequired.append(members[i]);
                     }
                 }
                 if (members.count==0) {
-                    return UIImage(named: "unknownprofile.png")!;
+                    return processImageCreate(0);
                 } else if (members.count == 1) {
                     if (actualimage.count == 1) {
                         return UIImage(data: actualimage[0])!;
                     } else {
-                        return UIImage(named: "unknownprofile.png")!;
+                        return processImageCreate(0); //Non-Friend
                     }
                 } else if (members.count == 2) {
                     var imagearray:[UIImage]! = [];
                     for (var i=0; i<2; i++) {
                         if (i>actualimage.count-1) {
-                            imagearray.append(UIImage(named: "unknownprofile.png")!);
+                            imagearray.append(UIImage(named: "unknownprofile.png")!); //Non-Friend
                         } else {
                             if (actualimage[i].length > 0) {
                                 imagearray.append(UIImage(data: actualimage[i])!);
                             } else {
-                                imagearray.append(UIImage(named: "unknownprofile.png")!);
+                                imagearray.append(UIImage(named: "unknownprofile.png")!); //Incorrect Data
                             }
                         }
                     }
-                    let leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    let rightimage:UIImage! = self.cropimage(imagearray[1], toRect: CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    let size:CGSize = imagearray[0].size;
-                    UIGraphicsBeginImageContext(size);
-                    leftimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    rightimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
-                    UIGraphicsEndImageContext();
-                    return finalimage;
+                    return processImageCreate(2, imagearray);
                 } else if (members.count == 3) {
                     var imagearray:[UIImage]! = [];
                     for (var i=0; i<3; i++) {
                         if (i>actualimage.count-1) {
-                            imagearray.append(UIImage(named: "unknownprofile.png")!);
+                            imagearray.append(UIImage(named: "unknownprofile.png")!); //Non-Friend
                         } else {
                             imagearray.append(UIImage(data: actualimage[i])!);
                         }
                     }
-                    let leftimage:UIImage! = self.cropimage(imagearray[0], toRect: CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    let righttopimage:UIImage! = imagearray[1];
-                    let rightbottomimage:UIImage! = imagearray[2];
-                    let size:CGSize = imagearray[0].size;
-                    UIGraphicsBeginImageContext(size);
-                    leftimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height));
-                    righttopimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    rightbottomimage.drawInRect(CGRectMake(imagearray[0].size.width/2, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
-                    UIGraphicsEndImageContext();
-                    return finalimage;
+                    return processImageCreate(3, imagearray);
                 } else
                 {
                     var imagearray:[UIImage]! = [];
                     for (var i=0; i<3; i++) {
                         if (i>actualimage.count-1) {
-                            imagearray.append(UIImage(named: "unknownprofile.png")!);
+                            imagearray.append(UIImage(named: "unknownprofile.png")!); //Non-Friend
                         } else {
                             imagearray.append(UIImage(data: actualimage[i])!);
                         }
                     }
-                    let lefttopimage:UIImage! = imagearray[0];
-                    let leftbottomimage:UIImage! = imagearray[1];
-                    let righttopimage:UIImage! = imagearray[2];
-                    let rightbottomimage:UIImage! = imagearray[3];
-                    let size:CGSize = imagearray[0].size;
-                    UIGraphicsBeginImageContext(size);
-                    lefttopimage.drawInRect(CGRectMake(0, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    leftbottomimage.drawInRect(CGRectMake(0, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    righttopimage.drawInRect(CGRectMake(imagearray[0].size.width/2, 0, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    rightbottomimage.drawInRect(CGRectMake(imagearray[0].size.width/2, imagearray[0].size.height/2, imagearray[0].size.width/2, imagearray[0].size.height/2));
-                    let finalimage:UIImage = UIGraphicsGetImageFromCurrentImageContext();
-                    UIGraphicsEndImageContext();
-                    return finalimage;
+                    return processImageCreate(4, imagearray);
                 }
             } else {
                 return UIImage(named: "unknownprofile.png")!;
@@ -409,7 +433,7 @@ class Group: NSManagedObject {
     }
     class func cropimage(imageToCrop:UIImage, toRect rect:CGRect) -> UIImage{
         let imageRef:CGImageRef = CGImageCreateWithImageInRect(imageToCrop.CGImage, rect)!
-        let cropped:UIImage = UIImage(CGImage:imageRef)
+        let cropped:UIImage = UIImage(CGImage:imageRef);
         return cropped
     }
     class func getMemberString(memberlist: String) -> String {

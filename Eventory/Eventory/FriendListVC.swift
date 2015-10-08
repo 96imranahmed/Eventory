@@ -52,6 +52,9 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             FriendList = Profile.SortFriends(((try? self.managedObjectContext!.executeFetchRequest(fetchRequest)) as? [Profile])!);
             fetchRequest = NSFetchRequest(entityName: "Group")
             GroupList = Group.SortGroups(((try? self.managedObjectContext!.executeFetchRequest(fetchRequest)) as? [Group])!);
+            for (var i = 0; i < GroupList.count; i++) {
+                GroupData.generateentry(&Globals.localgroups, input: GroupList[i]);
+            }
             sort()
         } else {
             groupsupdated = true;
@@ -68,7 +71,7 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         // Do any additional setup after loading the view.
     }
     override func viewWillAppear(animated: Bool) {
-        if (Reachability.isConnectedToNetwork()) {
+        if (Reachability.isConnectedToNetwork() && Globals.profloaded && Globals.groupschanged) {
             getData();
         }
     }
@@ -212,6 +215,9 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
     func groupsUpdated(notification: NSNotification) {
         let fetchRequest = NSFetchRequest(entityName: "Group")
         self.GroupList = Group.SortGroups((try? self.managedObjectContext!.executeFetchRequest(fetchRequest)) as? [Group]);
+        for (var i = 0; i < GroupList.count; i++) {
+            GroupData.generateentry(&Globals.localgroups, input: GroupList[i]);
+        }
         groupsupdated = true;
         sort()
     }
@@ -234,6 +240,9 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             FriendList = Profile.SortFriends(((try? self.managedObjectContext!.executeFetchRequest(fetchRequest)) as? [Profile])!);
             fetchRequest = NSFetchRequest(entityName: "Group")
             GroupList = Group.SortGroups(((try? self.managedObjectContext!.executeFetchRequest(fetchRequest)) as? [Group])!);
+            for (var i = 0; i < GroupList.count; i++) {
+                GroupData.generateentry(&Globals.localgroups, input: GroupList[i]);
+            }
             sort()
         }
     }
@@ -425,15 +434,16 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                         cell.setLeftUtilityButtons(left as [AnyObject], withButtonWidth: 40);
                         cell.setRightUtilityButtons(right as [AnyObject], withButtonWidth: 40);
                         cell.groupimage.image = UIImage(named: "unkownprofile.png");
-                        if (currentprof.memberstring != nil) {
-                            cell.memberlabel.text = Group.getMemberString(currentprof.memberstring!);
-                            cell.memberlist = currentprof.memberstring;
+                        let details = GroupData.getGroupData(&Globals.localgroups, id: currentprof.groupid!);
+                        cell.memberlabel.text = details.descriptiontext;
+                        if currentprof.memberstring != nil {
+                        cell.memberlist = currentprof.memberstring;
+                        }
+                        if (groupsupdated) {
+                            cell.groupimage.image = details.image;
                         }
                         cell.grouptextfield.delegate = self;
                         cell.delegate = self;
-                        if (groupsupdated) {
-                            cell.groupimage.image = Group.generateGroupImage(currentprof.memberstring);
-                        }
                         return cell;
                     } else if (indexPath.section == 1) {
                         let cell = tableView.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;
@@ -479,15 +489,16 @@ class FriendListVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                         cell.setLeftUtilityButtons(left as [AnyObject], withButtonWidth: 40);
                         cell.setRightUtilityButtons(right as [AnyObject], withButtonWidth: 40);
                         cell.groupimage.image = UIImage(named: "unkownprofile.png");
-                        if (currentprof.memberstring != nil) {
-                            cell.memberlabel.text = Group.getMemberString(currentprof.memberstring!);
+                        let details = GroupData.getGroupData(&Globals.localgroups, id: currentprof.groupid!);
+                        cell.memberlabel.text = details.descriptiontext;
+                        if currentprof.memberstring != nil {
                             cell.memberlist = currentprof.memberstring;
+                        }
+                        if (groupsupdated) {
+                            cell.groupimage.image = details.image;
                         }
                         cell.grouptextfield.delegate = self;
                         cell.delegate = self;
-                        if (groupsupdated) {
-                            cell.groupimage.image = Group.generateGroupImage(currentprof.memberstring);
-                        }
                         return cell;
                     } else if (indexPath.section == 1) {
                         let cell = tableView.dequeueReusableCellWithIdentifier("Friend") as! FriendCell;

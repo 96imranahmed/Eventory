@@ -42,7 +42,7 @@ $check = $connection->TokenVerify($profid, $token);
 if ($check) {
     if ($safe) {
         try {
-            $profilecheck = $connectinfo->prepare("SELECT id from Profiles where id= :profid");
+            $profilecheck = $connectinfo->prepare("SELECT id from Profiles where id = :profid");
             $profilecheck->execute(array(':profid' => $profid));
             if ($profilecheck->rowCount() >= 1) {
                 //Profile already exists

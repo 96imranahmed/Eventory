@@ -93,12 +93,12 @@ class Notification {
             contentBodyAsString = contentBodyAsString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
             let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
                 (data, response, error) in
-                //NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
                 if data?.length == 0 || data == nil {
                     Globals.unreadnotificationcount = 0;
                     let params = ["Count":0];
                     NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Notifications_Done", object: self, userInfo: params);
                 } else {
+                    //NSLog((NSString(data: data!, encoding: NSUTF8StringEncoding)?.description)!);
                     if let results:NSArray = ((try? NSJSONSerialization.JSONObjectWithData(data!, options: [])) as? NSArray)
                     {
                         if (results.count > 0) {
@@ -107,20 +107,22 @@ class Notification {
                             }
                             let countstore: NSDictionary = results[0] as! NSDictionary;
                             let count = countstore.valueForKey("numberunseen") as! String;
-                            if results.count > 1 {
+                            if (results.count > 1) {
                                 for (var i = 1; i<results.count; i++) {
-                                    let current:NSDictionary = results[i] as! NSDictionary;
-                                    let sourceid:String = (current.valueForKey("sourceid")!) as! String;
-                                    let interval:Double = (current.valueForKey("date"))! as! Double;
-                                    let date:NSDate = NSDate(timeIntervalSince1970: interval);
-                                    let type:Int = (current.valueForKey("type")!) as! Int;
-                                    let read:Bool = (current.valueForKey("isread")!) as! Bool;
-                                    let text:String = (current.valueForKey("text")!) as! String;
-                                    let data:String = (current.valueForKey("data")!) as! String;
-                                    let checkduplicate = Globals.notifications.filter({$0.text == text})
-                                    if (checkduplicate.count > 0) {
-                                    } else {
-                                        Globals.notifications.append(Notification(type: type, sourceID: sourceid, decided: nil, text: text, read: read, notifdata: data, date: date));
+                                    if !(results[i] is NSNull) {
+                                        let current:NSDictionary = results[i] as! NSDictionary;
+                                        let sourceid:String = (current.valueForKey("sourceid")!) as! String;
+                                        let interval:Double = (current.valueForKey("date"))! as! Double;
+                                        let date:NSDate = NSDate(timeIntervalSince1970: interval);
+                                        let type:Int = (current.valueForKey("type")!) as! Int;
+                                        let read:Bool = (current.valueForKey("isread")!) as! Bool;
+                                        let text:String = (current.valueForKey("text")!) as! String;
+                                        let data:String = (current.valueForKey("data")!) as! String;
+                                        let checkduplicate = Globals.notifications.filter({$0.notifdata == data && $0.notificationtype == type})
+                                        if (checkduplicate.count > 0) {
+                                        } else {
+                                            Globals.notifications.append(Notification(type: type, sourceID: sourceid, decided: nil, text: text, read: read, notifdata: data, date: date));
+                                        }
                                     }
                                 }
                             }
@@ -130,6 +132,7 @@ class Notification {
                         }
                     }
                 }
+                Globals.profloaded = true;
             }
             task.resume();
         }

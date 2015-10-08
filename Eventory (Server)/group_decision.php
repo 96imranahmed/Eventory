@@ -57,9 +57,9 @@ if ($safe) {
                 if ($check == true && $checkdeclined == false && $checkleft == false) {
                     //Add on to people declined
                     $connection->AddtoList($connectinfo, 2, $profid, "groups_declined", $groupid); //Add to profile list of declined group
-                    $connection->RemoveItemfromList($connectinfo, 1, $profid, "groups_pending", "groupid:"+$groupid, "data");//Clear "pending" notification
+                    $connection->RemoveItemfromList($connectinfo, 1, $profid, "groups_pending", "groupid:".strval($groupid), "data");//Clear "pending" notification
                     //(Notify group inviter that a new user has declined group request?)
-                    CreateNotification(3, $connectinfo, $targetid, $profid, $groupid, FALSE);
+                    CreateNotification(2, $connectinfo, $targetid, $profid, $groupid, FALSE);
                 }
             }
         } else {

@@ -42,7 +42,6 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         notificationtable.addSubview(refreshControl)
         if (Reachability.isConnectedToNetwork()) {
             Notification.getNotifications(Constants.notificationloadlimit, page: 0);
-            pagenumber++;
             progressBarDisplayer("Loading...", indicator:true);
             _ = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "timeout", userInfo: nil, repeats: false);
         } else {
@@ -50,7 +49,6 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         }
         NSNotificationCenter.defaultCenter().removeObserver(self);
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshnotifications:", name: "Eventory_Notifications_Done", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "autorefresh:", name: "Eventory_Refresh_Trigger", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "groupdownload:", name: "Eventory_Group_Single_Done", object: nil)
         // Do any additional setup after loading the view.
     }
@@ -112,6 +110,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 }
                 self.refreshControl.endRefreshing();
                 self.isUpdating = false;
+                RKDropdownAlert.title("No Notifications!", backgroundColor: Schemes.returnColor("Amethyst", alpha: 1.0), textColor: UIColor.whiteColor())
             }
         }
         //NSLog(pagenumber.description);
@@ -153,13 +152,6 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.messageFrame.removeFromSuperview();
         refreshControl.endRefreshing();
     }
-    func autorefresh(notification: NSNotification) {
-        pagenumber = 0;
-        if (Reachability.isConnectedToNetwork()) {
-            Notification.getNotifications(Constants.notificationloadlimit, page: 0);
-        }
-        progressBarDisplayer("Loading...", indicator:true);
-    }
     func refresh(refreshControl: UIRefreshControl) {
         pagenumber = 0;
         if (Reachability.isConnectedToNetwork()) {
@@ -199,7 +191,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         if (decisiontypes.contains(currentnotification.notificationtype!)){
             return 85.0;
         } else {
-            return 67.0;
+            return 85.0;
         }
 
     }
@@ -221,6 +213,7 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             cell.unseen = !currentnotification.read;
             cell.title.text = currentnotification.text;
             cell.setDecisionLayout(currentnotification.notificationtype);
+            cell.delegate = self;
             return cell;
         }
     }
@@ -246,8 +239,8 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         if (maximumOffset - currentOffset <= 5.0 && isUpdating == false && isScrolling == false) || (currentOffset > maximumOffset && isUpdating == false && isScrolling == false){
             isUpdating = true;
             isScrolling = true;
-            Notification.getNotifications(Constants.notificationloadlimit, page: pagenumber);
             pagenumber++;
+            Notification.getNotifications(Constants.notificationloadlimit, page: pagenumber);
             progressBarDisplayer("Loading...", indicator:true);
             _ = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: "timeout", userInfo: nil, repeats: false);
         }
@@ -286,7 +279,11 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 if (offset == 1 && preoffset == 0 && isScrollingFast) {
                     notificationDecision(true, index: index)
                 } else if (offset == 2 && preoffset == 0 && isScrollingFast) {
-                    notificationDecision(false, index: index)
+                    if (decisiontypes.contains(notificationlist[index.row].notificationtype!)) {
+                        notificationDecision(false, index: index)
+                    } else {
+                        dismiss(index);
+                    }
                 }
             }
         }
@@ -297,6 +294,8 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         animation = UITableViewRowAnimation.Fade;
         if Reachability.isConnectedToNetwork() {
             let procnotif = notificationlist[index.row];
+            pagenumber = 0;
+            //Process notification actions (Group decision/Event decision etc.)
             if (procnotif.notificationtype == 1) {
                 if let text = procnotif.notifdata {
                     let pos = text.rangeOfString(":", options: .BackwardsSearch)?.startIndex
@@ -309,12 +308,36 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                         params["accepted"] = 0.description;
                     }
                     params["groupid"] = groupidpost;
-                    Reachability.postToServer("group_decision.php", postdata: params, customselector: "Refresh");
+                    Reachability.postToServer("group_decision.php", postdata: params, customselector: nil);
                 }
             }
             notificationlist.removeAtIndex(index.row);
             Globals.unreadnotificationcount = Globals.unreadnotificationcount - 1;
+            notificationtable.beginUpdates();
+            if (notificationtable.numberOfRowsInSection(index.section) == 1) {
+                //Delete section
+                notificationtable.deleteSections(NSIndexSet(index: index.section), withRowAnimation: animation);
+            } else {
+                //Delete row
+                notificationtable.deleteRowsAtIndexPaths([index], withRowAnimation: animation)
+            }
+            notificationtable.endUpdates();
+        } else {
+            RKDropdownAlert.title("Offline!", message: "You are currently not connected to the internet! :(");
+        }
+    }
+    func dismiss(index: NSIndexPath) {
+        var animation: UITableViewRowAnimation;
+        animation = UITableViewRowAnimation.Fade;
+        if Reachability.isConnectedToNetwork() {
             pagenumber = 0;
+            let procnotif = notificationlist[index.row];
+            var params = Dictionary<String,AnyObject>();
+            params["type"] = procnotif.notificationtype?.description;
+            params["data"] = procnotif.notifdata;
+            Reachability.postToServer("notification_delete.php", postdata: params, customselector: nil);
+            notificationlist.removeAtIndex(index.row);
+            Globals.unreadnotificationcount = Globals.unreadnotificationcount - 1;
             notificationtable.beginUpdates();
             if (notificationtable.numberOfRowsInSection(index.section) == 1) {
                 //Delete section
@@ -355,7 +378,11 @@ class NotificationsVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         let cellfind:NSIndexPath? = notificationtable.indexPathForCell(cell);
         if let nonnilindex = cellfind
         {
+            if (decisiontypes.contains(notificationlist[nonnilindex.row].notificationtype!)) {
             notificationDecision(false, index: nonnilindex)
+            } else {
+                dismiss(nonnilindex);
+            }
         }
     }
 }

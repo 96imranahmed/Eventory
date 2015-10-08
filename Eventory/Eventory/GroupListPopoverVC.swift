@@ -28,10 +28,10 @@ class GroupListPopoverVC: UIViewController, UITableViewDataSource, UITableViewDe
         memberlist = Group.returnSavedFriends(currentgroup!.memberstring!, membersfind: true);
         invitedlist = Group.returnSavedFriends(currentgroup!.invitedstring!, membersfind: false);
         NSNotificationCenter.defaultCenter().removeObserver(self);
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateMemberList:", name: "Eventory_Group_List_Updated", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateMemberPicture:", name: "Eventory_Group_Picture_Updated", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateInvitedList:", name: "Eventory_Group_Invited_List_Updated", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateInvitedPicture:", name: "Eventory_Group_Invited_Picture_Updated", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateMemberList:", name: "Eventory_Single_Group_List_Updated", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateMemberPicture:", name: "Eventory_Single_Group_Picture_Updated", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateInvitedList:", name: "Eventory_Single_Group_Invited_List_Updated", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "updateInvitedPicture:", name: "Eventory_Single_Group_Invited_Picture_Updated", object: nil)
         groupimage.layer.masksToBounds = true;
         groupimage.layer.cornerRadius = 25;
         let image = Group.generateGroupImage(currentgroup?.memberstring);

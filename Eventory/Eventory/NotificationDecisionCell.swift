@@ -11,7 +11,7 @@ import UIKit
 class NotificationDecisionCell: SWTableViewCell {
     var notification: Notification = Notification(type: 0, sourceID: nil, decided: nil, text: "", read: false, notifdata: nil, date: NSDate(timeIntervalSinceNow: 0));
     var unseen: Bool = false;
-    @IBOutlet weak var title: MarqueeLabel!
+    @IBOutlet weak var title: UITextView!
     @IBOutlet weak var picture: UIImageView!
     @IBOutlet weak var yeslabel: UILabel!
     @IBOutlet weak var nolabel: UILabel!
@@ -21,7 +21,6 @@ class NotificationDecisionCell: SWTableViewCell {
         picture.image = UIImage(named: "unknownprofile.png");
         picture.layer.masksToBounds = true;
         picture.layer.cornerRadius = 25;
-        title.scrollDuration = 2;
         // Initialization code
     }
     

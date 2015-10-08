@@ -195,9 +195,9 @@ class Profile : NSManagedObject {
                 params["ID"] = input.profid;
                 params["Data"] = data;
                 if membersfind {
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Picture_Updated", object: self, userInfo: params);
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Single_Group_Picture_Updated", object: self, userInfo: params);
                 } else {
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_Picture_Updated", object: self, userInfo: params);
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Single_Group_Invited_Picture_Updated", object: self, userInfo: params);
                 }
             }
         })

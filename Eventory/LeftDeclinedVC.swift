@@ -30,7 +30,7 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidLoad()
         grouptable.delegate = self;
         grouptable.dataSource = self;
-        refreshControl.addTarget(self, action: "refresh", forControlEvents: .ValueChanged)
+        refreshControl.addTarget(self, action: "refreshtable", forControlEvents: .ValueChanged)
         refreshControl.attributedTitle = NSAttributedString(string: "Refreshing...");
         grouptable.addSubview(refreshControl)
         if (Reachability.isConnectedToNetwork()) {
@@ -53,9 +53,9 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Dispose of any resources that can be recreated.
     }
     func trigrefresh(timer:NSTimer) {
-        refresh();
+        refreshtable();
     }
-    func refresh() {
+    func refreshtable() {
         dispatch_async(dispatch_get_main_queue()){
             self.grouptable.reloadData();
         }
@@ -368,6 +368,7 @@ class LeftDeclinedVC: UIViewController, UITableViewDelegate, UITableViewDataSour
                 params["groupid"] = group.groupid;
                 if (Reachability.isConnectedToNetwork()) {
                     Reachability.postToServer("group_decision.php", postdata: params, customselector: "");
+                    Globals.groupschanged = true;
                     if (!result.isEmpty) {
                         self.leftGroups = self.leftGroups.filter({$0.groupid != group.groupid});
                     } else {

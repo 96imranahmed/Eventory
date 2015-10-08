@@ -15,12 +15,17 @@ class Main {
     var currentgroup:Group?;
     var notifications:[Notification];
     var unreadnotificationcount:Int!;
-    init (currentprofile:Profile, currentgroup:Group, notifications:[Notification], unreadnotificationcount:Int) {
+    var profloaded:Bool;
+    var groupschanged:Bool;
+    var localgroups:[GroupData];
+    init (currentprofile:Profile, currentgroup:Group, notifications:[Notification], unreadnotificationcount:Int, profloaded:Bool, groupschanged:Bool) {
         self.currentprofile = currentprofile;
         self.currentgroup = currentgroup;
         self.notifications = notifications;
         self.unreadnotificationcount = unreadnotificationcount;
-        
+        self.profloaded = profloaded;
+        self.groupschanged = groupschanged;
+        self.localgroups = [];
     }
     class func clearAll() {
         Profile.ClearProfiles();
@@ -28,7 +33,7 @@ class Main {
     }
 }
 public struct Constants {
-    static let notificationloadlimit = 10;
+    static let notificationloadlimit = 5;
 }
 public class Schemes
 {
@@ -150,13 +155,11 @@ public class Reachability {
                 } else if (sendto == "UpdateGroupMemberList") {
                     let friends:[Profile] = Group.parseProfileGet(data!);
                     let params:Dictionary = ["Friends":friends];
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_List_Updated", object: self, userInfo: params);
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Single_Group_List_Updated", object: self, userInfo: params);
                 } else if (sendto == "UpdateGroupInvitedList") {
                     let friends:[Profile] = Group.parseProfileGet(data!);
                     let params:Dictionary = ["Friends":friends];
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Group_Invited_List_Updated", object: self, userInfo: params);
-                } else if (sendto == "Refresh") {
-                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Refresh_Trigger", object: self, userInfo: nil);
+                    NSNotificationCenter.defaultCenter().postNotificationName("Eventory_Single_Group_Invited_List_Updated", object: self, userInfo: params);
                 } else if (sendto == "ProfileUpdated") {
                     var paramstwo = Dictionary<String,AnyObject>();
                     paramstwo["type"] = "0";
@@ -189,4 +192,4 @@ public class Reachability {
 var demonotif = [];
 var demoprofile = Profile(name: "", url: "", profid: "", imagedata: nil, save: false);
 var demogroup = Group(name: "", groupid: "", memberstring: "", invitedstring: "", isadmin: false, save: false);
-var Globals = Main(currentprofile: demoprofile, currentgroup: demogroup,notifications: demonotif as! [Notification], unreadnotificationcount: 0);
+var Globals = Main(currentprofile: demoprofile, currentgroup: demogroup,notifications: demonotif as! [Notification], unreadnotificationcount: 0, profloaded: false, groupschanged: false);
