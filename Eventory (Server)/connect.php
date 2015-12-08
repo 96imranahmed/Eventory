@@ -8,9 +8,6 @@ class Connect {
     public function GetConnection() {
         try {
             $ServerName = "localhost";
-            $database = "acaveex1_Acavee";
-            $username = "acaveex1_96imran";
-            $password = "8ch12enpl!";
             $dbo = new PDO('mysql:host=' . $ServerName . ';dbname=' . $database, $username, $password);
             $dbo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $dbo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
